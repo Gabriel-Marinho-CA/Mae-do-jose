@@ -28,21 +28,11 @@
     </div>
 
     <div class="mdj-drawer__body">
-      <form action="{{ routes.search_url }}" method="get" role="search" class="mdj-drawer__search">
-        <input type="hidden" name="options[prefix]" value="last">
-        <label class="visually-hidden" for="mdj-drawer-search">{{ 'general.search.search' | t }}</label>
-        <span class="mdj-drawer__search-icon" aria-hidden="true">
-          {{- 'icon-search-mdj.svg' | inline_asset_content -}}
-        </span>
-        <input
-          id="mdj-drawer-search"
-          class="mdj-drawer__search-input"
-          type="search"
-          name="q"
-          placeholder="Buscar produtos..."
-          autocomplete="off"
-        >
-      </form>
+      {% render 'mdj-search',
+        input_id: 'mdj-drawer-search',
+        placeholder: 'Buscar produtos...',
+        variant: 'drawer'
+      %}
 
       <p class="mdj-drawer__label">Navegação</p>
 

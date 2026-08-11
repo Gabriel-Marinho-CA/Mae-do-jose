@@ -4,6 +4,10 @@
   theme editor (section.settings.menu).
 {% endcomment %}
 
+{%- if settings.predictive_search_enabled -%}
+  <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
+{%- endif -%}
+
 {%- if settings.cart_type == 'notification' -%}
   <link
     rel="stylesheet"
@@ -187,51 +191,29 @@
     overflow-y: auto;
   }
 
-  .mdj-drawer__search {
-    position: relative;
-    display: flex;
-    align-items: center;
+  .mdj-search-wrapper--drawer {
     flex: 0 0 auto;
+    margin-top: 0;
+  }
+
+  .mdj-search--drawer {
     height: 3.8rem;
-    background-color: var(--mdj-field-bg);
     border: 1px solid #f0ede8;
     border-radius: 1rem;
   }
 
-  .mdj-drawer__search-icon {
-    display: flex;
-    align-items: center;
-    padding-left: 1.4rem;
-    color: #b0a898;
-  }
-
-  .mdj-drawer__search-icon svg {
-    display: block;
-    width: 1.35rem;
-    height: 1.35rem;
-  }
-
-  .mdj-drawer__search-input {
-    flex: 1 1 auto;
-    min-width: 0;
-    height: 100%;
-    padding: 0 1.4rem 0 1rem;
-    background: transparent;
-    border: 0;
-    font-family: var(--mdj-font);
+  .mdj-search--drawer .mdj-search__input {
+    padding: 0 3.2rem 0 1rem;
     font-size: 1.4rem;
     color: #1a2e2d;
-    appearance: none;
-    -webkit-appearance: none;
   }
 
-  .mdj-drawer__search-input::placeholder {
+  .mdj-search--drawer .mdj-search__input::placeholder {
     color: #1a2e2d;
-    opacity: 1;
   }
 
-  .mdj-drawer__search-input:focus {
-    outline: none;
+  .mdj-search--drawer .mdj-search__reset {
+    right: 1.2rem;
   }
 
   .mdj-drawer__label {
@@ -372,23 +354,28 @@
 
   /* ---------- Search ---------- */
 
-  .mdj-search {
+  .mdj-search-wrapper {
     grid-area: search;
+    display: block;
+    width: 100%;
+    margin-top: 0.8rem;
+  }
+
+  .mdj-search {
     position: relative;
     display: flex;
     align-items: center;
     width: 100%;
-    margin-top: 0.8rem;
+    height: 3.9rem;
     background-color: var(--mdj-field-bg);
     border-radius: 0.45rem;
-    height: 3.9rem;
   }
 
   .mdj-search__input {
     flex: 1 1 auto;
     min-width: 0;
     height: 100%;
-    padding: 0 4.6rem 0 2rem;
+    padding: 0 6.4rem 0 2rem;
     border: 0;
     background: transparent;
     border-radius: inherit;
@@ -418,14 +405,12 @@
     -webkit-appearance: none;
   }
 
-  .mdj-search__submit {
-    position: absolute;
-    right: 2rem;
-    top: 50%;
-    transform: translateY(-50%);
+  .mdj-search__submit,
+  .mdj-search__reset {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex: 0 0 auto;
     padding: 0;
     border: 0;
     background: none;
@@ -433,10 +418,53 @@
     cursor: pointer;
   }
 
+  .mdj-search__submit {
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
   .mdj-search__submit svg {
     display: block;
     width: 1.4rem;
     height: 1.4rem;
+  }
+
+  .mdj-search__reset {
+    position: absolute;
+    right: 4.4rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  .mdj-search__reset svg {
+    display: block;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  .mdj-search__icon {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    padding-left: 1.4rem;
+    color: #b0a898;
+  }
+
+  .mdj-search__icon svg {
+    display: block;
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+
+  /* O dropdown do predictive search se posiciona contra o form */
+  .mdj-search .predictive-search {
+    font-family: var(--mdj-font);
+    border-radius: 0.8rem;
+    text-align: left;
   }
 
   /* ---------- Desktop-only pieces ---------- */
@@ -465,7 +493,7 @@
     }
 
     .mdj-header__inner .mdj-drawer,
-    .mdj-search--mobile {
+    .mdj-search-wrapper--mobile {
       display: none;
     }
 
@@ -487,25 +515,40 @@
       height: 5.5rem;
     }
 
-    .mdj-search {
+    .mdj-search-wrapper--desktop {
       flex: 1 1 auto;
+      min-width: 0;
       margin-top: 0;
+    }
+
+    .mdj-search--desktop {
       height: 5.5rem;
       border-radius: 0.8rem;
     }
 
-    .mdj-search__input {
-      padding: 0 6.4rem 0 3.2rem;
+    .mdj-search--desktop .mdj-search__input {
+      padding: 0 8rem 0 3.2rem;
       font-size: 1.8rem;
     }
 
-    .mdj-search__submit {
+    .mdj-search--desktop .mdj-search__submit {
       right: 2.4rem;
     }
 
-    .mdj-search__submit svg {
+    .mdj-search--desktop .mdj-search__submit svg {
       width: 2.4rem;
       height: 2.4rem;
+    }
+
+    .mdj-search--desktop .mdj-search__reset {
+      right: 5.8rem;
+      width: 2rem;
+      height: 2rem;
+    }
+
+    .mdj-search--desktop .mdj-search__reset svg {
+      width: 1.5rem;
+      height: 1.5rem;
     }
 
     .mdj-header__actions {
@@ -689,42 +732,20 @@
       {%- comment -%} Mobile drawer — os links vêm do menu configurado no admin {%- endcomment -%}
       {% render 'mdj-menu-drawer' %}
 
-      {%- comment -%} Search — shown on mobile below the logo, inline on desktop {%- endcomment -%}
-      <form action="{{ routes.search_url }}" method="get" role="search" class="mdj-search mdj-search--mobile">
-        <input type="hidden" name="options[prefix]" value="last">
-        <label class="visually-hidden" for="mdj-search-mobile">{{ 'general.search.search' | t }}</label>
-        <input
-          id="mdj-search-mobile"
-          class="mdj-search__input"
-          type="search"
-          name="q"
-          value="{{ search.terms | escape }}"
-          placeholder="Buscar quiches, tortas..."
-          autocomplete="off"
-        >
-        <button type="submit" class="mdj-search__submit" aria-label="{{ 'general.search.search' | t }}">
-          {{- 'icon-search-mdj.svg' | inline_asset_content -}}
-        </button>
-      </form>
+      {%- comment -%} Busca — no mobile fica abaixo do logo, no desktop fica inline {%- endcomment -%}
+      {% render 'mdj-search',
+        input_id: 'mdj-search-mobile',
+        placeholder: 'Buscar quiches, tortas...',
+        variant: 'mobile'
+      %}
 
       <div class="mdj-header__content">
         <div class="mdj-header__top">
-          <form action="{{ routes.search_url }}" method="get" role="search" class="mdj-search mdj-search--desktop">
-            <input type="hidden" name="options[prefix]" value="last">
-            <label class="visually-hidden" for="mdj-search-desktop">{{ 'general.search.search' | t }}</label>
-            <input
-              id="mdj-search-desktop"
-              class="mdj-search__input"
-              type="search"
-              name="q"
-              value="{{ search.terms | escape }}"
-              placeholder="Buscar quiches, tortas, doces..."
-              autocomplete="off"
-            >
-            <button type="submit" class="mdj-search__submit" aria-label="{{ 'general.search.search' | t }}">
-              {{- 'icon-search-mdj.svg' | inline_asset_content -}}
-            </button>
-          </form>
+          {% render 'mdj-search',
+            input_id: 'mdj-search-desktop',
+            placeholder: 'Buscar quiches, tortas, doces...',
+            variant: 'desktop'
+          %}
 
           <div class="mdj-header__actions">
             <a href="/pages/personalizado" class="mdj-header__custom-link">Personalizado</a>
