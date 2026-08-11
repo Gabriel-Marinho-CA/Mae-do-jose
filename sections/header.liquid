@@ -1,0 +1,1058 @@
+{% comment %}
+  Header — Mãe do José
+  Layout hardcoded from the Figma design. Only the navigation menu comes from the
+  theme editor (section.settings.menu).
+{% endcomment %}
+
+{%- if settings.cart_type == 'notification' -%}
+  <link
+    rel="stylesheet"
+    href="{{ 'component-cart-notification.css' | asset_url }}"
+    media="print"
+    onload="this.media='all'"
+  >
+  <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap"
+  media="print"
+  onload="this.media='all'"
+>
+
+{%- style -%}
+  .mdj-header-wrapper {
+    --mdj-green: #043c39;
+    --mdj-nav-text: #6b7e7d;
+    --mdj-muted-text: #5a6e6d;
+    --mdj-field-bg: #f7f5f2;
+    --mdj-rule: #f7f5f2;
+    --mdj-divider: #e8e4df;
+    --mdj-search-icon: #a89880;
+    --mdj-font: 'Outfit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+    display: block;
+    position: relative;
+    background-color: #fff;
+    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    z-index: 3;
+  }
+
+  .mdj-header {
+    font-family: var(--mdj-font);
+    max-width: 192rem;
+    margin: 0 auto;
+    padding: 1.2rem 4rem;
+  }
+
+  .mdj-header__inner {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      'logo toggle'
+      'search search';
+    align-items: center;
+    column-gap: 1.6rem;
+  }
+
+  /* ---------- Logo ---------- */
+
+  .mdj-header__logo {
+    grid-area: logo;
+    display: block;
+    line-height: 0;
+    text-decoration: none;
+    width: 14rem;
+  }
+
+  .mdj-header__logo svg,
+  .mdj-header__logo img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .mdj-header__logo .mdj-header__logo-text {
+    display: block;
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: var(--mdj-green);
+    line-height: 1.2;
+  }
+
+  /* ---------- Menu drawer (abre pela direita) ---------- */
+
+  .mdj-header__inner .mdj-drawer {
+    grid-area: toggle;
+    justify-self: end;
+  }
+
+  .mdj-drawer__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.6rem;
+    height: 3.6rem;
+    padding: 0;
+    color: #000;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .mdj-drawer__toggle svg {
+    display: block;
+    width: 1.8rem;
+    height: 1.6rem;
+  }
+
+  .mdj-drawer__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background-color: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .mdj-drawer.is-open .mdj-drawer__overlay {
+    opacity: 1;
+  }
+
+  .mdj-drawer__panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 21;
+    display: flex;
+    flex-direction: column;
+    width: min(30rem, 88vw);
+    background-color: #fff;
+    box-shadow: -4px 0 32px 0 rgba(0, 0, 0, 0.12);
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    text-align: left;
+  }
+
+  .mdj-drawer.is-open .mdj-drawer__panel {
+    transform: translateX(0);
+  }
+
+  .mdj-drawer__panel[hidden],
+  .mdj-drawer__overlay[hidden] {
+    display: none;
+  }
+
+  .mdj-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 auto;
+    height: 7.7rem;
+    padding: 0 2.2rem;
+    border-bottom: 1px solid #f0ede8;
+  }
+
+  .mdj-drawer__title {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: #1a2e2d;
+  }
+
+  .mdj-drawer__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    padding: 0;
+    background-color: var(--mdj-field-bg);
+    border: 1px solid #f0ede8;
+    border-radius: 0.8rem;
+    color: var(--mdj-nav-text);
+    font-size: 1.7rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .mdj-drawer__body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    padding: 1.6rem 2.2rem 2rem;
+    overflow-y: auto;
+  }
+
+  .mdj-drawer__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    height: 3.8rem;
+    background-color: var(--mdj-field-bg);
+    border: 1px solid #f0ede8;
+    border-radius: 1rem;
+  }
+
+  .mdj-drawer__search-icon {
+    display: flex;
+    align-items: center;
+    padding-left: 1.4rem;
+    color: #b0a898;
+  }
+
+  .mdj-drawer__search-icon svg {
+    display: block;
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+
+  .mdj-drawer__search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    padding: 0 1.4rem 0 1rem;
+    background: transparent;
+    border: 0;
+    font-family: var(--mdj-font);
+    font-size: 1.4rem;
+    color: #1a2e2d;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .mdj-drawer__search-input::placeholder {
+    color: #1a2e2d;
+    opacity: 1;
+  }
+
+  .mdj-drawer__search-input:focus {
+    outline: none;
+  }
+
+  .mdj-drawer__label {
+    flex: 0 0 auto;
+    margin: 2rem 0 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--mdj-search-icon);
+  }
+
+  .mdj-drawer__nav {
+    flex: 0 0 auto;
+    margin: 3rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mdj-drawer__nav-item + .mdj-drawer__nav-item {
+    margin-top: 1.5rem;
+  }
+
+  .mdj-drawer__link {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 4.3rem;
+    padding: 1.1rem 0 0;
+    border-bottom: 1px solid var(--mdj-field-bg);
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 2rem;
+    color: #1a2e2d;
+    text-decoration: none;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .mdj-drawer__link::-webkit-details-marker {
+    display: none;
+  }
+
+  .mdj-drawer__chevron {
+    display: flex;
+    align-items: center;
+    height: 2rem;
+    color: #d4cfc9;
+    transform: rotate(180deg);
+    transition: transform 0.2s ease;
+  }
+
+  .mdj-drawer__chevron svg {
+    display: block;
+    width: 0.4rem;
+    height: 0.9rem;
+  }
+
+  .mdj-drawer__details[open] > .mdj-drawer__link .mdj-drawer__chevron {
+    transform: rotate(270deg);
+  }
+
+  .mdj-drawer__submenu {
+    margin: 0;
+    padding: 0.8rem 0 0;
+    list-style: none;
+  }
+
+  .mdj-drawer__sublink {
+    display: block;
+    padding: 0.8rem 0;
+    font-size: 1.4rem;
+    color: var(--mdj-muted-text);
+    text-decoration: none;
+  }
+
+  .mdj-drawer__footer {
+    margin-top: auto;
+    padding-top: 3rem;
+  }
+
+  .mdj-drawer__order {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 5.4rem;
+    padding: 0 2rem 0 2.2rem;
+    border-radius: 1.2rem;
+    background-color: var(--mdj-green);
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .mdj-drawer__order-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 5.6rem;
+    height: 2.2rem;
+    padding: 0 0.8rem;
+    border-radius: 10rem;
+    background-color: rgba(255, 255, 255, 0.25);
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .mdj-drawer__social {
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mdj-drawer__social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 0.8rem;
+    background-color: var(--mdj-field-bg);
+    color: var(--mdj-search-icon);
+  }
+
+  .mdj-drawer__social-link svg {
+    display: block;
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  body.mdj-drawer-open {
+    overflow: hidden;
+  }
+
+  /* ---------- Search ---------- */
+
+  .mdj-search {
+    grid-area: search;
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-top: 0.8rem;
+    background-color: var(--mdj-field-bg);
+    border-radius: 0.45rem;
+    height: 3.9rem;
+  }
+
+  .mdj-search__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    padding: 0 4.6rem 0 2rem;
+    border: 0;
+    background: transparent;
+    border-radius: inherit;
+    font-family: var(--mdj-font);
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--mdj-green);
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .mdj-search__input::placeholder {
+    color: var(--mdj-green);
+    opacity: 1;
+  }
+
+  .mdj-search__input:focus {
+    outline: none;
+  }
+
+  .mdj-search:focus-within {
+    box-shadow: 0 0 0 0.2rem rgba(4, 60, 57, 0.2);
+  }
+
+  .mdj-search__input::-webkit-search-decoration,
+  .mdj-search__input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+
+  .mdj-search__submit {
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--mdj-search-icon);
+    cursor: pointer;
+  }
+
+  .mdj-search__submit svg {
+    display: block;
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  /* ---------- Desktop-only pieces ---------- */
+
+  .mdj-header__content,
+  .mdj-header__actions,
+  .mdj-nav,
+  .mdj-header__rule {
+    display: none;
+  }
+
+  /* ---------- Desktop ---------- */
+
+  @media screen and (min-width: 990px) {
+    .mdj-header {
+      max-width: 192rem;
+      padding: 2.6rem 4rem;
+    }
+
+    .mdj-header__inner {
+      display: flex;
+      align-items: flex-start;
+      gap: clamp(3rem, 6.3vw, 12.1rem);
+      max-width: 136.4rem;
+      margin: 0 auto;
+    }
+
+    .mdj-header__inner .mdj-drawer,
+    .mdj-search--mobile {
+      display: none;
+    }
+
+    .mdj-header__logo {
+      width: 19.4rem;
+      flex: 0 0 auto;
+    }
+
+    .mdj-header__content {
+      display: block;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .mdj-header__top {
+      display: flex;
+      align-items: center;
+      gap: clamp(2.4rem, 4vw, 7.4rem);
+      height: 5.5rem;
+    }
+
+    .mdj-search {
+      flex: 1 1 auto;
+      margin-top: 0;
+      height: 5.5rem;
+      border-radius: 0.8rem;
+    }
+
+    .mdj-search__input {
+      padding: 0 6.4rem 0 3.2rem;
+      font-size: 1.8rem;
+    }
+
+    .mdj-search__submit {
+      right: 2.4rem;
+    }
+
+    .mdj-search__submit svg {
+      width: 2.4rem;
+      height: 2.4rem;
+    }
+
+    .mdj-header__actions {
+      display: flex;
+      align-items: center;
+      gap: 1.4rem;
+      flex: 0 0 auto;
+    }
+
+    .mdj-header__custom-link {
+      font-size: 1.8rem;
+      font-weight: 500;
+      color: var(--mdj-muted-text);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .mdj-header__custom-link:hover {
+      color: var(--mdj-green);
+    }
+
+    .mdj-header__divider {
+      display: block;
+      width: 1px;
+      height: 2rem;
+      background-color: var(--mdj-divider);
+    }
+
+    .mdj-cart {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 1.4rem;
+      height: 5.3rem;
+      padding: 0 2.7rem;
+      border-radius: 0.8rem;
+      background-color: var(--mdj-green);
+      color: #fff;
+      font-size: 1.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: opacity 0.15s ease;
+    }
+
+    .mdj-cart:hover {
+      opacity: 0.9;
+    }
+
+    .mdj-cart svg {
+      display: block;
+      width: 2.5rem;
+      height: 2.5rem;
+      flex: 0 0 auto;
+    }
+
+    .mdj-cart__count {
+      position: absolute;
+      top: -0.6rem;
+      right: -0.6rem;
+      min-width: 2rem;
+      height: 2rem;
+      padding: 0 0.5rem;
+      border-radius: 1rem;
+      background-color: #fff;
+      color: var(--mdj-green);
+      font-size: 1.2rem;
+      font-weight: 600;
+      line-height: 2rem;
+      text-align: center;
+    }
+
+    .mdj-header__rule {
+      display: block;
+      height: 1px;
+      border: 0;
+      background-color: var(--mdj-rule);
+    }
+
+    .mdj-header__rule--top {
+      margin: 1.9rem 0 1.1rem;
+    }
+
+    .mdj-header__rule--bottom {
+      margin: 1.1rem 0 0;
+    }
+
+    .mdj-nav {
+      display: block;
+      min-height: 4.2rem;
+    }
+
+    .mdj-nav__list {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .mdj-nav__item {
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .mdj-nav__link {
+      display: block;
+      padding: 1rem 2rem;
+      font-size: 1.8rem;
+      font-weight: 400;
+      line-height: normal;
+      color: var(--mdj-nav-text);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .mdj-nav__link:hover,
+    .mdj-nav__link[aria-current='page'] {
+      color: var(--mdj-green);
+    }
+
+    .mdj-nav__submenu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 5;
+      display: none;
+      min-width: 20rem;
+      margin: 0;
+      padding: 1rem 0;
+      list-style: none;
+      background-color: #fff;
+      border-radius: 0.8rem;
+      box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .mdj-nav__item:hover > .mdj-nav__submenu,
+    .mdj-nav__item:focus-within > .mdj-nav__submenu {
+      display: block;
+    }
+
+    .mdj-nav__submenu .mdj-nav__link {
+      padding: 0.8rem 2rem;
+      font-size: 1.6rem;
+      white-space: normal;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign header_tag = 'div'
+  if section.settings.sticky_header_type != 'none'
+    assign header_tag = 'sticky-header'
+  endif
+-%}
+
+<{{ header_tag }}
+  {% if header_tag == 'sticky-header' %}
+    data-sticky-type="{{ section.settings.sticky_header_type }}"
+  {% endif %}
+  class="header-wrapper mdj-header-wrapper"
+>
+  <header class="mdj-header">
+    <div class="mdj-header__inner">
+      {%- if request.page_type == 'index' -%}
+        <h1 class="mdj-header__logo-heading" style="margin: 0; display: contents;">
+      {%- endif -%}
+      <a href="{{ routes.root_url }}" class="mdj-header__logo" aria-label="{{ shop.name | escape }}">
+        {%- if settings.logo != blank -%}
+          {{ settings.logo | image_url: width: 400 | image_tag: alt: shop.name, width: 194, loading: 'eager' }}
+        {%- else -%}
+          {{- 'logo-mae-do-jose.svg' | inline_asset_content -}}
+        {%- endif -%}
+      </a>
+      {%- if request.page_type == 'index' -%}
+        </h1>
+      {%- endif -%}
+
+      {%- comment -%} Mobile drawer — os links vêm do menu configurado no admin {%- endcomment -%}
+      {% render 'mdj-menu-drawer' %}
+
+      {%- comment -%} Search — shown on mobile below the logo, inline on desktop {%- endcomment -%}
+      <form action="{{ routes.search_url }}" method="get" role="search" class="mdj-search mdj-search--mobile">
+        <input type="hidden" name="options[prefix]" value="last">
+        <label class="visually-hidden" for="mdj-search-mobile">{{ 'general.search.search' | t }}</label>
+        <input
+          id="mdj-search-mobile"
+          class="mdj-search__input"
+          type="search"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="Buscar quiches, tortas..."
+          autocomplete="off"
+        >
+        <button type="submit" class="mdj-search__submit" aria-label="{{ 'general.search.search' | t }}">
+          {{- 'icon-search-mdj.svg' | inline_asset_content -}}
+        </button>
+      </form>
+
+      <div class="mdj-header__content">
+        <div class="mdj-header__top">
+          <form action="{{ routes.search_url }}" method="get" role="search" class="mdj-search mdj-search--desktop">
+            <input type="hidden" name="options[prefix]" value="last">
+            <label class="visually-hidden" for="mdj-search-desktop">{{ 'general.search.search' | t }}</label>
+            <input
+              id="mdj-search-desktop"
+              class="mdj-search__input"
+              type="search"
+              name="q"
+              value="{{ search.terms | escape }}"
+              placeholder="Buscar quiches, tortas, doces..."
+              autocomplete="off"
+            >
+            <button type="submit" class="mdj-search__submit" aria-label="{{ 'general.search.search' | t }}">
+              {{- 'icon-search-mdj.svg' | inline_asset_content -}}
+            </button>
+          </form>
+
+          <div class="mdj-header__actions">
+            <a href="/pages/personalizado" class="mdj-header__custom-link">Personalizado</a>
+            <span class="mdj-header__divider" aria-hidden="true"></span>
+            <a href="{{ routes.cart_url }}" class="mdj-cart" id="cart-icon-bubble">
+              {{- 'icon-cart-mdj.svg' | inline_asset_content -}}
+              <span>Carrinho</span>
+              {%- if cart != empty -%}
+                <span class="mdj-cart__count" aria-hidden="true">{{ cart.item_count }}</span>
+              {%- endif -%}
+              <span class="visually-hidden">
+                {{- 'sections.header.cart_count' | t: count: cart.item_count -}}
+              </span>
+            </a>
+          </div>
+        </div>
+
+        <hr class="mdj-header__rule mdj-header__rule--top">
+
+        <nav class="mdj-nav" aria-label="{{ 'sections.header.menu' | t }}">
+          <ul class="mdj-nav__list">
+            {%- for link in section.settings.menu.links -%}
+              <li class="mdj-nav__item">
+                <a
+                  href="{{ link.url }}"
+                  class="mdj-nav__link"
+                  {% if link.current %}
+                    aria-current="page"
+                  {% endif %}
+                >
+                  {{- link.title | escape -}}
+                </a>
+                {%- if link.links != blank -%}
+                  <ul class="mdj-nav__submenu">
+                    {%- for childlink in link.links -%}
+                      <li>
+                        <a
+                          href="{{ childlink.url }}"
+                          class="mdj-nav__link"
+                          {% if childlink.current %}
+                            aria-current="page"
+                          {% endif %}
+                        >
+                          {{- childlink.title | escape -}}
+                        </a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+
+        <hr class="mdj-header__rule mdj-header__rule--bottom">
+      </div>
+    </div>
+  </header>
+</{{ header_tag }}>
+
+{%- if settings.cart_type == 'notification' -%}
+  {%- render 'cart-notification', color_scheme: 'scheme-1' -%}
+{%- endif -%}
+
+{% javascript %}
+  class MdjDrawer extends HTMLElement {
+    connectedCallback() {
+      this.toggle = this.querySelector('[data-drawer-toggle]');
+      this.panel = this.querySelector('.mdj-drawer__panel');
+      this.overlay = this.querySelector('[data-drawer-overlay]');
+      this.closeButton = this.querySelector('[data-drawer-close]');
+
+      this.onKeyDown = this.onKeyDown.bind(this);
+
+      this.toggle.addEventListener('click', () => this.open());
+      this.closeButton.addEventListener('click', () => this.close());
+      this.overlay.addEventListener('click', () => this.close());
+    }
+
+    disconnectedCallback() {
+      document.removeEventListener('keydown', this.onKeyDown);
+      document.body.classList.remove('mdj-drawer-open');
+    }
+
+    get isOpen() {
+      return this.classList.contains('is-open');
+    }
+
+    open() {
+      this.panel.hidden = false;
+      this.overlay.hidden = false;
+      // Força um reflow para que a transição rode a partir do estado fechado.
+      this.panel.offsetHeight;
+      this.classList.add('is-open');
+      this.toggle.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('mdj-drawer-open');
+      document.addEventListener('keydown', this.onKeyDown);
+      this.closeButton.focus();
+    }
+
+    close() {
+      if (!this.isOpen) return;
+
+      this.classList.remove('is-open');
+      this.toggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('mdj-drawer-open');
+      document.removeEventListener('keydown', this.onKeyDown);
+      this.toggle.focus();
+
+      const hide = () => {
+        if (this.isOpen) return;
+        this.panel.hidden = true;
+        this.overlay.hidden = true;
+      };
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reducedMotion) {
+        hide();
+      } else {
+        this.panel.addEventListener('transitionend', hide, { once: true });
+        setTimeout(hide, 400);
+      }
+    }
+
+    onKeyDown(event) {
+      if (event.key === 'Escape') {
+        this.close();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const focusable = this.panel.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([type="hidden"]), summary, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+  }
+
+  customElements.define('mdj-drawer', MdjDrawer);
+
+  class StickyHeader extends HTMLElement {
+    constructor() {
+      super();
+      this.setHeaderHeight = this.setHeaderHeight.bind(this);
+    }
+
+    connectedCallback() {
+      this.header = document.querySelector('.section-header');
+      this.mobileMediaQuery = window.matchMedia('(max-width: 990px)');
+      this.headerIsAlwaysSticky =
+        this.getAttribute('data-sticky-type') === 'always' ||
+        this.getAttribute('data-sticky-type') === 'reduce-logo-size';
+      this.headerBounds = {};
+
+      this.setHeaderHeight();
+
+      this.mobileMediaQuery.addEventListener('change', this.setHeaderHeight);
+
+      if (this.headerIsAlwaysSticky) {
+        this.header.classList.add('shopify-section-header-sticky');
+      }
+
+      this.currentScrollTop = 0;
+      this.preventReveal = false;
+      this.predictiveSearches = this.querySelectorAll('predictive-search');
+
+      this.onScrollHandler = this.onScroll.bind(this);
+      this.hideHeaderOnScrollUp = () => (this.preventReveal = true);
+
+      this.addEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
+      window.addEventListener('scroll', this.onScrollHandler, false);
+
+      this.createObserver();
+    }
+
+    setHeaderHeight() {
+      document.documentElement.style.setProperty('--header-height', `${this.header.offsetHeight}px`);
+    }
+
+    disconnectedCallback() {
+      this.mobileMediaQuery.removeEventListener('change', this.setHeaderHeight);
+      this.removeEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
+      window.removeEventListener('scroll', this.onScrollHandler);
+    }
+
+    createObserver() {
+      let observer = new IntersectionObserver((entries, observer) => {
+        this.headerBounds = entries[0].intersectionRect;
+        observer.disconnect();
+      });
+
+      observer.observe(this.header);
+    }
+
+    onScroll() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+      if ([...this.predictiveSearches].some((predictiveSearch) => predictiveSearch.isOpen)) return;
+
+      if (scrollTop > this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
+        this.header.classList.add('scrolled-past-header');
+        if (this.preventHide) return;
+        requestAnimationFrame(this.hide.bind(this));
+      } else if (scrollTop < this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
+        this.header.classList.add('scrolled-past-header');
+        if (!this.preventReveal) {
+          requestAnimationFrame(this.reveal.bind(this));
+        } else {
+          window.clearTimeout(this.isScrolling);
+
+          this.isScrolling = setTimeout(() => {
+            this.preventReveal = false;
+          }, 66);
+
+          requestAnimationFrame(this.hide.bind(this));
+        }
+      } else if (scrollTop <= this.headerBounds.top) {
+        this.header.classList.remove('scrolled-past-header');
+        requestAnimationFrame(this.reset.bind(this));
+      }
+
+      this.currentScrollTop = scrollTop;
+    }
+
+    hide() {
+      if (this.headerIsAlwaysSticky) return;
+      this.header.classList.add('shopify-section-header-hidden', 'shopify-section-header-sticky');
+      this.closeMenuDisclosure();
+    }
+
+    reveal() {
+      if (this.headerIsAlwaysSticky) return;
+      this.header.classList.add('shopify-section-header-sticky', 'animate');
+      this.header.classList.remove('shopify-section-header-hidden');
+    }
+
+    reset() {
+      if (this.headerIsAlwaysSticky) return;
+      this.header.classList.remove('shopify-section-header-hidden', 'shopify-section-header-sticky', 'animate');
+    }
+
+    closeMenuDisclosure() {
+      this.disclosures = this.disclosures || this.header.querySelectorAll('header-menu');
+      this.disclosures.forEach((disclosure) => disclosure.close());
+    }
+  }
+
+  customElements.define('sticky-header', StickyHeader);
+{% endjavascript %}
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    {% if settings.logo %}
+      "logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }},
+    {% endif %}
+    "url": {{ request.origin | append: page.url | json }}
+  }
+</script>
+
+{%- if request.page_type == 'index' -%}
+  {% assign potential_action_target = request.origin | append: routes.search_url | append: '?q={search_term_string}' %}
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "name": {{ shop.name | json }},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {{ potential_action_target | json }},
+        "query-input": "required name=search_term_string"
+      },
+      "url": {{ request.origin | append: page.url | json }}
+    }
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.header.name",
+  "class": "section-header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "default": "main-menu",
+      "label": "t:sections.header.settings.menu.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "menu_color_scheme",
+      "label": "t:sections.header.settings.menu_color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "sticky_header_type",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:sections.header.settings.sticky_header_type.options__1.label"
+        },
+        {
+          "value": "on-scroll-up",
+          "label": "t:sections.header.settings.sticky_header_type.options__2.label"
+        },
+        {
+          "value": "always",
+          "label": "t:sections.header.settings.sticky_header_type.options__3.label"
+        }
+      ],
+      "default": "on-scroll-up",
+      "label": "t:sections.header.settings.sticky_header_type.label"
+    }
+  ]
+}
+{% endschema %}

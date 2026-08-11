@@ -1,0 +1,125 @@
+/* Card de produto no formato da loja migrada. Ver snippets/tp-product-card.liquid. */
+
+.tp-pcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--tp-pcard-bg, #fff);
+  border: 1px solid var(--tp-pcard-border, rgba(0, 0, 0, 0.06));
+  border-radius: var(--tp-pcard-radius, 12px);
+  height: 100%;
+}
+
+/* Badge de desconto, canto superior esquerdo, sobre a imagem. */
+.tp-pcard__badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--tp-pcard-badge-bg, #ffd400);
+  color: var(--tp-pcard-badge-color, #1a1c1e);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.tp-pcard__media {
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.tp-pcard__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.tp-pcard:hover .tp-pcard__img {
+  transform: scale(1.04);
+}
+
+/* Chips de especificação: voltagem, capacidade, tipo. */
+.tp-pcard__specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tp-pcard__spec {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--tp-pcard-spec-color, #0a4165);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.tp-pcard__title {
+  color: var(--tp-pcard-title-color, #1a1c1e);
+  font-size: 0.95rem;
+  line-height: 1.35;
+  text-align: center;
+  text-decoration: none;
+
+  /* Duas linhas e reticências, como na origem — senão o card muda de altura por item. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tp-pcard__rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.tp-pcard__stars {
+  --star: '★★★★★';
+  position: relative;
+  display: inline-block;
+  color: rgba(0, 0, 0, 0.18);
+  letter-spacing: 0.1em;
+}
+
+.tp-pcard__stars::before {
+  content: '★★★★★';
+}
+
+.tp-pcard__prices {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  margin-top: auto;
+  text-align: center;
+}
+
+.tp-pcard__compare {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.tp-pcard__price {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--tp-pcard-price-color, #1a1c1e);
+}
+
+.tp-pcard__pix,
+.tp-pcard__installments {
+  font-size: 0.72rem;
+  color: rgba(0, 0, 0, 0.6);
+  line-height: 1.3;
+}

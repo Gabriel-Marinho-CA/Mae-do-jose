@@ -1,0 +1,106 @@
+{%- comment -%}
+  Card de produto no formato da loja migrada.
+
+  Modelado a partir da vitrine da origem: badge de desconto, imagem, chips de
+  especificação, título, avaliação, preço "de/por", preço à vista com desconto e
+  parcelamento.
+
+  **Por que um snippet novo e não o `card-product` do Dawn:** o card do Dawn é usado
+  por coleção, busca e recomendações, e tem uma API grande (quick-add, variantes,
+  swatches). Trocar a estrutura dele quebraria essas telas. Este snippet é dedicado às
+  vitrines geradas na migração; se quiser adotá-lo em todo o tema, é trocar a chamada
+  nas sections do Dawn — a assinatura é a mesma (`card_product`).
+
+  Os campos que a VTEX tinha e a Shopify não traz de fábrica (chips de especificação,
+  desconto no PIX, nº de parcelas) saem de **metafields** e de settings da section, e
+  ficam prontos para quando o catálogo subir.
+
+  Parâmetros:
+    card_product (obrigatório) — o produto
+    pix_discount   — % de desconto à vista (0 = esconde a linha)
+    installments   — nº de parcelas sem juros (0 = esconde a linha)
+    spec_metafield — namespace.key do metafield com os chips, ex.: 'custom.especificacoes'
+{%- endcomment -%}
+
+{{ 'tp-product-card.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign product = card_product
+  assign pix = pix_discount | default: 0
+  assign parcelas = installments | default: 0
+
+  assign on_sale = false
+  if product.compare_at_price > product.price
+    assign on_sale = true
+    assign desconto = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round
+  endif
+
+  assign pix_price = product.price
+  if pix > 0
+    assign pix_price = product.price | times: 100 | minus: product.price | times: pix | divided_by: 100
+  endif
+-%}
+
+<div class="tp-pcard">
+  {%- if on_sale -%}
+    <span class="tp-pcard__badge">-{{ desconto }}%</span>
+  {%- endif -%}
+
+  <a class="tp-pcard__media" href="{{ product.url }}">
+    {%- if product.featured_media -%}
+      {{
+        product.featured_media
+        | image_url: width: 600
+        | image_tag:
+          class: 'tp-pcard__img',
+          loading: 'lazy',
+          widths: '200, 300, 400, 600',
+          alt: product.featured_media.alt | default: product.title | escape
+      }}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'tp-pcard__img' }}
+    {%- endif -%}
+  </a>
+
+  {%- comment -%} Chips de especificação: vêm de metafield de lista. {%- endcomment -%}
+  {%- if spec_metafield != blank -%}
+    {%- assign parts = spec_metafield | split: '.' -%}
+    {%- assign specs = product.metafields[parts[0]][parts[1]].value -%}
+    {%- if specs != blank -%}
+      <ul class="tp-pcard__specs" role="list">
+        {%- for spec in specs limit: 3 -%}
+          <li class="tp-pcard__spec">{{ spec }}</li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  {%- endif -%}
+
+  <a class="tp-pcard__title" href="{{ product.url }}">{{ product.title }}</a>
+
+  {%- if product.metafields.reviews.rating.value != blank -%}
+    <div class="tp-pcard__rating">
+      <span class="tp-pcard__stars" style="--rating: {{ product.metafields.reviews.rating.value.rating }}"></span>
+      <span class="tp-pcard__rating-count">({{ product.metafields.reviews.rating_count | default: 0 }})</span>
+    </div>
+  {%- endif -%}
+
+  <div class="tp-pcard__prices">
+    {%- if on_sale -%}
+      <s class="tp-pcard__compare">{{ product.compare_at_price | money }}</s>
+    {%- endif -%}
+
+    <strong class="tp-pcard__price">{{ pix_price | money }}</strong>
+
+    {%- if pix > 0 -%}
+      <span class="tp-pcard__pix">à vista com {{ pix }}% de desconto no PIX</span>
+    {%- endif -%}
+
+    {%- if parcelas > 0 -%}
+      {%- assign parcela = product.price | divided_by: parcelas -%}
+      <span class="tp-pcard__installments">
+        Ou <strong>{{ product.price | money }}</strong>
+        em {{ parcelas }}x de {{ parcela | money }} sem juros
+      </span>
+    {%- endif -%}
+  </div>
+</div>

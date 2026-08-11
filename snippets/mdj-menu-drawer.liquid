@@ -1,0 +1,123 @@
+{% comment %}
+  Menu drawer — Mãe do José
+
+  Abre pela direita. Layout hardcoded do Figma; os links de navegação vêm do
+  menu configurado no admin (section.settings.menu).
+{% endcomment %}
+
+<mdj-drawer class="mdj-drawer">
+  <button
+    type="button"
+    class="mdj-drawer__toggle"
+    aria-expanded="false"
+    aria-controls="mdj-drawer-panel"
+    aria-label="{{ 'sections.header.menu' | t }}"
+    data-drawer-toggle
+  >
+    {{- 'icon-hamburger.svg' | inline_asset_content -}}
+  </button>
+
+  <div class="mdj-drawer__overlay" data-drawer-overlay hidden></div>
+
+  <div id="mdj-drawer-panel" class="mdj-drawer__panel" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+    <div class="mdj-drawer__header">
+      <span class="mdj-drawer__title">Menu</span>
+      <button type="button" class="mdj-drawer__close" aria-label="{{ 'accessibility.close' | t }}" data-drawer-close>
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <div class="mdj-drawer__body">
+      <form action="{{ routes.search_url }}" method="get" role="search" class="mdj-drawer__search">
+        <input type="hidden" name="options[prefix]" value="last">
+        <label class="visually-hidden" for="mdj-drawer-search">{{ 'general.search.search' | t }}</label>
+        <span class="mdj-drawer__search-icon" aria-hidden="true">
+          {{- 'icon-search-mdj.svg' | inline_asset_content -}}
+        </span>
+        <input
+          id="mdj-drawer-search"
+          class="mdj-drawer__search-input"
+          type="search"
+          name="q"
+          placeholder="Buscar produtos..."
+          autocomplete="off"
+        >
+      </form>
+
+      <p class="mdj-drawer__label">Navegação</p>
+
+      <ul class="mdj-drawer__nav">
+        {%- for link in section.settings.menu.links -%}
+          <li class="mdj-drawer__nav-item">
+            {%- if link.links != blank -%}
+              <details class="mdj-drawer__details">
+                <summary class="mdj-drawer__link mdj-drawer__link--summary">
+                  <span>{{ link.title | escape }}</span>
+                  <span class="mdj-drawer__chevron" aria-hidden="true">
+                    {{- 'icon-chevron-mdj.svg' | inline_asset_content -}}
+                  </span>
+                </summary>
+                <ul class="mdj-drawer__submenu">
+                  {%- for childlink in link.links -%}
+                    <li>
+                      <a href="{{ childlink.url }}" class="mdj-drawer__sublink">{{ childlink.title | escape }}</a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </details>
+            {%- else -%}
+              <a
+                href="{{ link.url }}"
+                class="mdj-drawer__link"
+                {% if link.current %}
+                  aria-current="page"
+                {% endif %}
+              >
+                <span>{{ link.title | escape }}</span>
+                <span class="mdj-drawer__chevron" aria-hidden="true">
+                  {{- 'icon-chevron-mdj.svg' | inline_asset_content -}}
+                </span>
+              </a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      <div class="mdj-drawer__footer">
+        <a href="{{ routes.cart_url }}" class="mdj-drawer__order">
+          <span>Ver Pedido</span>
+          <span class="mdj-drawer__order-count">
+            {{- cart.item_count }}
+            {% if cart.item_count == 1 %}item{% else %}itens{% endif -%}
+          </span>
+        </a>
+
+        <ul class="mdj-drawer__social">
+          <li>
+            <a
+              href="{{ settings.social_instagram_link | default: 'https://www.instagram.com/' }}"
+              class="mdj-drawer__social-link"
+              aria-label="Instagram"
+            >
+              {{- 'icon-instagram-mdj.svg' | inline_asset_content -}}
+            </a>
+          </li>
+          <li>
+            <a href="https://wa.me/5500000000000" class="mdj-drawer__social-link" aria-label="WhatsApp">
+              {{- 'icon-whatsapp-mdj.svg' | inline_asset_content -}}
+            </a>
+          </li>
+          <li>
+            <a
+              href="{{ settings.social_youtube_link | default: 'https://www.youtube.com/' }}"
+              class="mdj-drawer__social-link"
+              aria-label="YouTube"
+            >
+              {{- 'icon-youtube-mdj.svg' | inline_asset_content -}}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</mdj-drawer>
