@@ -121,14 +121,16 @@
   .mdj-drawer__overlay {
     position: fixed;
     inset: 0;
-    z-index: 20;
-    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    background-color: #000;
     opacity: 0;
     transition: opacity 0.25s ease;
+    cursor: pointer;
+    touch-action: manipulation;
   }
 
   .mdj-drawer.is-open .mdj-drawer__overlay {
-    opacity: 1;
+    opacity: 0.3;
   }
 
   .mdj-drawer__panel {
@@ -136,7 +138,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    z-index: 21;
+    z-index: 101;
     display: flex;
     flex-direction: column;
     width: min(30rem, 88vw);
@@ -357,6 +359,12 @@
     overflow: hidden;
   }
 
+  /* O header cria um stacking context próprio (z-index: 3), então o overlay só
+     cobre o resto da página se a seção inteira subir junto enquanto está aberto. */
+  body.mdj-drawer-open .section-header {
+    z-index: 100;
+  }
+
   /* ---------- Search ---------- */
 
   .mdj-search-wrapper {
@@ -486,13 +494,13 @@
   @media screen and (min-width: 990px) {
     .mdj-header {
       max-width: 192rem;
-      padding: 2.6rem 4rem;
+      padding: 2.6rem clamp(2rem, 2.78vw, 4rem);
     }
 
     .mdj-header__inner {
       display: flex;
       align-items: flex-start;
-      gap: clamp(3rem, 6.3vw, 12.1rem);
+      gap: clamp(2rem, 8.4vw, 12.1rem);
       max-width: 136.4rem;
       margin: 0 auto;
     }
@@ -502,9 +510,12 @@
       display: none;
     }
 
+    /* Os clamps abaixo estão calibrados para bater as medidas do Figma a partir de
+       1440px (onde o container já trava em 1364px) e encolherem junto com a tela
+       até 990px, para o menu não quebrar em duas linhas. */
     .mdj-header__logo {
-      width: 19.4rem;
-      flex: 0 0 auto;
+      width: clamp(11rem, 13.47vw, 19.4rem);
+      flex: 0 1 auto;
     }
 
     .mdj-header__logo svg,
@@ -521,7 +532,7 @@
     .mdj-header__top {
       display: flex;
       align-items: center;
-      gap: clamp(2.4rem, 4vw, 7.4rem);
+      gap: clamp(1.6rem, 5.14vw, 7.4rem);
       height: 5.5rem;
     }
 
@@ -537,8 +548,8 @@
     }
 
     .mdj-search--desktop .mdj-search__input {
-      padding: 0 8rem 0 3.2rem;
-      font-size: 1.8rem;
+      padding: 0 8rem 0 clamp(1.6rem, 2.22vw, 3.2rem);
+      font-size: clamp(1.5rem, 1.25vw, 1.8rem);
     }
 
     .mdj-search--desktop .mdj-search__submit {
@@ -564,12 +575,12 @@
     .mdj-header__actions {
       display: flex;
       align-items: center;
-      gap: 1.4rem;
+      gap: clamp(0.8rem, 0.97vw, 1.4rem);
       flex: 0 0 auto;
     }
 
     .mdj-header__custom-link {
-      font-size: 1.8rem;
+      font-size: clamp(1.4rem, 1.25vw, 1.8rem);
       font-weight: 500;
       color: var(--mdj-muted-text);
       text-decoration: none;
@@ -591,13 +602,13 @@
       position: relative;
       display: inline-flex;
       align-items: center;
-      gap: 1.4rem;
+      gap: clamp(0.8rem, 0.97vw, 1.4rem);
       height: 5.3rem;
-      padding: 0 2.7rem;
+      padding: 0 clamp(1.4rem, 1.875vw, 2.7rem);
       border-radius: 0.8rem;
       background-color: var(--mdj-green);
       color: #fff;
-      font-size: 1.8rem;
+      font-size: clamp(1.4rem, 1.25vw, 1.8rem);
       font-weight: 600;
       text-decoration: none;
       white-space: nowrap;
@@ -610,8 +621,8 @@
 
     .mdj-cart svg {
       display: block;
-      width: 2.5rem;
-      height: 2.5rem;
+      width: clamp(1.8rem, 1.74vw, 2.5rem);
+      height: clamp(1.8rem, 1.74vw, 2.5rem);
       flex: 0 0 auto;
     }
 
@@ -655,7 +666,7 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 1rem;
+      gap: clamp(0.2rem, 0.69vw, 1rem);
       margin: 0;
       padding: 0;
       list-style: none;
@@ -668,8 +679,8 @@
 
     .mdj-nav__link {
       display: block;
-      padding: 1rem 2rem;
-      font-size: 1.8rem;
+      padding: 1rem clamp(0.8rem, 1.39vw, 2rem);
+      font-size: clamp(1.4rem, 1.25vw, 1.8rem);
       font-weight: 400;
       line-height: normal;
       color: var(--mdj-nav-text);
@@ -735,7 +746,7 @@
             assign logo_width = 194
             assign logo_height = logo_width | divided_by: settings.logo.aspect_ratio
           -%}
-          {%- capture logo_sizes -%}(min-width: 990px) 194px, 140px{%- endcapture -%}
+          {%- capture logo_sizes -%}(min-width: 1440px) 194px, (min-width: 990px) 14vw, 140px{%- endcapture -%}
           {%- capture logo_widths -%}140, 194, 280, 388, 582{%- endcapture -%}
           {{
             settings.logo
@@ -776,8 +787,15 @@
           %}
 
           <div class="mdj-header__actions">
-            <a href="/pages/personalizado" class="mdj-header__custom-link">Personalizado</a>
-            <span class="mdj-header__divider" aria-hidden="true"></span>
+            {%- if section.settings.custom_link_label != blank -%}
+              <a
+                href="{{ section.settings.custom_link_url | default: routes.root_url }}"
+                class="mdj-header__custom-link"
+              >
+                {{- section.settings.custom_link_label | escape -}}
+              </a>
+              <span class="mdj-header__divider" aria-hidden="true"></span>
+            {%- endif -%}
             <a href="{{ routes.cart_url }}" class="mdj-cart" id="cart-icon-bubble">
               {{- 'icon-cart-mdj.svg' | inline_asset_content -}}
               <span>Carrinho</span>
@@ -847,6 +865,7 @@
       this.closeButton = this.querySelector('[data-drawer-close]');
 
       this.onKeyDown = this.onKeyDown.bind(this);
+      this.onDocumentClick = this.onDocumentClick.bind(this);
 
       this.toggle.addEventListener('click', () => this.open());
       this.closeButton.addEventListener('click', () => this.close());
@@ -855,7 +874,15 @@
 
     disconnectedCallback() {
       document.removeEventListener('keydown', this.onKeyDown);
+      document.removeEventListener('click', this.onDocumentClick);
       document.body.classList.remove('mdj-drawer-open');
+    }
+
+    // Rede de segurança: fecha em qualquer clique fora do painel, mesmo que algo
+    // fique sobreposto ao overlay e engula o clique nele.
+    onDocumentClick(event) {
+      if (this.panel.contains(event.target) || this.toggle.contains(event.target)) return;
+      this.close();
     }
 
     get isOpen() {
@@ -871,6 +898,7 @@
       this.toggle.setAttribute('aria-expanded', 'true');
       document.body.classList.add('mdj-drawer-open');
       document.addEventListener('keydown', this.onKeyDown);
+      document.addEventListener('click', this.onDocumentClick);
       this.closeButton.focus();
     }
 
@@ -881,6 +909,7 @@
       this.toggle.setAttribute('aria-expanded', 'false');
       document.body.classList.remove('mdj-drawer-open');
       document.removeEventListener('keydown', this.onKeyDown);
+      document.removeEventListener('click', this.onDocumentClick);
       this.toggle.focus();
 
       const hide = () => {
@@ -1075,6 +1104,22 @@
       "id": "menu",
       "default": "main-menu",
       "label": "t:sections.header.settings.menu.label"
+    },
+    {
+      "type": "header",
+      "content": "Link ao lado do carrinho"
+    },
+    {
+      "type": "text",
+      "id": "custom_link_label",
+      "default": "Personalizado",
+      "label": "Texto",
+      "info": "Deixe em branco para esconder o link e o divisor."
+    },
+    {
+      "type": "url",
+      "id": "custom_link_url",
+      "label": "Link"
     },
     {
       "type": "color_scheme",

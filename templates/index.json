@@ -1,5 +1,41 @@
 {
   "sections": {
+    "banner_carousel": {
+      "type": "banner-carousel",
+      "blocks": {
+        "slide_1": {
+          "type": "slide",
+          "settings": {
+            "heading": "Sabor artesanal, ingredientes de chef",
+            "text": "<p>Quiches, tortas, pratos prontos e muito mais — feitos com ingredientes selecionados e entregues direto na sua mesa.</p>",
+            "button_1_label": "Ver Cardápio",
+            "button_2_label": "Personalizado"
+          }
+        },
+        "slide_2": {
+          "type": "slide",
+          "settings": {
+            "heading": "Sabor artesanal, ingredientes de chef",
+            "text": "<p>Quiches, tortas, pratos prontos e muito mais — feitos com ingredientes selecionados e entregues direto na sua mesa.</p>",
+            "button_1_label": "Ver Cardápio",
+            "button_2_label": "Personalizado"
+          }
+        }
+      },
+      "block_order": [
+        "slide_1",
+        "slide_2"
+      ],
+      "settings": {
+        "autoplay": true,
+        "autoplay_interval": 6,
+        "loop": true,
+        "show_arrows": true,
+        "show_pagination": true,
+        "content_offset": 14,
+        "content_max_width": 620
+      }
+    },
     "image_banner": {
       "type": "image-banner",
       "blocks": {
@@ -69,6 +105,7 @@
     }
   },
   "order": [
+    "banner_carousel",
     "image_banner",
     "featured_collection"
   ]

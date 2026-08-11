@@ -41,7 +41,8 @@
       "settings": {
         "menu": "main-menu-novo",
         "menu_color_scheme": "scheme-1",
-        "sticky_header_type": "on-scroll-up"
+        "sticky_header_type": "on-scroll-up",
+        "custom_link_label": "Personalizado"
       }
     }
   },
