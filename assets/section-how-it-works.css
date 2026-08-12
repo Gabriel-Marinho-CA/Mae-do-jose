@@ -115,6 +115,10 @@
   font-size: 1.4rem;
   font-weight: 500;
   line-height: 1;
+
+  @media (max-width: 750px) {
+    font-size: 12px;
+  }
 }
 
 .how-it-works__card-status::before {
@@ -133,6 +137,10 @@
   font-size: 2.6rem;
   font-weight: 700;
   line-height: 1;
+
+  @media (max-width: 750px) {
+    font-size: 18px;
+  }
 }
 
 .how-it-works__card-price {
@@ -206,6 +214,11 @@
   transform: translateX(-40%);
   width: 21.5rem;
   padding: 1.8rem 2rem;
+
+  @media (max-width:750px) {
+    width: max-content;
+    transform: translateX(-50%);
+  }
 }
 
 .how-it-works__card-title {
@@ -267,7 +280,7 @@
     border-radius: 0;
   }
 
-  .how-it-works__step + .how-it-works__step {
+  .how-it-works__step+.how-it-works__step {
     border-top: 1px solid var(--hiw-divider);
   }
 
