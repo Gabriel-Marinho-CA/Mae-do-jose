@@ -49,6 +49,8 @@ Toda section personalizada expõe os quatro settings:
 
 Aplicados mobile-first no `{% style %}`, com o desktop em `@media screen and (min-width: 750px)`.
 
+> **Cuidado com `step` em setting `range`.** O `default` precisa ser alcançável a partir do `min` em múltiplos do `step` — ou seja, `(default - min) % step == 0`. `min: 0, step: 4, default: 90` é inválido (a escala vai 88 → 92) e **o upload é rejeitado**, mesmo com `shopify theme check` passando: o check não pega isso. `(max - min) / step` também precisa ser ≤ 101.
+
 ### 4. Imagens sempre desktop e mobile
 
 Todo `image_picker` no schema vem em par: `image` (desktop) e `image_mobile`. Se `image_mobile` estiver vazio, cai no desktop — nunca deixe a section quebrar por falta da imagem mobile.
@@ -102,6 +104,8 @@ shopify theme check
 ```
 
 Meta: **0 erros**. Os warnings restantes são herdados do Dawn.
+
+Atenção: **theme check passando não garante que o upload passa.** A validação do schema no `shopify theme push` é mais rígida (ver a nota sobre `step` em `range`, acima). Se o push falhar sem erro de Liquid aparente, o suspeito número um é o `{% schema %}`.
 
 > Nota: a Shopify CLI exige Node 22+. Se o `nvm` estiver no Node 20, o comando falha com
 > `SyntaxError: ... does not provide an export named 'enableCompileCache'`.
