@@ -59,50 +59,6 @@
         "secondary_button_border": "#e8e4dc"
       }
     },
-    "how_it_works": {
-      "type": "how-it-works",
-      "blocks": {
-        "step_1": {
-          "type": "step",
-          "settings": {
-            "title": "Escolha seus pratos",
-            "text": "Navegue pelo cardápio, selecione tamanho, modo de preparo e personalizações."
-          }
-        },
-        "step_2": {
-          "type": "step",
-          "settings": {
-            "title": "Produção artesanal",
-            "text": "Cada prato é feito no dia com ingredientes selecionados. Zero conservantes."
-          }
-        },
-        "step_3": {
-          "type": "step",
-          "settings": {
-            "title": "Entrega ou retirada",
-            "text": "Receba em casa ou retire no local, na embalagem premium que o produto merece."
-          }
-        }
-      },
-      "block_order": [
-        "step_1",
-        "step_2",
-        "step_3"
-      ],
-      "settings": {
-        "label": "Como funciona",
-        "heading": "<p>Da nossa cozinha à sua mesa</p>",
-        "show_card": true,
-        "card_status": "Pronto para entrega hoje",
-        "card_title": "Quiche Lorraine",
-        "card_price": "R$ 49,90",
-        "background_color": "#f7f5f2",
-        "accent_color": "#a89880",
-        "heading_color": "#1a2e2d",
-        "text_color": "#6b7e7d",
-        "price_color": "#ff8204"
-      }
-    },
     "collection_tabs_adYhCV": {
       "type": "collection-tabs",
       "blocks": {
@@ -181,11 +137,56 @@
         "padding_top_mobile": 48,
         "padding_bottom_mobile": 48
       }
+    },
+    "how_it_works": {
+      "type": "how-it-works",
+      "blocks": {
+        "step_1": {
+          "type": "step",
+          "settings": {
+            "title": "Escolha seus pratos",
+            "text": "Navegue pelo cardápio, selecione tamanho, modo de preparo e personalizações."
+          }
+        },
+        "step_2": {
+          "type": "step",
+          "settings": {
+            "title": "Produção artesanal",
+            "text": "Cada prato é feito no dia com ingredientes selecionados. Zero conservantes."
+          }
+        },
+        "step_3": {
+          "type": "step",
+          "settings": {
+            "title": "Entrega ou retirada",
+            "text": "Receba em casa ou retire no local, na embalagem premium que o produto merece."
+          }
+        }
+      },
+      "block_order": [
+        "step_1",
+        "step_2",
+        "step_3"
+      ],
+      "settings": {
+        "label": "Como funciona",
+        "heading": "<p>Da nossa cozinha à sua mesa</p>",
+        "image": "shopify://shop_images/DIV.png",
+        "show_card": true,
+        "card_status": "Pronto para entrega hoje",
+        "card_title": "Quiche Lorraine",
+        "card_price": "R$ 49,90",
+        "background_color": "#f7f5f2",
+        "accent_color": "#a89880",
+        "heading_color": "#1a2e2d",
+        "text_color": "#6b7e7d",
+        "price_color": "#ff8204"
+      }
     }
   },
   "order": [
     "banner_carousel",
-    "how_it_works",
-    "collection_tabs_adYhCV"
+    "collection_tabs_adYhCV",
+    "how_it_works"
   ]
 }
