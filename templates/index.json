@@ -183,77 +183,72 @@
         "price_color": "#ff8204"
       }
     },
-    "faq": {
-      "type": "faq",
+    "testimonials_WdLRGj": {
+      "type": "testimonials",
       "blocks": {
-        "item_1": {
-          "type": "item",
+        "testimonial_wqENjB": {
+          "type": "testimonial",
           "settings": {
-            "question": "Como faço meu pedido?",
-            "answer": "<p>Escolha os itens no cardápio, adicione ao carrinho e finalize o pedido. Você recebe a confirmação na hora.</p>"
+            "rating": 5,
+            "quote": "<p>\"A melhor quiche que já comi. Melhor do que em restaurante. Virou meu pedido fixo toda semana.\"</p>",
+            "author": "Rodrigo F.",
+            "author_detail": "Quiche de Cogumelos",
+            "initials": ""
           }
         },
-        "item_2": {
-          "type": "item",
+        "testimonial_EzgVHV": {
+          "type": "testimonial",
           "settings": {
-            "question": "Qual o prazo de entrega?",
-            "answer": "<p>O prazo varia conforme a sua região e o produto escolhido. O tempo estimado aparece no checkout.</p>"
+            "rating": 5,
+            "quote": "<p>\"A melhor quiche que já comi. Melhor do que em restaurante. Virou meu pedido fixo toda semana.\"</p>",
+            "author": "Rodrigo F.",
+            "author_detail": "Quiche de Cogumelos",
+            "initials": ""
           }
         },
-        "item_3": {
-          "type": "item",
+        "testimonial_VBNARi": {
+          "type": "testimonial",
           "settings": {
-            "question": "Posso retirar no local?",
-            "answer": "<p>Sim. Basta escolher a opção de retirada no checkout e combinar o horário.</p>"
+            "rating": 5,
+            "quote": "<p>\"A melhor quiche que já comi. Melhor do que em restaurante. Virou meu pedido fixo toda semana.\"</p>",
+            "author": "Rodrigo F.",
+            "author_detail": "Quiche de Cogumelos",
+            "initials": ""
           }
         },
-        "item_4": {
-          "type": "item",
+        "testimonial_rbBxFJ": {
+          "type": "testimonial",
           "settings": {
-            "question": "Como devo armazenar os produtos?",
-            "answer": "<p>Cada produto acompanha as instruções de conservação. Em geral, mantenha refrigerado e consuma dentro do prazo indicado.</p>"
-          }
-        },
-        "item_5": {
-          "type": "item",
-          "settings": {
-            "question": "Vocês atendem restrições alimentares?",
-            "answer": "<p>Temos opções para diferentes restrições. Fale com a gente pelo WhatsApp para conferir a disponibilidade.</p>"
-          }
-        },
-        "item_6": {
-          "type": "item",
-          "settings": {
-            "question": "Posso fazer pedidos corporativos ou para eventos?",
-            "answer": "<p>Sim. Fazemos encomendas para eventos e empresas. Entre em contato para um orçamento personalizado.</p>"
+            "rating": 5,
+            "quote": "<p>\"A melhor quiche que já comi. Melhor do que em restaurante. Virou meu pedido fixo toda semana.\"</p>",
+            "author": "Rodrigo F.",
+            "author_detail": "Quiche de Cogumelos",
+            "initials": ""
           }
         }
       },
       "block_order": [
-        "item_1",
-        "item_2",
-        "item_3",
-        "item_4",
-        "item_5",
-        "item_6"
+        "testimonial_wqENjB",
+        "testimonial_EzgVHV",
+        "testimonial_VBNARi",
+        "testimonial_rbBxFJ"
       ],
+      "name": "Depoimentos",
       "settings": {
-        "eyebrow": "Dúvidas",
-        "heading": "Perguntas frequentes",
-        "whatsapp_label": "Falar no WhatsApp",
-        "whatsapp_link": "",
-        "background_color": "#ffffff",
-        "accent_color": "#a89880",
-        "heading_color": "#1a2e2d",
-        "text_color": "#3d5250",
-        "whatsapp_color": "#ff8204"
+        "eyebrow": "Depoimentos",
+        "heading": "O que nossos clientes dizem",
+        "columns_desktop": 4,
+        "padding_top": 90,
+        "padding_bottom": 90,
+        "padding_top_mobile": 60,
+        "padding_bottom_mobile": 60
       }
     }
   },
   "order": [
     "banner_carousel",
     "collection_tabs_adYhCV",
-    "faq",
-    "how_it_works"
+    "how_it_works",
+    "testimonials_WdLRGj"
   ]
 }
