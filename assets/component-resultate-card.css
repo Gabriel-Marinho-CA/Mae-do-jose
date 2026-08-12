@@ -6,7 +6,7 @@
 
   Estrutura:
     .resultate-card
-      .resultate-card__media      imagem + tags (canto superior direito)
+      .resultate-card__media      imagem + tags (canto superior esquerdo)
       .resultate-card__content    categoria, título, descrição, nota, preço, CTA
 */
 
@@ -18,6 +18,7 @@
   --resultate-border: #f0ede8;
   --resultate-surface: #f7f5f2;
   --resultate-star: #ff8204;
+  --resultate-ready: #2ecc71;
   /* Definida em snippets/theme-fonts.liquid; o fallback cobre o caso do
      snippet não ter sido renderizado. */
   --resultate-font: var(--mdj-font-body, 'Outfit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif);
@@ -72,15 +73,15 @@
   object-fit: cover;
 }
 
-/* Tags do produto — canto superior direito. */
+/* Tags do produto — canto superior esquerdo. */
 .resultate-card__tags {
   position: absolute;
   top: 10px;
-  right: 10px;
+  left: 10px;
   z-index: 2;
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 6px;
   max-width: calc(100% - 20px);
   margin: 0;
@@ -110,6 +111,13 @@
   flex: none;
   border-radius: 2px;
   background: currentColor;
+}
+
+/* Cores por tag. O modificador vem de `tag | handleize` no snippet, então
+   "Pronto", "pronto" e "PRONTO" caem todas na mesma regra. Tags sem regra
+   própria ficam na cor padrão (laranja, herdada de .resultate-card__tag). */
+.resultate-card__tag--pronto {
+  color: var(--resultate-ready);
 }
 
 /* ---------- Conteúdo ---------- */
@@ -146,12 +154,12 @@
 
 /* O link do título cobre o card inteiro: um clique em qualquer lugar leva ao
    produto, sem precisar de <div> clicável (ruim para SEO e acessibilidade). */
-.resultate-card__title a::after {
+/* .resultate-card__title a::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
-}
+} */
 
 .resultate-card__description {
   margin: 1.2rem 0 0;
@@ -294,7 +302,7 @@
 
   .resultate-card__tags {
     top: 8px;
-    right: 8px;
+    left: 8px;
     gap: 4px;
   }
 

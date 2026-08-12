@@ -2,7 +2,7 @@
   Renders a "Resultate card" — o card de produto do cardápio (Figma).
 
   Baseado em snippets/card-product.liquid, mas com a estrutura própria do design:
-  tags do produto no canto superior direito, categoria (metafield) acima do
+  tags do produto no canto superior esquerdo, categoria (metafield) acima do
   título, nota em estrelas e um CTA "Ver mais" que leva à página do produto.
 
   Accepts:
@@ -11,7 +11,8 @@
   - price_label: {String} Texto acima do preço. Default: 'a partir de'.
   - button_label: {String} Texto do CTA. Default: 'Ver mais'.
   - show_rating: {Boolean} Mostrar a avaliação. Default: true.
-  - show_description: {Boolean} Mostrar a descrição curta. Default: true.
+  - show_description: {Boolean} Mostrar a descrição curta (metafield
+    custom.pequena_descricao, com fallback para a descrição do produto). Default: true.
   - max_tags: {Number} Máximo de tags exibidas. Default: 2.
   - lazy_load: {Boolean} Carregar a imagem em lazy. Default: true.
   - image_sizes: {String} Atributo sizes da imagem.
@@ -53,7 +54,7 @@
   {%- liquid
     assign card_id = 'ResultateCard-' | append: section_id | append: '-' | append: card_product.id
     assign card_category = card_product.metafields.custom.categoria.value | default: card_product.type
-    assign card_subtitle = card_product.metafields.custom.subtitle.value
+    assign card_subtitle = card_product.metafields.custom.pequena_descricao.value
 
     if card_subtitle == blank
       assign card_subtitle = card_product.description | strip_html | truncatewords: 8
@@ -88,7 +89,12 @@
       {%- if card_product.tags.size > 0 -%}
         <ul class="resultate-card__tags">
           {%- for tag in card_product.tags limit: resultate_max_tags -%}
-            <li class="resultate-card__tag">{{ tag | escape }}</li>
+            {%- comment -%}
+              O handle da tag vira modificador de classe, para dar cor própria a
+              tags conhecidas (ex.: "Pronto" em verde). Sem regra específica, a
+              tag cai na cor padrão (laranja).
+            {%- endcomment -%}
+            <li class="resultate-card__tag resultate-card__tag--{{ tag | handleize }}">{{ tag | escape }}</li>
           {%- endfor -%}
         </ul>
       {%- endif -%}
