@@ -111,55 +111,105 @@
         </div>
       {%- endif -%}
 
-      {%- if section.blocks.size > 0 or section.settings.show_payment_icons -%}
+      {%- if section.blocks.size > 0 -%}
         <res-footer-menus class="res-footer__columns" role="list">
           {%- for block in section.blocks -%}
-            {%- assign panel_id = uid | append: '-menu-' | append: block.id -%}
+            {%- case block.type -%}
+              {%- when 'menu' -%}
+                {%- assign panel_id = uid | append: '-menu-' | append: block.id -%}
 
-            <div class="res-footer__column" role="listitem" {{ block.shopify_attributes }}>
-              {%- if block.settings.heading != blank -%}
-                <h2 class="res-footer__column-heading">
-                  {%- comment -%}
-                    O botão existe sempre; no desktop o CSS esconde o ícone e o
-                    JS remove o aria-expanded, então ele vira texto inerte.
-                  {%- endcomment -%}
-                  <button
-                    type="button"
-                    class="res-footer__toggle"
-                    data-footer-toggle
-                    aria-controls="{{ panel_id }}"
-                  >
-                    {{ block.settings.heading | escape }}
-                    <span class="res-footer__toggle-icon" aria-hidden="true"></span>
-                  </button>
-                </h2>
-              {%- endif -%}
+                <div class="res-footer__column" role="listitem" {{ block.shopify_attributes }}>
+                  {%- if block.settings.heading != blank -%}
+                    <h2 class="res-footer__column-heading">
+                      {%- comment -%}
+                        O botão existe sempre; no desktop o CSS esconde o ícone e
+                        o JS remove o aria-expanded, então ele vira texto inerte.
+                      {%- endcomment -%}
+                      <button
+                        type="button"
+                        class="res-footer__toggle"
+                        data-footer-toggle
+                        aria-controls="{{ panel_id }}"
+                      >
+                        {{ block.settings.heading | escape }}
+                        <span class="res-footer__toggle-icon" aria-hidden="true"></span>
+                      </button>
+                    </h2>
+                  {%- endif -%}
 
-              {%- if block.settings.menu != blank -%}
-                <ul class="res-footer__menu-list" id="{{ panel_id }}" role="list">
-                  {%- for link in block.settings.menu.links -%}
-                    <li>
-                      <a class="res-footer__menu-link" href="{{ link.url }}">{{ link.title | escape }}</a>
-                    </li>
-                  {%- endfor -%}
-                </ul>
-              {%- endif -%}
-            </div>
+                  {%- if block.settings.menu != blank -%}
+                    <ul class="res-footer__menu-list" id="{{ panel_id }}" role="list">
+                      {%- for link in block.settings.menu.links -%}
+                        <li>
+                          <a class="res-footer__menu-link" href="{{ link.url }}">{{ link.title | escape }}</a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  {%- endif -%}
+                </div>
+
+              {%- when 'payments' -%}
+                {%- comment -%}
+                  Coluna de imagem: sem sanfona no mobile, é só título + card.
+                {%- endcomment -%}
+                <div class="res-footer__column res-footer__payments" role="listitem" {{ block.shopify_attributes }}>
+                  {%- if block.settings.heading != blank -%}
+                    <h2 class="res-footer__column-heading">{{ block.settings.heading | escape }}</h2>
+                  {%- endif -%}
+
+                  {%- if block.settings.image != blank or block.settings.image_mobile != blank -%}
+                    <div class="res-footer__payments-card">
+                      {%- if block.settings.image != blank -%}
+                        <img
+                          class="res-footer__payments-image res-footer__payments-image--desktop"
+                          src="{{ block.settings.image | image_url: width: 460 }}"
+                          srcset="
+                            {{ block.settings.image | image_url: width: 230 }} 230w,
+                            {{ block.settings.image | image_url: width: 460 }} 460w
+                          "
+                          sizes="(min-width: 750px) 203px, 218px"
+                          alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
+                          width="{{ block.settings.image.width }}"
+                          height="{{ block.settings.image.height }}"
+                          loading="lazy"
+                        >
+                      {%- endif -%}
+
+                      {%- if block.settings.image_mobile != blank -%}
+                        <img
+                          class="res-footer__payments-image res-footer__payments-image--mobile"
+                          src="{{ block.settings.image_mobile | image_url: width: 460 }}"
+                          srcset="
+                            {{ block.settings.image_mobile | image_url: width: 230 }} 230w,
+                            {{ block.settings.image_mobile | image_url: width: 460 }} 460w
+                          "
+                          sizes="218px"
+                          alt="{{ block.settings.image_mobile.alt | default: block.settings.heading | escape }}"
+                          width="{{ block.settings.image_mobile.width }}"
+                          height="{{ block.settings.image_mobile.height }}"
+                          loading="lazy"
+                        >
+                      {%- elsif block.settings.image != blank -%}
+                        {%- comment -%}
+                          Sem imagem de mobile, a de desktop cobre os dois — o
+                          CSS troca qual das duas aparece por breakpoint, então
+                          sem este fallback o card ficaria vazio no celular.
+                        {%- endcomment -%}
+                        <img
+                          class="res-footer__payments-image res-footer__payments-image--mobile"
+                          src="{{ block.settings.image | image_url: width: 460 }}"
+                          sizes="218px"
+                          alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
+                          width="{{ block.settings.image.width }}"
+                          height="{{ block.settings.image.height }}"
+                          loading="lazy"
+                        >
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+                </div>
+            {%- endcase -%}
           {%- endfor -%}
-
-          {%- if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
-            <div class="res-footer__column res-footer__payments" role="listitem">
-              {%- if section.settings.payment_heading != blank -%}
-                <h2 class="res-footer__column-heading">{{ section.settings.payment_heading | escape }}</h2>
-              {%- endif -%}
-
-              <ul class="res-footer__payments-card" role="list">
-                {%- for type in shop.enabled_payment_types -%}
-                  <li>{{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}</li>
-                {%- endfor -%}
-              </ul>
-            </div>
-          {%- endif -%}
         </res-footer-menus>
       {%- endif -%}
     </div>
@@ -188,7 +238,7 @@
   "name": "Rodapé Resultate",
   "tag": "footer",
   "class": "section-res-footer",
-  "max_blocks": 4,
+  "max_blocks": 6,
   "settings": [
     {
       "type": "header",
@@ -230,23 +280,6 @@
       "id": "description",
       "label": "Descrição",
       "default": "<p>Ingredientes premium, receitas que acolhem. Cada prato feito com intenção e carinho.</p>"
-    },
-    {
-      "type": "header",
-      "content": "Formas de pagamento"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_payment_icons",
-      "label": "Mostrar formas de pagamento",
-      "default": true,
-      "info": "Os ícones refletem os meios de pagamento habilitados na loja."
-    },
-    {
-      "type": "text",
-      "id": "payment_heading",
-      "label": "Título da coluna",
-      "default": "Formas de Pagamento"
     },
     {
       "type": "header",
@@ -352,6 +385,30 @@
           "info": "Os links são editados em Navegação, no admin da loja."
         }
       ]
+    },
+    {
+      "type": "payments",
+      "name": "Formas de pagamento",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Título da coluna",
+          "default": "Formas de Pagamento"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagem das bandeiras (desktop)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Imagem das bandeiras (mobile)",
+          "info": "Se vazio, usa a imagem de desktop."
+        }
+      ]
     }
   ],
   "presets": [
@@ -360,7 +417,8 @@
       "blocks": [
         { "type": "menu" },
         { "type": "menu" },
-        { "type": "menu" }
+        { "type": "menu" },
+        { "type": "payments" }
       ]
     }
   ]

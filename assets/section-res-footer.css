@@ -176,26 +176,25 @@
 
 .res-footer__payments-card {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 0.8rem 1rem;
   max-width: 23.2rem;
+  min-height: 11rem;
   margin: 2.6rem 0 0;
-  padding: 1.6rem;
+  padding: 2rem 1.5rem;
   background: #fff;
   border-radius: 14px;
-  list-style: none;
 }
 
-.res-footer__payments-card li {
-  display: flex;
-  line-height: 0;
-}
-
-.res-footer__payments-card svg {
-  width: 3.8rem;
+.res-footer__payments-image {
+  display: block;
+  width: auto;
+  max-width: 100%;
   height: auto;
+}
+
+.res-footer__payments-image--mobile {
+  display: none;
 }
 
 /* ---------- Redes sociais ---------- */
@@ -418,7 +417,15 @@
   .res-footer__payments-card {
     max-width: none;
     margin-top: 1.6rem;
-    padding: 1.8rem;
+    padding: 1.6rem 2rem;
+  }
+
+  .res-footer__payments-image--desktop {
+    display: none;
+  }
+
+  .res-footer__payments-image--mobile {
+    display: block;
   }
 
   .res-footer__bottom {

@@ -34,12 +34,19 @@
             "heading": "Cardápio",
             "menu": "footer"
           }
+        },
+        "pagamentos": {
+          "type": "payments",
+          "settings": {
+            "heading": "Formas de Pagamento"
+          }
         }
       },
       "block_order": [
         "menu_contato",
         "menu_empresa",
-        "menu_cardapio"
+        "menu_cardapio",
+        "pagamentos"
       ],
       "settings": {
         "logo": "shopify://shop_images/Group_276.svg",
@@ -47,8 +54,6 @@
         "logo_mobile": "shopify://shop_images/logo-maedojose-28_1.svg",
         "logo_width_mobile": 275,
         "description": "<p>Ingredientes premium, receitas que acolhem. Cada prato feito com intenção e carinho.</p>",
-        "show_payment_icons": true,
-        "payment_heading": "Formas de Pagamento",
         "legal_text": "Todos os direitos reservados",
         "credit_text": "",
         "credit_link": "",
