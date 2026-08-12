@@ -1,0 +1,245 @@
+{%- comment -%}
+  Seção "Como funciona" — Da nossa cozinha à sua mesa.
+
+  - Rótulo, título e os passos (blocos "step") são editáveis no painel.
+  - Cada passo é numerado automaticamente (01, 02, 03…) na ordem dos blocos.
+  - Imagem à direita (desktop) / no final (mobile), com um card de produto
+    flutuante cujo conteúdo também é configurável.
+
+  Estilos fixos em assets/section-how-it-works.css. Apenas as cores (que
+  dependem do schema) ficam no {% style %} abaixo.
+{%- endcomment -%}
+
+{%- liquid
+  assign uid = 'how-it-works-' | append: section.id
+-%}
+
+{{ 'section-how-it-works.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  .{{ uid }} {
+    --hiw-bg: {{ section.settings.background_color }};
+    --hiw-accent: {{ section.settings.accent_color }};
+    --hiw-heading: {{ section.settings.heading_color }};
+    --hiw-text: {{ section.settings.text_color }};
+    --hiw-price: {{ section.settings.price_color }};
+  }
+{% endstyle %}
+
+<div class="how-it-works {{ uid }}">
+  <div class="how-it-works__inner">
+    <div class="how-it-works__content">
+      <div class="how-it-works__header">
+        {%- if section.settings.label != blank -%}
+          <p class="how-it-works__label">{{ section.settings.label | escape }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="how-it-works__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+      </div>
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="how-it-works__steps">
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign step_number = forloop.index
+              if step_number < 10
+                assign step_number = step_number | prepend: '0'
+              endif
+            -%}
+            <div class="how-it-works__step" {{ block.shopify_attributes }}>
+              <span class="how-it-works__badge" aria-hidden="true">{{ step_number }}</span>
+              <div class="how-it-works__step-body">
+                {%- if block.settings.title != blank -%}
+                  <h3 class="how-it-works__step-title">{{ block.settings.title | escape }}</h3>
+                {%- endif -%}
+                {%- if block.settings.text != blank -%}
+                  <p class="how-it-works__step-text">{{ block.settings.text | escape }}</p>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="how-it-works__media">
+      <div class="how-it-works__image-wrap">
+        {%- if section.settings.image != blank -%}
+          <img
+            class="how-it-works__image"
+            src="{{ section.settings.image | image_url: width: 1260 }}"
+            srcset="
+              {{ section.settings.image | image_url: width: 640 }} 640w,
+              {{ section.settings.image | image_url: width: 960 }} 960w,
+              {{ section.settings.image | image_url: width: 1260 }} 1260w
+            "
+            sizes="(min-width: 990px) 50vw, 100vw"
+            width="{{ section.settings.image.width }}"
+            height="{{ section.settings.image.height }}"
+            alt="{{ section.settings.image.alt | escape }}"
+            loading="lazy"
+          >
+        {%- else -%}
+          {{ 'product-apparel-1' | placeholder_svg_tag: 'how-it-works__image placeholder-svg' }}
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.show_card -%}
+        <div class="how-it-works__card">
+          {%- if section.settings.card_status != blank -%}
+            <p class="how-it-works__card-status">{{ section.settings.card_status | escape }}</p>
+          {%- endif -%}
+          {%- if section.settings.card_title != blank -%}
+            <p class="how-it-works__card-title">{{ section.settings.card_title | escape }}</p>
+          {%- endif -%}
+          {%- if section.settings.card_price != blank -%}
+            <p class="how-it-works__card-price">{{ section.settings.card_price | escape }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Como funciona",
+  "tag": "section",
+  "class": "section-how-it-works",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Rótulo",
+      "default": "Como funciona"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Título",
+      "default": "<p>Da nossa cozinha à sua mesa</p>"
+    },
+    {
+      "type": "header",
+      "content": "Imagem"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Imagem"
+    },
+    {
+      "type": "header",
+      "content": "Card de produto (flutuante)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_card",
+      "label": "Mostrar card",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "card_status",
+      "label": "Selo de status",
+      "default": "Pronto para entrega hoje"
+    },
+    {
+      "type": "text",
+      "id": "card_title",
+      "label": "Nome do produto",
+      "default": "Quiche Lorraine"
+    },
+    {
+      "type": "text",
+      "id": "card_price",
+      "label": "Preço",
+      "default": "R$ 49,90"
+    },
+    {
+      "type": "header",
+      "content": "Cores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Fundo",
+      "default": "#f7f5f2"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Destaque (rótulo e números)",
+      "default": "#a89880"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Títulos",
+      "default": "#1a2e2d"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Textos",
+      "default": "#6b7e7d"
+    },
+    {
+      "type": "color",
+      "id": "price_color",
+      "label": "Preço",
+      "default": "#ff8204"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Passo",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Escolha seus pratos"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Descrição",
+          "default": "Navegue pelo cardápio, selecione tamanho, modo de preparo e personalizações."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Como funciona",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "title": "Escolha seus pratos",
+            "text": "Navegue pelo cardápio, selecione tamanho, modo de preparo e personalizações."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Produção artesanal",
+            "text": "Cada prato é feito no dia com ingredientes selecionados. Zero conservantes."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Entrega ou retirada",
+            "text": "Receba em casa ou retire no local, na embalagem premium que o produto merece."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

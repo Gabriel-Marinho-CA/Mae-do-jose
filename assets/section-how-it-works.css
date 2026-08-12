@@ -1,0 +1,324 @@
+/*
+  Seção "Como funciona" — Da nossa cozinha à sua mesa.
+
+  Estilos estáticos. As cores vêm de variáveis (--hiw-*) definidas no
+  {% style %} da section (dependem do schema), com fallback aqui.
+
+  Desktop: passos à esquerda (badge quadrado + texto, divisórias entre eles),
+  imagem à direita com card de produto flutuante.
+  Mobile: título centralizado, passos empilhados em cards com badge circular,
+  imagem + card no final.
+*/
+
+.how-it-works {
+  --hiw-bg: #f7f5f2;
+  --hiw-accent: #a89880;
+  --hiw-heading: #1a2e2d;
+  --hiw-text: #6b7e7d;
+  --hiw-price: #ff8204;
+  --hiw-badge-mobile-text: #f7f5f2;
+  --hiw-card-border: #f0ede8;
+  --hiw-divider: #e8e4df;
+
+  background-color: var(--hiw-bg);
+  font-family: var(--mdj-font-body, 'Outfit', ui-sans-serif, system-ui, sans-serif);
+}
+
+.how-it-works__inner {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 6rem 4rem;
+}
+
+/* ---------- Cabeçalho ---------- */
+
+.how-it-works__label {
+  margin: 0;
+  color: var(--hiw-accent);
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.how-it-works__heading {
+  margin: 1.6rem 0 0;
+  color: var(--hiw-heading);
+  font-family: var(--mdj-font-display, 'Marcellus', Georgia, serif);
+  font-weight: 400;
+  line-height: 1.1;
+  font-size: clamp(3.2rem, 4.4vw, 7rem);
+}
+
+.how-it-works__heading p {
+  margin: 0;
+}
+
+/* ---------- Passos ---------- */
+
+.how-it-works__step-title {
+  margin: 0;
+  color: var(--hiw-heading);
+  font-size: 2.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.how-it-works__step-text {
+  margin: 1rem 0 0;
+  color: var(--hiw-text);
+  font-size: 1.8rem;
+  font-weight: 300;
+  line-height: 1.35;
+}
+
+.how-it-works__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+
+/* ---------- Imagem + card de produto ---------- */
+
+.how-it-works__media {
+  position: relative;
+}
+
+.how-it-works__image-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  aspect-ratio: 321 / 271;
+}
+
+.how-it-works__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.how-it-works__card {
+  position: absolute;
+  background-color: #fff;
+  border-radius: 1.6rem;
+  box-shadow: 0 1.3rem 2.7rem rgba(0, 0, 0, 0.1);
+}
+
+.how-it-works__card-status {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #1a7a3c;
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.how-it-works__card-status::before {
+  content: '';
+  display: block;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background-color: #2ecc71;
+  flex: 0 0 auto;
+}
+
+.how-it-works__card-title {
+  margin: 1.2rem 0 0;
+  color: var(--hiw-heading);
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.how-it-works__card-price {
+  margin: 0.8rem 0 0;
+  color: var(--hiw-price);
+  font-size: 2.3rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ============================================================
+   MOBILE (padrão) — tudo empilhado e centralizado
+   ============================================================ */
+
+.how-it-works__header {
+  text-align: center;
+}
+
+.how-it-works__heading {
+  text-align: center;
+}
+
+.how-it-works__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin: 4rem 0 0;
+}
+
+.how-it-works__step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3.6rem 2rem 2.4rem;
+  border: 1px solid var(--hiw-card-border);
+  border-radius: 1.3rem;
+}
+
+.how-it-works__badge {
+  position: absolute;
+  top: -2.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background-color: var(--hiw-accent);
+  color: var(--hiw-badge-mobile-text);
+}
+
+.how-it-works__step-title {
+  font-size: 1.6rem;
+}
+
+.how-it-works__step-text {
+  font-size: 1.6rem;
+  margin-top: 0.8rem;
+  max-width: 26rem;
+}
+
+.how-it-works__media {
+  margin: 4rem auto 0;
+  max-width: 32.2rem;
+}
+
+.how-it-works__card {
+  left: 50%;
+  bottom: -3rem;
+  transform: translateX(-40%);
+  width: 21.5rem;
+  padding: 1.8rem 2rem;
+}
+
+.how-it-works__card-title {
+  font-size: 1.95rem;
+}
+
+.how-it-works__card-price {
+  font-size: 1.75rem;
+}
+
+/* extra de respiro para o card que transborda embaixo da imagem */
+.how-it-works__media {
+  margin-bottom: 3rem;
+}
+
+/* ============================================================
+   DESKTOP
+   ============================================================ */
+
+@media screen and (min-width: 990px) {
+  .how-it-works__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: clamp(4rem, 8vw, 10rem);
+    align-items: center;
+    padding: 9rem 4rem;
+  }
+
+  .how-it-works__content {
+    grid-column: 1;
+  }
+
+  .how-it-works__header {
+    text-align: left;
+  }
+
+  .how-it-works__heading {
+    text-align: left;
+    font-size: clamp(4rem, 4.4vw, 7rem);
+  }
+
+  .how-it-works__label {
+    font-size: clamp(1.8rem, 1.7vw, 2.5rem);
+  }
+
+  /* passos: lista vertical alinhada à esquerda, divisória entre eles */
+  .how-it-works__steps {
+    gap: 0;
+    margin-top: 5rem;
+  }
+
+  .how-it-works__step {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2.6rem;
+    text-align: left;
+    padding: 3rem 0;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .how-it-works__step + .how-it-works__step {
+    border-top: 1px solid var(--hiw-divider);
+  }
+
+  /* badge desktop: quadrado "invisível" (mesma cor do fundo), só o número */
+  .how-it-works__badge {
+    position: static;
+    transform: none;
+    width: 5.2rem;
+    height: 5.2rem;
+    border-radius: 2rem;
+    background-color: transparent;
+    color: var(--hiw-accent);
+    margin-top: 0.2rem;
+  }
+
+  .how-it-works__step-title {
+    font-size: 2.2rem;
+  }
+
+  .how-it-works__step-text {
+    font-size: 1.8rem;
+    margin-top: 1.2rem;
+    max-width: 36.4rem;
+  }
+
+  /* imagem à direita */
+  .how-it-works__media {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    max-width: none;
+  }
+
+  .how-it-works__image-wrap {
+    aspect-ratio: 630 / 612;
+  }
+
+  .how-it-works__card {
+    left: clamp(-8rem, -12%, -2rem);
+    bottom: 4rem;
+    transform: none;
+    width: 37.3rem;
+    padding: 3.4rem 4rem;
+    border-radius: 2.7rem;
+  }
+
+  .how-it-works__card-title {
+    font-size: 3.4rem;
+  }
+
+  .how-it-works__card-price {
+    font-size: 3rem;
+  }
+}
