@@ -1,0 +1,228 @@
+/*
+  Seção "Perguntas frequentes" (FAQ / acordeão).
+
+  Estilos estáticos. As cores vêm de variáveis (--faq-*) definidas no
+  {% style %} da section (dependem do schema), com fallback aqui.
+
+  Marcação em <details>/<summary>: funciona sem JS. O componente
+  assets/faq-accordion.js só melhora (anima e mantém um item aberto por vez).
+
+  Mobile: cabeçalho centralizado, itens compactos.
+  Desktop: cabeçalho com o botão de WhatsApp à direita, itens espaçados.
+*/
+
+.faq {
+  --faq-bg: #ffffff;
+  --faq-accent: #a89880;
+  --faq-heading: #1a2e2d;
+  --faq-question: #1a2e2d;
+  --faq-answer: #3d5250;
+  --faq-whatsapp: #ff8204;
+  --faq-border: #e8e4dc;
+  --faq-icon: #7d8e8d;
+
+  background-color: var(--faq-bg);
+  font-family: var(--mdj-font-body, 'Outfit', ui-sans-serif, system-ui, sans-serif);
+}
+
+/* ---------- Cabeçalho ---------- */
+
+.faq__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2rem;
+}
+
+.faq__eyebrow {
+  display: block;
+  color: var(--faq-accent);
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.faq__heading {
+  margin: 1.2rem 0 0;
+  color: var(--faq-heading);
+  font-family: var(--mdj-font-display, 'Marcellus', Georgia, serif);
+  font-weight: 400;
+  line-height: 1.15;
+  font-size: clamp(3.2rem, 4.4vw, 7rem);
+}
+
+.faq__whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  padding: 1.4rem 3rem;
+  border: 1px solid var(--faq-border);
+  border-radius: 0.8rem;
+  color: var(--faq-whatsapp);
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.faq__whatsapp:hover {
+  background-color: rgba(255, 130, 4, 0.06);
+}
+
+.faq__whatsapp svg {
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+}
+
+/* ---------- Lista ---------- */
+
+.faq__list {
+  margin: 4rem 0 0;
+  border-top: 1px solid var(--faq-border);
+}
+
+.faq__item {
+  border-bottom: 1px solid var(--faq-border);
+}
+
+.faq__question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6rem;
+  padding: 2rem 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq__question::-webkit-details-marker {
+  display: none;
+}
+
+.faq__question:focus-visible {
+  outline: 2px solid var(--faq-whatsapp);
+  outline-offset: 2px;
+  border-radius: 0.4rem;
+}
+
+.faq__question-text {
+  margin: 0;
+  color: var(--faq-question);
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* Ícone +/− dentro da caixinha */
+.faq__icon {
+  position: relative;
+  flex: 0 0 auto;
+  width: 2.8rem;
+  height: 2.8rem;
+  border: 1px solid var(--faq-border);
+  border-radius: 1.4rem;
+}
+
+.faq__icon::before,
+.faq__icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: var(--faq-icon);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.faq__icon::before {
+  width: 1.2rem;
+  height: 1.5px;
+  transform: translate(-50%, -50%);
+}
+
+.faq__icon::after {
+  width: 1.5px;
+  height: 1.2rem;
+  transform: translate(-50%, -50%);
+}
+
+/* Aberto: vira "−" */
+.faq__item[open] .faq__icon::after {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+/* Resposta */
+.faq__answer {
+  overflow: hidden;
+}
+
+.faq__answer-inner {
+  padding: 0 0 2.4rem;
+  color: var(--faq-answer);
+  font-size: 1.6rem;
+  font-weight: 300;
+  line-height: 1.4;
+  max-width: 97.4rem;
+}
+
+.faq__answer-inner > *:first-child {
+  margin-top: 0;
+}
+
+.faq__answer-inner > *:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   DESKTOP
+   ============================================================ */
+
+@media screen and (min-width: 750px) {
+  .faq__header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    text-align: left;
+    gap: 3rem;
+  }
+
+  .faq__eyebrow {
+    font-size: clamp(1.8rem, 1.7vw, 2.5rem);
+  }
+
+  .faq__heading {
+    margin-top: 2rem;
+    font-size: clamp(4rem, 4.4vw, 7rem);
+  }
+
+  .faq__whatsapp {
+    padding: 1.6rem 3rem;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .faq__list {
+    margin-top: 6rem;
+    border-top: 0;
+  }
+
+  .faq__question {
+    padding: 2.6rem 0;
+  }
+
+  .faq__question-text {
+    font-size: 2.2rem;
+    font-weight: 500;
+  }
+
+  .faq__answer-inner {
+    padding-bottom: 3rem;
+    font-size: 1.8rem;
+    line-height: 1.4;
+  }
+}

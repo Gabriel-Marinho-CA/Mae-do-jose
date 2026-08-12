@@ -1,0 +1,300 @@
+{%- comment -%}
+  Seção "Perguntas frequentes" (FAQ / acordeão).
+
+  - Eyebrow, título, botão de WhatsApp e cada pergunta/resposta (blocos "item")
+    são editáveis no painel.
+  - Marcação em <details>/<summary>: funciona sem JS (progressive enhancement).
+    O componente assets/faq-accordion.js anima e mantém um item aberto por vez.
+  - Gera FAQPage (JSON-LD) a partir das perguntas reais, bom para SEO.
+
+  Estilos fixos em assets/section-faq.css. Apenas cores e paddings (que
+  dependem do schema) ficam no {% style %} abaixo.
+{%- endcomment -%}
+
+{%- liquid
+  assign uid = 'faq-' | append: section.id
+-%}
+
+{{ 'section-faq.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'faq-accordion.js' | asset_url }}" defer="defer"></script>
+
+{% style %}
+  .{{ uid }} {
+    --faq-bg: {{ section.settings.background_color }};
+    --faq-accent: {{ section.settings.accent_color }};
+    --faq-heading: {{ section.settings.heading_color }};
+    --faq-question: {{ section.settings.heading_color }};
+    --faq-answer: {{ section.settings.text_color }};
+    --faq-whatsapp: {{ section.settings.whatsapp_color }};
+
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .{{ uid }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+
+<mdj-faq class="faq page-width {{ uid }}">
+  <div class="faq__header{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+    <div class="faq__intro">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="faq__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="faq__heading">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.whatsapp_label != blank and section.settings.whatsapp_link != blank -%}
+      <a class="faq__whatsapp" href="{{ section.settings.whatsapp_link }}" target="_blank" rel="noopener">
+        <span>{{ section.settings.whatsapp_label | escape }}</span>
+        {{- 'icon-arrow.svg' | inline_asset_content -}}
+      </a>
+    {%- endif -%}
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <div class="faq__list{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+      {%- for block in section.blocks -%}
+        <details
+          class="faq__item"
+          {% if forloop.first %}open{% endif %}
+          {{ block.shopify_attributes }}
+        >
+          <summary class="faq__question">
+            <span class="faq__question-text">{{ block.settings.question | escape }}</span>
+            <span class="faq__icon" aria-hidden="true"></span>
+          </summary>
+          <div class="faq__answer">
+            <div class="faq__answer-inner">{{ block.settings.answer }}</div>
+          </div>
+        </details>
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} FAQPage: só perguntas/respostas reais preenchidas no painel. {%- endcomment -%}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {%- assign has_prev = false -%}
+          {%- for block in section.blocks -%}
+            {%- if block.settings.question != blank and block.settings.answer != blank -%}
+              {%- if has_prev %},{% endif -%}
+              {
+                "@type": "Question",
+                "name": {{ block.settings.question | strip_html | json }},
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": {{ block.settings.answer | strip_html | strip_newlines | json }}
+                }
+              }
+              {%- assign has_prev = true -%}
+            {%- endif -%}
+          {%- endfor -%}
+        ]
+      }
+    </script>
+  {%- endif -%}
+</mdj-faq>
+
+{% schema %}
+{
+  "name": "Perguntas frequentes",
+  "tag": "section",
+  "class": "section-faq",
+  "max_blocks": 20,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Textos"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Texto acima do título",
+      "default": "Dúvidas"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título",
+      "default": "Perguntas frequentes"
+    },
+    {
+      "type": "header",
+      "content": "Botão de WhatsApp"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_label",
+      "label": "Texto do botão",
+      "default": "Falar no WhatsApp",
+      "info": "Deixe vazio para esconder o botão."
+    },
+    {
+      "type": "url",
+      "id": "whatsapp_link",
+      "label": "Link do WhatsApp",
+      "info": "Ex.: https://wa.me/5599999999999"
+    },
+    {
+      "type": "header",
+      "content": "Cores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Fundo",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Destaque (eyebrow)",
+      "default": "#a89880"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Títulos e perguntas",
+      "default": "#1a2e2d"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Respostas",
+      "default": "#3d5250"
+    },
+    {
+      "type": "color",
+      "id": "whatsapp_color",
+      "label": "Botão de WhatsApp",
+      "default": "#ff8204"
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço acima",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço abaixo",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento (mobile)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço acima",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço abaixo",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Pergunta",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Pergunta",
+          "default": "Como faço meu pedido?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Resposta",
+          "default": "<p>Escolha os itens no cardápio, adicione ao carrinho e finalize o pedido. Você recebe a confirmação na hora.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Perguntas frequentes",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": {
+            "question": "Como faço meu pedido?",
+            "answer": "<p>Escolha os itens no cardápio, adicione ao carrinho e finalize o pedido. Você recebe a confirmação na hora.</p>"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "question": "Qual o prazo de entrega?",
+            "answer": "<p>O prazo varia conforme a sua região e o produto escolhido. O tempo estimado aparece no checkout.</p>"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "question": "Posso retirar no local?",
+            "answer": "<p>Sim. Basta escolher a opção de retirada no checkout e combinar o horário.</p>"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "question": "Como devo armazenar os produtos?",
+            "answer": "<p>Cada produto acompanha as instruções de conservação. Em geral, mantenha refrigerado e consuma dentro do prazo indicado.</p>"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "question": "Vocês atendem restrições alimentares?",
+            "answer": "<p>Temos opções para diferentes restrições. Fale com a gente pelo WhatsApp para conferir a disponibilidade.</p>"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "question": "Posso fazer pedidos corporativos ou para eventos?",
+            "answer": "<p>Sim. Fazemos encomendas para eventos e empresas. Entre em contato para um orçamento personalizado.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

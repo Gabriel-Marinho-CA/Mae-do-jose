@@ -1,0 +1,288 @@
+/*
+  Serviço personalizado — "Feito do seu jeito, para sua ocasião".
+
+  Estilos estáticos. O que depende do schema (paddings, cores) fica no
+  {% style %} da section, escopado por instância.
+
+  Faixa de cor sangrando de ponta a ponta, com o conteúdo dentro de page-width.
+
+  Desktop: duas colunas — texto + CTAs à esquerda, grade 2x2 de diferenciais à
+  direita. Mobile: coluna única, centralizada, na ordem título → cards → CTAs.
+  A ordem do DOM já é a do mobile; o desktop reposiciona via grid-area, então
+  não há conflito entre ordem visual e ordem de leitura.
+*/
+
+.custom-service {
+  --cs-bg: #043c39;
+  --cs-eyebrow: #688a88;
+  --cs-heading: #ffffff;
+  --cs-text: #8ea7a6;
+  --cs-card-bg: rgba(255, 255, 255, 0.05);
+  --cs-card-border: rgba(255, 255, 255, 0.08);
+  --cs-card-title: #f7f5f2;
+  --cs-card-text: rgba(255, 255, 255, 0.4);
+  --cs-accent: #ff8204;
+  --cs-on-accent: #ffffff;
+  --cs-secondary-bg: #ffffff;
+  --cs-secondary-text: #043c39;
+  --cs-secondary-border: #e8e4dc;
+  /* Definidas em snippets/theme-fonts.liquid; o fallback cobre o caso do
+     snippet não ter sido renderizado. */
+  --cs-font: var(--mdj-font-body, 'Outfit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif);
+  --cs-font-display: var(--mdj-font-display, 'Marcellus', Georgia, serif);
+
+  display: block;
+  background: var(--cs-bg);
+  font-family: var(--cs-font);
+}
+
+.custom-service__inner {
+  display: grid;
+  /* Coluna de texto com largura fixa (como no Figma) e os cards ocupando o
+     resto — assim a grade acompanha o page-width sem quebrar a proporção. */
+  grid-template-columns: minmax(0, 48rem) minmax(0, 1fr);
+  gap: 0 7rem;
+  align-items: start;
+}
+
+/* ---------- Texto ---------- */
+
+.custom-service__intro {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.custom-service__eyebrow {
+  display: block;
+  margin: 0;
+  color: var(--cs-eyebrow);
+  font-size: 2.5rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.custom-service__heading {
+  margin: 1.2rem 0 0;
+  color: var(--cs-heading);
+  font-family: var(--cs-font-display);
+  font-size: 7rem;
+  font-weight: 400;
+  line-height: 0.86;
+}
+
+.custom-service__text {
+  margin: 5rem 0 0;
+  color: var(--cs-text);
+  font-size: 1.8rem;
+  font-weight: 300;
+  line-height: 1.22;
+}
+
+.custom-service__text p {
+  margin: 0;
+}
+
+.custom-service__text p + p {
+  margin-top: 1rem;
+}
+
+/* ---------- Botões ---------- */
+
+.custom-service__actions {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.7rem;
+  margin-top: 5rem;
+}
+
+.custom-service__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 6.1rem;
+  padding: 1.5rem 3rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 1.8rem;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.custom-service__button:hover,
+.custom-service__button:focus-visible {
+  opacity: 0.9;
+}
+
+.custom-service__button--primary {
+  background: var(--cs-accent);
+  border-color: var(--cs-accent);
+  color: var(--cs-on-accent);
+  font-weight: 600;
+}
+
+.custom-service__button--secondary {
+  background: var(--cs-secondary-bg);
+  border-color: var(--cs-secondary-border);
+  color: var(--cs-secondary-text);
+  font-weight: 500;
+}
+
+/* ---------- Cards ---------- */
+
+.custom-service__cards {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.custom-service__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 13.8rem;
+  padding: 2.4rem 3.7rem;
+  background: var(--cs-card-bg);
+  border: 1.25px solid var(--cs-card-border);
+  border-radius: 17px;
+}
+
+.custom-service__card-title {
+  margin: 0;
+  color: var(--cs-card-title);
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.custom-service__card-text {
+  margin: 1.7rem 0 0;
+  color: var(--cs-card-text);
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+/* ---------- Tablet ---------- */
+
+@media screen and (max-width: 1199px) and (min-width: 750px) {
+  .custom-service__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4rem;
+  }
+
+  .custom-service__intro,
+  .custom-service__actions,
+  .custom-service__cards {
+    grid-column: 1;
+  }
+
+  .custom-service__intro {
+    grid-row: 1;
+  }
+
+  .custom-service__cards {
+    grid-row: 2;
+  }
+
+  .custom-service__actions {
+    grid-row: 3;
+    margin-top: 0;
+  }
+
+  .custom-service__heading {
+    font-size: 5.4rem;
+  }
+
+  .custom-service__text {
+    margin-top: 3rem;
+  }
+}
+
+/* ---------- Mobile ---------- */
+
+@media screen and (max-width: 749px) {
+  .custom-service__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    justify-items: center;
+    text-align: center;
+  }
+
+  /* Uma coluna só: a ordem do DOM (título → cards → CTAs) já é a desejada,
+     então basta zerar o posicionamento explícito do desktop. */
+  .custom-service__intro,
+  .custom-service__cards,
+  .custom-service__actions {
+    grid-column: 1;
+    grid-row: auto;
+    width: 100%;
+  }
+
+  .custom-service__eyebrow {
+    font-size: 1.6rem;
+  }
+
+  .custom-service__heading {
+    margin-top: 0.4rem;
+    font-size: 4rem;
+    line-height: 1.15;
+  }
+
+  .custom-service__text {
+    margin-top: 2.4rem;
+    font-size: 1.6rem;
+    line-height: 1.4;
+  }
+
+  .custom-service__cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    margin-top: 4rem;
+  }
+
+  .custom-service__card {
+    min-height: 11.1rem;
+    padding: 2.4rem 2rem;
+    text-align: center;
+  }
+
+  .custom-service__card-title {
+    font-size: 2rem;
+  }
+
+  .custom-service__card-text {
+    margin-top: 0.9rem;
+    font-size: 1.6rem;
+  }
+
+  .custom-service__actions {
+    flex-direction: column;
+    gap: 1.2rem;
+    margin-top: 4rem;
+  }
+
+  .custom-service__button {
+    width: 100%;
+    min-height: 5rem;
+    font-size: 1.6rem;
+  }
+
+  .custom-service__button--primary {
+    box-shadow: 0 4px 10px rgba(255, 130, 4, 0.3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .custom-service__button {
+    transition: none;
+  }
+}

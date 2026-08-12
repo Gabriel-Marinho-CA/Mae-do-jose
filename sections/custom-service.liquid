@@ -1,0 +1,282 @@
+{%- comment -%}
+  Serviço personalizado — "Feito do seu jeito, para sua ocasião".
+
+  - Faixa de cor sangrando de ponta a ponta, com o conteúdo dentro de page-width.
+  - Cada bloco é um diferencial (título + descrição) da grade 2x2.
+  - Dois CTAs: o primário costuma apontar para o WhatsApp.
+
+  Estilos fixos ficam em assets/section-custom-service.css. Apenas o que depende
+  do schema (paddings, cores) fica no {% style %} abaixo.
+
+  Outfit e Marcellus vêm de snippets/theme-fonts.liquid, carregado uma única
+  vez no layout. Nada de <link> de fonte aqui.
+
+  Section estática — não há JS, o layout inteiro é CSS grid.
+{%- endcomment -%}
+
+{%- assign uid = 'custom-service-' | append: section.id -%}
+
+{{ 'section-custom-service.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  .{{ uid }} {
+    --cs-bg: {{ section.settings.background_color }};
+    --cs-accent: {{ section.settings.accent_color }};
+    --cs-on-accent: {{ section.settings.accent_text_color }};
+
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .{{ uid }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="custom-service {{ uid }}">
+  <div class="custom-service__inner page-width">
+    <div class="custom-service__intro{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="custom-service__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        {%- comment -%}
+          textarea + newline_to_br: o merchant aperta Enter onde quer a quebra e
+          vira <br>, sem sair do <h2>. inline_richtext não serve aqui — ele não
+          suporta quebra de linha (só negrito, itálico e link). O escape vem
+          antes do newline_to_br para neutralizar HTML digitado no campo.
+        {%- endcomment -%}
+        <h2 class="custom-service__heading">{{ section.settings.heading | escape | newline_to_br }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.text != blank -%}
+        <div class="custom-service__text">{{ section.settings.text }}</div>
+      {%- endif -%}
+    </div>
+
+    {%- if section.blocks.size > 0 -%}
+      <ul
+        class="custom-service__cards{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+        role="list"
+      >
+        {%- for block in section.blocks -%}
+          <li
+            class="custom-service__card{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+            {% if settings.animations_reveal_on_scroll %}
+              data-cascade
+              style="--animation-order: {{ forloop.index }};"
+            {% endif %}
+            {{ block.shopify_attributes }}
+          >
+            {%- if block.settings.title != blank -%}
+              <h3 class="custom-service__card-title">{{ block.settings.title | escape }}</h3>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <p class="custom-service__card-text">{{ block.settings.text | escape }}</p>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    {%- if section.settings.button_1_label != blank or section.settings.button_2_label != blank -%}
+      <div class="custom-service__actions{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+        {%- if section.settings.button_1_label != blank -%}
+          <a
+            class="custom-service__button custom-service__button--primary"
+            {% if section.settings.button_1_link != blank %}
+              href="{{ section.settings.button_1_link }}"
+            {% else %}
+              role="link" aria-disabled="true"
+            {% endif %}
+          >
+            {{- section.settings.button_1_label | escape -}}
+          </a>
+        {%- endif -%}
+
+        {%- if section.settings.button_2_label != blank -%}
+          <a
+            class="custom-service__button custom-service__button--secondary"
+            {% if section.settings.button_2_link != blank %}
+              href="{{ section.settings.button_2_link }}"
+            {% else %}
+              role="link" aria-disabled="true"
+            {% endif %}
+          >
+            {{- section.settings.button_2_label | escape -}}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Serviço personalizado",
+  "tag": "section",
+  "class": "section-custom-service",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Textos"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Texto acima do título",
+      "default": "Serviço Personalizado"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Título",
+      "default": "Feito do seu jeito,\npara sua ocasião",
+      "info": "Quebre a linha com Enter onde quiser que o título divida."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Descrição",
+      "default": "<p>Eventos, corporativo, dietas específicas ou tamanhos sob medida. Criamos o menu certo para você.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Botão principal"
+    },
+    {
+      "type": "text",
+      "id": "button_1_label",
+      "label": "Texto do botão",
+      "default": "Falar no WhatsApp"
+    },
+    {
+      "type": "url",
+      "id": "button_1_link",
+      "label": "Link do botão",
+      "info": "Para o WhatsApp, use um link no formato https://wa.me/5511999999999"
+    },
+    {
+      "type": "header",
+      "content": "Botão secundário"
+    },
+    {
+      "type": "text",
+      "id": "button_2_label",
+      "label": "Texto do botão",
+      "default": "Saiba mais"
+    },
+    {
+      "type": "url",
+      "id": "button_2_link",
+      "label": "Link do botão"
+    },
+    {
+      "type": "header",
+      "content": "Cores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Fundo da seção",
+      "default": "#043c39"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Botão principal — fundo",
+      "default": "#ff8204"
+    },
+    {
+      "type": "color",
+      "id": "accent_text_color",
+      "label": "Botão principal — texto",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Espaço acima",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Espaço abaixo",
+      "default": 90
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento (mobile)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 5,
+      "unit": "px",
+      "label": "Espaço acima",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 5,
+      "unit": "px",
+      "label": "Espaço abaixo",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Diferencial",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Dietas especiais"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Descrição",
+          "default": "Low carb, vegano, sem glúten"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Serviço personalizado",
+      "blocks": [
+        { "type": "feature" },
+        { "type": "feature" },
+        { "type": "feature" },
+        { "type": "feature" }
+      ]
+    }
+  ]
+}
+{% endschema %}

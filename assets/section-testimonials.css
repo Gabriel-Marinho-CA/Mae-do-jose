@@ -90,6 +90,7 @@
   border: 1px solid var(--tst-border);
   border-radius: 16px;
   transition: box-shadow 0.25s ease, transform 0.25s ease;
+  margin: 0;
 }
 
 .testimonials__card:hover {
