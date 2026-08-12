@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "banner_carousel": {
@@ -6,25 +15,33 @@
         "slide_1": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/Rectangle_1.png",
+            "image_mobile": "shopify://shop_images/Rectangle_35.png",
             "heading": "Sabor artesanal, ingredientes de chef",
             "text": "<p>Quiches, tortas, pratos prontos e muito mais — feitos com ingredientes selecionados e entregues direto na sua mesa.</p>",
             "button_1_label": "Ver Cardápio",
-            "button_2_label": "Personalizado"
+            "button_1_link": "",
+            "button_2_label": "Personalizado",
+            "button_2_link": ""
           }
         },
-        "slide_2": {
+        "slide_JFwr8q": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/Rectangle_1.png",
+            "image_mobile": "shopify://shop_images/Rectangle_35.png",
             "heading": "Sabor artesanal, ingredientes de chef",
             "text": "<p>Quiches, tortas, pratos prontos e muito mais — feitos com ingredientes selecionados e entregues direto na sua mesa.</p>",
             "button_1_label": "Ver Cardápio",
-            "button_2_label": "Personalizado"
+            "button_1_link": "",
+            "button_2_label": "Personalizado",
+            "button_2_link": ""
           }
         }
       },
       "block_order": [
         "slide_1",
-        "slide_2"
+        "slide_JFwr8q"
       ],
       "settings": {
         "autoplay": true,
@@ -33,7 +50,13 @@
         "show_arrows": true,
         "show_pagination": true,
         "content_offset": 14,
-        "content_max_width": 620
+        "content_max_width": 620,
+        "text_color": "#1a2e2d",
+        "primary_button_bg": "#043c39",
+        "primary_button_text": "#ffffff",
+        "secondary_button_bg": "#ffffff",
+        "secondary_button_text": "#043c39",
+        "secondary_button_border": "#e8e4dc"
       }
     },
     "image_banner": {
@@ -65,33 +88,32 @@
       "settings": {
         "image_overlay_opacity": 40,
         "image_height": "large",
-        "desktop_content_position": "bottom-center",
-        "show_text_box": false,
         "image_behavior": "none",
+        "desktop_content_position": "bottom-center",
         "desktop_content_alignment": "center",
+        "show_text_box": false,
         "color_scheme": "scheme-3",
-        "mobile_content_alignment": "center",
         "stack_images_on_mobile": false,
+        "mobile_content_alignment": "center",
         "show_text_below": false
       }
     },
     "featured_collection": {
       "type": "featured-collection",
       "settings": {
+        "collection": "all",
+        "products_to_show": 8,
         "title": "Featured products",
         "heading_size": "h2",
         "description": "",
         "show_description": false,
         "description_style": "body",
-        "collection": "all",
-        "products_to_show": 8,
         "columns_desktop": 4,
-        "color_scheme": "scheme-1",
+        "enable_desktop_slider": false,
         "full_width": false,
         "show_view_all": true,
         "view_all_style": "solid",
-        "enable_desktop_slider": false,
-        "swipe_on_mobile": false,
+        "color_scheme": "scheme-1",
         "image_ratio": "adapt",
         "image_shape": "default",
         "show_secondary_image": true,
@@ -99,6 +121,7 @@
         "show_rating": false,
         "quick_add": "none",
         "columns_mobile": "2",
+        "swipe_on_mobile": false,
         "padding_top": 44,
         "padding_bottom": 36
       }
