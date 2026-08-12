@@ -18,21 +18,21 @@
           "type": "menu",
           "settings": {
             "heading": "Contato",
-            "menu": "footer"
+            "menu": "contato"
           }
         },
         "menu_empresa": {
           "type": "menu",
           "settings": {
             "heading": "Empresa",
-            "menu": "footer"
+            "menu": "empresa"
           }
         },
         "menu_cardapio": {
           "type": "menu",
           "settings": {
             "heading": "Cardápio",
-            "menu": "footer"
+            "menu": "cardapio"
           }
         },
         "pagamentos": {
