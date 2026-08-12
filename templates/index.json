@@ -243,12 +243,141 @@
         "padding_top_mobile": 60,
         "padding_bottom_mobile": 60
       }
+    },
+    "custom_service_h8pRgN": {
+      "type": "custom-service",
+      "blocks": {
+        "feature_xBNEyB": {
+          "type": "feature",
+          "settings": {
+            "title": "Dietas especiais",
+            "text": "Low carb, vegano, sem glúten"
+          }
+        },
+        "feature_fcWVVz": {
+          "type": "feature",
+          "settings": {
+            "title": "Dietas especiais",
+            "text": "Low carb, vegano, sem glúten"
+          }
+        },
+        "feature_YUnPKj": {
+          "type": "feature",
+          "settings": {
+            "title": "Dietas especiais",
+            "text": "Low carb, vegano, sem glúten"
+          }
+        },
+        "feature_dYcRAq": {
+          "type": "feature",
+          "settings": {
+            "title": "Dietas especiais",
+            "text": "Low carb, vegano, sem glúten"
+          }
+        }
+      },
+      "block_order": [
+        "feature_xBNEyB",
+        "feature_fcWVVz",
+        "feature_YUnPKj",
+        "feature_dYcRAq"
+      ],
+      "name": "Serviço personalizado",
+      "settings": {
+        "eyebrow": "Serviço Personalizado",
+        "heading": "Feito do seu jeito,\npara sua ocasião",
+        "text": "<p>Eventos, corporativo, dietas específicas ou tamanhos sob medida. Criamos o menu certo para você.</p>",
+        "button_1_label": "Falar no WhatsApp",
+        "button_1_link": "",
+        "button_2_label": "Saiba mais",
+        "button_2_link": "",
+        "background_color": "#043c39",
+        "accent_color": "#ff8204",
+        "accent_text_color": "#ffffff",
+        "padding_top": 90,
+        "padding_bottom": 90,
+        "padding_top_mobile": 60,
+        "padding_bottom_mobile": 60
+      }
+    },
+    "faq_eWDQyJ": {
+      "type": "faq",
+      "blocks": {
+        "item_rhRBtB": {
+          "type": "item",
+          "settings": {
+            "question": "Como faço meu pedido?",
+            "answer": "<p>Escolha os itens no cardápio, adicione ao carrinho e finalize o pedido. Você recebe a confirmação na hora.</p>"
+          }
+        },
+        "item_zFUrfk": {
+          "type": "item",
+          "settings": {
+            "question": "Qual o prazo de entrega?",
+            "answer": "<p>O prazo varia conforme a sua região e o produto escolhido. O tempo estimado aparece no checkout.</p>"
+          }
+        },
+        "item_QjCUg9": {
+          "type": "item",
+          "settings": {
+            "question": "Posso retirar no local?",
+            "answer": "<p>Sim. Basta escolher a opção de retirada no checkout e combinar o horário.</p>"
+          }
+        },
+        "item_KgjDYc": {
+          "type": "item",
+          "settings": {
+            "question": "Como devo armazenar os produtos?",
+            "answer": "<p>Cada produto acompanha as instruções de conservação. Em geral, mantenha refrigerado e consuma dentro do prazo indicado.</p>"
+          }
+        },
+        "item_cfmPEE": {
+          "type": "item",
+          "settings": {
+            "question": "Vocês atendem restrições alimentares?",
+            "answer": "<p>Temos opções para diferentes restrições. Fale com a gente pelo WhatsApp para conferir a disponibilidade.</p>"
+          }
+        },
+        "item_3mNTUB": {
+          "type": "item",
+          "settings": {
+            "question": "Posso fazer pedidos corporativos ou para eventos?",
+            "answer": "<p>Sim. Fazemos encomendas para eventos e empresas. Entre em contato para um orçamento personalizado.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "item_rhRBtB",
+        "item_zFUrfk",
+        "item_QjCUg9",
+        "item_KgjDYc",
+        "item_cfmPEE",
+        "item_3mNTUB"
+      ],
+      "name": "Perguntas frequentes",
+      "settings": {
+        "eyebrow": "Dúvidas",
+        "heading": "Perguntas frequentes",
+        "whatsapp_label": "Falar no WhatsApp",
+        "whatsapp_link": "",
+        "background_color": "#ffffff",
+        "accent_color": "#a89880",
+        "heading_color": "#1a2e2d",
+        "text_color": "#3d5250",
+        "whatsapp_color": "#ff8204",
+        "padding_top": 100,
+        "padding_bottom": 100,
+        "padding_top_mobile": 48,
+        "padding_bottom_mobile": 48
+      }
     }
   },
   "order": [
     "banner_carousel",
     "collection_tabs_adYhCV",
     "how_it_works",
-    "testimonials_WdLRGj"
+    "testimonials_WdLRGj",
+    "custom_service_h8pRgN",
+    "faq_eWDQyJ"
   ]
 }
