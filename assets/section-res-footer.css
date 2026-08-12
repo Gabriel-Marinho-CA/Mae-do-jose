@@ -195,6 +195,10 @@
 .res-footer__payments-card picture {
   display: block;
   line-height: 0;
+  @media (max-width:750px) {
+    width:100%;
+    max-width:180px;
+  }
 }
 
 .res-footer__payments-image {
