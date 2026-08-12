@@ -40,7 +40,7 @@
   display: grid;
   /* Coluna de texto com largura fixa (como no Figma) e os cards ocupando o
      resto — assim a grade acompanha o page-width sem quebrar a proporção. */
-  grid-template-columns: minmax(0, 48rem) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 57rem) minmax(0, 1fr);
   gap: 0 7rem;
   align-items: start;
 }
