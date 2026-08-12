@@ -1,0 +1,307 @@
+/*
+  Depoimentos — "O que nossos clientes dizem".
+
+  Estilos estáticos. O que depende do schema (paddings, colunas) fica no
+  {% style %} da section, escopado por instância.
+
+  Uma única mecânica serve desktop e mobile: uma trilha com scroll-snap.
+  No desktop cabem N cards por página (setting), no mobile um. Os indicadores
+  só aparecem quando há mais de uma página — por isso o desktop do Figma, com
+  4 cards e 4 depoimentos, fica sem eles.
+*/
+
+.testimonials {
+  --tst-title: #1a2e2d;
+  --tst-quote: #3d5250;
+  --tst-muted: #a89880;
+  --tst-initials: #5a6e6d;
+  --tst-border: #f0ede8;
+  --tst-accent: #ff8204;
+  --tst-dot: #d7d2c9;
+  /* Definidas em snippets/theme-fonts.liquid; o fallback cobre o caso do
+     snippet não ter sido renderizado. */
+  --tst-font: var(--mdj-font-body, 'Outfit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif);
+  --tst-font-display: var(--mdj-font-display, 'Marcellus', Georgia, serif);
+
+  display: block;
+  font-family: var(--tst-font);
+}
+
+/* ---------- Cabeçalho ---------- */
+
+.testimonials__header {
+  text-align: center;
+}
+
+.testimonials__eyebrow {
+  display: block;
+  margin: 0;
+  color: var(--tst-muted);
+  font-size: 2.5rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.testimonials__heading {
+  margin: 0.8rem 0 0;
+  color: var(--tst-title);
+  font-family: var(--tst-font-display);
+  font-size: 7rem;
+  font-weight: 400;
+  line-height: 0.86;
+}
+
+/* ---------- Trilha ---------- */
+
+.testimonials__track {
+  display: flex;
+  gap: 2rem;
+  margin: 8rem 0 0;
+  /* Folga vertical para a sombra de hover dos cards não ser cortada. */
+  padding: 0.8rem 0;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.testimonials__track::-webkit-scrollbar {
+  display: none;
+}
+
+.testimonials__item {
+  flex: none;
+  /* Largura derivada do número de colunas: N cards por página, com o gap
+     descontado proporcionalmente. */
+  width: calc((100% - (var(--tst-columns, 4) - 1) * 2rem) / var(--tst-columns, 4));
+  scroll-snap-align: start;
+}
+
+/* ---------- Card ---------- */
+
+.testimonials__card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 25.4rem;
+  padding: 3rem 2.5rem 3.3rem;
+  background: #fff;
+  border: 1px solid var(--tst-border);
+  border-radius: 16px;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.testimonials__card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* Estrelas decorativas: o depoimento é curadoria da loja, não uma avaliação
+   verificada, então nada de schema.org aqui. A nota vai em texto para leitor
+   de tela via .visually-hidden no markup. */
+.testimonials__stars {
+  --tst-rating: 5;
+
+  font-family: Times, serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.24rem;
+  line-height: 1;
+}
+
+.testimonials__stars::before {
+  content: '★★★★★';
+  background: linear-gradient(
+    90deg,
+    var(--tst-accent) calc(var(--tst-rating) / 5 * 100%),
+    rgba(168, 152, 128, 0.3) calc(var(--tst-rating) / 5 * 100%)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.testimonials__quote {
+  margin: 2.1rem 0 0;
+  color: var(--tst-quote);
+  font-size: 1.8rem;
+  font-weight: 300;
+  line-height: 1.22;
+}
+
+.testimonials__quote p {
+  margin: 0;
+}
+
+.testimonials__quote p + p {
+  margin-top: 0.8rem;
+}
+
+/* ---------- Autor ---------- */
+
+.testimonials__author {
+  display: flex;
+  align-items: center;
+  gap: 1.7rem;
+  /* Empurra o autor para a base, mantendo o alinhamento entre cards de alturas
+     de texto diferentes. */
+  margin-top: auto;
+  padding-top: 2.4rem;
+}
+
+.testimonials__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 4rem;
+  height: 4rem;
+  overflow: hidden;
+  background: var(--tst-border);
+  border-radius: 50%;
+  color: var(--tst-initials);
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.testimonials__avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.testimonials__author-name {
+  display: block;
+  margin: 0;
+  color: var(--tst-title);
+  font-size: 2.2rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.testimonials__author-detail {
+  display: block;
+  margin: 0.3rem 0 0;
+  color: var(--tst-accent);
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+/* ---------- Indicadores ---------- */
+
+.testimonials__dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 3.2rem;
+}
+
+.testimonials__dots[hidden] {
+  display: none;
+}
+
+.testimonials__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  background: var(--tst-dot);
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.25s ease;
+}
+
+.testimonials__dot[aria-current='true'] {
+  background: var(--tst-accent);
+  transform: scale(1.1);
+}
+
+.testimonials__dot:focus-visible {
+  outline: 2px solid var(--tst-accent);
+  outline-offset: 3px;
+}
+
+/* ---------- Tablet ---------- */
+
+@media screen and (max-width: 1199px) and (min-width: 750px) {
+  .testimonials__heading {
+    font-size: 5.4rem;
+  }
+
+  .testimonials__item {
+    width: calc((100% - 2rem) / 2);
+  }
+}
+
+/* ---------- Mobile ---------- */
+
+@media screen and (max-width: 749px) {
+  .testimonials__eyebrow {
+    font-size: 1.6rem;
+  }
+
+  .testimonials__heading {
+    margin-top: 0.4rem;
+    font-size: 4rem;
+    line-height: 1.15;
+  }
+
+  /* Sangra até a borda da tela para o card seguinte "espiar" na lateral. */
+  .testimonials__track {
+    gap: 1.6rem;
+    margin-top: 4rem;
+    padding: 0.4rem 1.5rem;
+    margin-inline: -1.5rem;
+    scroll-padding-left: 1.5rem;
+  }
+
+  .testimonials__item {
+    width: calc(100% - 3rem);
+  }
+
+  .testimonials__card {
+    min-height: 22.6rem;
+    padding: 2.8rem 2.4rem 3rem;
+  }
+
+  .testimonials__quote {
+    margin-top: 1.9rem;
+    font-size: 1.3rem;
+    line-height: 1.9;
+  }
+
+  .testimonials__author {
+    gap: 1.2rem;
+    padding-top: 2rem;
+  }
+
+  .testimonials__author-name {
+    font-size: 1.3rem;
+  }
+
+  .testimonials__author-detail {
+    margin-top: 0.4rem;
+    font-size: 1.1rem;
+  }
+
+  .testimonials__dots {
+    margin-top: 2.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .testimonials__card,
+  .testimonials__dot {
+    transition: none;
+  }
+
+  .testimonials__card:hover {
+    transform: none;
+  }
+}

@@ -1,0 +1,279 @@
+{%- comment -%}
+  Depoimentos — "O que nossos clientes dizem".
+
+  - Cada bloco é um depoimento: nota, citação, autor e o prato que ele comprou.
+  - Uma trilha com scroll-snap serve os dois layouts: N cards por página no
+    desktop (setting) e um no mobile. Os indicadores só aparecem quando há mais
+    de uma página.
+  - As estrelas são decorativas: depoimento é curadoria da loja, não avaliação
+    verificada, então não há markup de review (schema.org) aqui — isso evita
+    rich snippet indevido. A nota vai em texto para leitor de tela.
+
+  Estilos fixos ficam em assets/section-testimonials.css. Apenas o que depende
+  do schema (paddings, colunas) fica no {% style %} abaixo.
+
+  Outfit e Marcellus vêm de snippets/theme-fonts.liquid, carregado uma única
+  vez no layout. Nada de <link> de fonte aqui.
+{%- endcomment -%}
+
+{%- assign uid = 'testimonials-' | append: section.id -%}
+
+{{ 'section-testimonials.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'testimonials-carousel.js' | asset_url }}" defer="defer"></script>
+
+{% style %}
+  .{{ uid }} {
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .{{ uid }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+
+    .{{ uid }} .testimonials__item {
+      --tst-columns: {{ section.settings.columns_desktop }};
+    }
+  }
+{% endstyle %}
+
+<testimonials-carousel class="testimonials page-width {{ uid }}">
+  <div class="testimonials__header{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+    {%- if section.settings.eyebrow != blank -%}
+      <span class="testimonials__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+    {%- endif -%}
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="testimonials__heading">{{ section.settings.heading | escape }}</h2>
+    {%- endif -%}
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <ul
+      class="testimonials__track{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+      role="list"
+      data-track
+    >
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign rating = block.settings.rating | at_least: 1 | at_most: 5
+          assign initials = block.settings.initials
+
+          # Sem iniciais informadas, usa as duas primeiras palavras do nome:
+          # "Ana Carolina M." vira AC, "Rodrigo F." vira RF.
+          if initials == blank and block.settings.author != blank
+            assign name_parts = block.settings.author | strip | split: ' '
+            assign initials = name_parts[0] | slice: 0
+            if name_parts.size > 1
+              assign second_initial = name_parts[1] | slice: 0
+              assign initials = initials | append: second_initial
+            endif
+          endif
+
+          assign initials = initials | upcase
+        -%}
+
+        <li
+          class="testimonials__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+          {% if settings.animations_reveal_on_scroll %}
+            data-cascade
+            style="--animation-order: {{ forloop.index }};"
+          {% endif %}
+          {{ block.shopify_attributes }}
+        >
+          <figure class="testimonials__card">
+            <span class="testimonials__stars" style="--tst-rating: {{ rating }};" aria-hidden="true"></span>
+            <span class="visually-hidden">{{ rating }} de 5 estrelas</span>
+
+            {%- if block.settings.quote != blank -%}
+              <blockquote class="testimonials__quote">{{ block.settings.quote }}</blockquote>
+            {%- endif -%}
+
+            <figcaption class="testimonials__author">
+              {%- if block.settings.avatar != blank -%}
+                <span class="testimonials__avatar">
+                  <img
+                    src="{{ block.settings.avatar | image_url: width: 80 }}"
+                    srcset="{{ block.settings.avatar | image_url: width: 40 }} 40w, {{ block.settings.avatar | image_url: width: 80 }} 80w"
+                    sizes="40px"
+                    alt="{{ block.settings.avatar.alt | default: block.settings.author | escape }}"
+                    width="{{ block.settings.avatar.width }}"
+                    height="{{ block.settings.avatar.height }}"
+                    loading="lazy"
+                  >
+                </span>
+              {%- elsif initials != blank -%}
+                <span class="testimonials__avatar" aria-hidden="true">{{ initials }}</span>
+              {%- endif -%}
+
+              <span class="testimonials__author-info">
+                {%- if block.settings.author != blank -%}
+                  <span class="testimonials__author-name">{{ block.settings.author | escape }}</span>
+                {%- endif -%}
+                {%- if block.settings.author_detail != blank -%}
+                  <span class="testimonials__author-detail">{{ block.settings.author_detail | escape }}</span>
+                {%- endif -%}
+              </span>
+            </figcaption>
+          </figure>
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    {%- comment -%}
+      Os indicadores são criados pelo JS (a quantidade depende de quantos cards
+      cabem na tela). Sem JS o container fica vazio e escondido, e a trilha
+      continua arrastável.
+    {%- endcomment -%}
+    <div class="testimonials__dots" data-dots data-dot-label="Ir para o depoimento %d" hidden></div>
+  {%- endif -%}
+</testimonials-carousel>
+
+{% schema %}
+{
+  "name": "Depoimentos",
+  "tag": "section",
+  "class": "section-testimonials",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Textos"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Texto acima do título",
+      "default": "Depoimentos"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título",
+      "default": "O que nossos clientes dizem"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "Depoimentos por página (desktop)",
+      "default": 4,
+      "info": "No mobile é sempre um por vez. Os indicadores aparecem quando há mais depoimentos do que cabem numa página."
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço acima",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço abaixo",
+      "default": 90
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento (mobile)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço acima",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço abaixo",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Depoimento",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Nota",
+          "default": 5
+        },
+        {
+          "type": "richtext",
+          "id": "quote",
+          "label": "Depoimento",
+          "default": "<p>\"A melhor quiche que já comi. Melhor do que em restaurante. Virou meu pedido fixo toda semana.\"</p>"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Nome do cliente",
+          "default": "Rodrigo F."
+        },
+        {
+          "type": "text",
+          "id": "author_detail",
+          "label": "Prato comprado",
+          "default": "Quiche de Cogumelos"
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "Foto do cliente",
+          "info": "Opcional. Sem foto, mostra as iniciais do nome."
+        },
+        {
+          "type": "text",
+          "id": "initials",
+          "label": "Iniciais",
+          "info": "Opcional. Se vazio, usa as duas primeiras palavras do nome."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Depoimentos",
+      "blocks": [
+        { "type": "testimonial" },
+        { "type": "testimonial" },
+        { "type": "testimonial" },
+        { "type": "testimonial" }
+      ]
+    }
+  ]
+}
+{% endschema %}
