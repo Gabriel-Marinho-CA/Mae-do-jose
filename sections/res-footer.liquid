@@ -4,8 +4,8 @@
   - Logo (desktop e mobile), descrição da marca e redes sociais à esquerda.
   - Cada bloco é uma coluna de links, alimentada por um menu da loja
     (link_list), então o merchant edita os links em Navegação, não aqui.
-  - Formas de pagamento: os ícones vêm de shop.enabled_payment_types, ou seja,
-    refletem os meios realmente habilitados na loja.
+  - Formas de pagamento: bloco próprio, com imagem das bandeiras enviada pelo
+    merchant (desktop e mobile). Não vira sanfona no mobile.
   - No mobile as colunas viram sanfonas (ver assets/res-footer.js).
 
   Estilos fixos ficam em assets/section-res-footer.css. Apenas o que depende do
@@ -24,6 +24,7 @@
   .{{ uid }} {
     --rf-bg: {{ section.settings.background_color }};
     --rf-heading: {{ section.settings.heading_color }};
+    --rf-logo-width: {{ section.settings.logo_width_mobile }}px;
 
     padding-top: {{ section.settings.padding_top_mobile }}px;
     padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
@@ -31,6 +32,8 @@
 
   @media screen and (min-width: 750px) {
     .{{ uid }} {
+      --rf-logo-width: {{ section.settings.logo_width }}px;
+
       padding-top: {{ section.settings.padding_top }}px;
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
@@ -42,50 +45,45 @@
     <div class="res-footer__top">
       <div class="res-footer__brand{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
         <a class="res-footer__logo-link" href="{{ routes.root_url }}">
-          {%- if section.settings.logo != blank -%}
-            <img
-              class="res-footer__logo res-footer__logo--desktop"
-              src="{{ section.settings.logo | image_url: width: 550 }}"
-              srcset="
-                {{ section.settings.logo | image_url: width: 275 }} 275w,
-                {{ section.settings.logo | image_url: width: 550 }} 550w
-              "
-              sizes="{{ section.settings.logo_width }}px"
-              alt="{{ section.settings.logo.alt | default: shop.name | escape }}"
-              width="{{ section.settings.logo.width }}"
-              height="{{ section.settings.logo.height }}"
-              style="width: {{ section.settings.logo_width }}px;"
-              loading="lazy"
-            >
-          {%- endif -%}
+          {%- liquid
+            assign logo_image = section.settings.logo | default: section.settings.logo_mobile
+            assign logo_image_mobile = section.settings.logo_mobile
+          -%}
 
-          {%- if section.settings.logo_mobile != blank -%}
-            <img
-              class="res-footer__logo res-footer__logo--mobile"
-              src="{{ section.settings.logo_mobile | image_url: width: 550 }}"
-              srcset="
-                {{ section.settings.logo_mobile | image_url: width: 275 }} 275w,
-                {{ section.settings.logo_mobile | image_url: width: 550 }} 550w
-              "
-              sizes="{{ section.settings.logo_width_mobile }}px"
-              alt="{{ section.settings.logo_mobile.alt | default: shop.name | escape }}"
-              width="{{ section.settings.logo_mobile.width }}"
-              height="{{ section.settings.logo_mobile.height }}"
-              style="width: {{ section.settings.logo_width_mobile }}px;"
-              loading="lazy"
-            >
-          {%- elsif section.settings.logo != blank -%}
-            {%- comment -%}Sem logo de mobile, a de desktop cobre os dois.{%- endcomment -%}
-            <img
-              class="res-footer__logo res-footer__logo--mobile"
-              src="{{ section.settings.logo | image_url: width: 550 }}"
-              sizes="{{ section.settings.logo_width_mobile }}px"
-              alt="{{ section.settings.logo.alt | default: shop.name | escape }}"
-              width="{{ section.settings.logo.width }}"
-              height="{{ section.settings.logo.height }}"
-              style="width: {{ section.settings.logo_width_mobile }}px;"
-              loading="lazy"
-            >
+          {%- if logo_image != blank -%}
+            {%- comment -%}
+              <picture> em vez de duas <img> alternadas por CSS: o navegador
+              escolhe a fonte pelo media e baixa só uma. Com duas <img>,
+              display:none esconde mas NÃO evita o download.
+              Sem logo de mobile, o <source> não é emitido e a de desktop cobre
+              os dois tamanhos. A largura por breakpoint vem das custom
+              properties definidas no {% style %} da section.
+            {%- endcomment -%}
+            <picture>
+              {%- if logo_image_mobile != blank -%}
+                <source
+                  media="(max-width: 749px)"
+                  srcset="
+                    {{ logo_image_mobile | image_url: width: 275 }} 275w,
+                    {{ logo_image_mobile | image_url: width: 550 }} 550w
+                  "
+                  sizes="{{ section.settings.logo_width_mobile }}px"
+                >
+              {%- endif -%}
+              <img
+                class="res-footer__logo"
+                src="{{ logo_image | image_url: width: 550 }}"
+                srcset="
+                  {{ logo_image | image_url: width: 275 }} 275w,
+                  {{ logo_image | image_url: width: 550 }} 550w
+                "
+                sizes="(min-width: 750px) {{ section.settings.logo_width }}px, {{ section.settings.logo_width_mobile }}px"
+                alt="{{ logo_image.alt | default: shop.name | escape }}"
+                width="{{ logo_image.width }}"
+                height="{{ logo_image.height }}"
+                loading="lazy"
+              >
+            </picture>
           {%- else -%}
             <span class="res-footer__logo-text">{{ shop.name }}</span>
           {%- endif -%}
@@ -157,54 +155,46 @@
                     <h2 class="res-footer__column-heading">{{ block.settings.heading | escape }}</h2>
                   {%- endif -%}
 
-                  {%- if block.settings.image != blank or block.settings.image_mobile != blank -%}
+                  {%- liquid
+                    assign payment_image = block.settings.image | default: block.settings.image_mobile
+                    assign payment_image_mobile = block.settings.image_mobile
+                  -%}
+
+                  {%- if payment_image != blank -%}
                     <div class="res-footer__payments-card">
-                      {%- if block.settings.image != blank -%}
+                      {%- comment -%}
+                        <picture> em vez de duas <img> alternadas por CSS: o
+                        navegador escolhe a fonte pelo media e baixa só uma.
+                        Com duas <img>, display:none esconde mas NÃO evita o
+                        download — as duas vinham do servidor.
+                        Sem imagem de mobile, o <source> não é emitido e a de
+                        desktop cobre os dois tamanhos.
+                      {%- endcomment -%}
+                      <picture>
+                        {%- if payment_image_mobile != blank -%}
+                          <source
+                            media="(max-width: 749px)"
+                            srcset="
+                              {{ payment_image_mobile | image_url: width: 230 }} 230w,
+                              {{ payment_image_mobile | image_url: width: 460 }} 460w
+                            "
+                            sizes="218px"
+                          >
+                        {%- endif -%}
                         <img
-                          class="res-footer__payments-image res-footer__payments-image--desktop"
-                          src="{{ block.settings.image | image_url: width: 460 }}"
+                          class="res-footer__payments-image"
+                          src="{{ payment_image | image_url: width: 460 }}"
                           srcset="
-                            {{ block.settings.image | image_url: width: 230 }} 230w,
-                            {{ block.settings.image | image_url: width: 460 }} 460w
+                            {{ payment_image | image_url: width: 230 }} 230w,
+                            {{ payment_image | image_url: width: 460 }} 460w
                           "
                           sizes="(min-width: 750px) 203px, 218px"
-                          alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
-                          width="{{ block.settings.image.width }}"
-                          height="{{ block.settings.image.height }}"
+                          alt="{{ payment_image.alt | default: block.settings.heading | escape }}"
+                          width="{{ payment_image.width }}"
+                          height="{{ payment_image.height }}"
                           loading="lazy"
                         >
-                      {%- endif -%}
-
-                      {%- if block.settings.image_mobile != blank -%}
-                        <img
-                          class="res-footer__payments-image res-footer__payments-image--mobile"
-                          src="{{ block.settings.image_mobile | image_url: width: 460 }}"
-                          srcset="
-                            {{ block.settings.image_mobile | image_url: width: 230 }} 230w,
-                            {{ block.settings.image_mobile | image_url: width: 460 }} 460w
-                          "
-                          sizes="218px"
-                          alt="{{ block.settings.image_mobile.alt | default: block.settings.heading | escape }}"
-                          width="{{ block.settings.image_mobile.width }}"
-                          height="{{ block.settings.image_mobile.height }}"
-                          loading="lazy"
-                        >
-                      {%- elsif block.settings.image != blank -%}
-                        {%- comment -%}
-                          Sem imagem de mobile, a de desktop cobre os dois — o
-                          CSS troca qual das duas aparece por breakpoint, então
-                          sem este fallback o card ficaria vazio no celular.
-                        {%- endcomment -%}
-                        <img
-                          class="res-footer__payments-image res-footer__payments-image--mobile"
-                          src="{{ block.settings.image | image_url: width: 460 }}"
-                          sizes="218px"
-                          alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
-                          width="{{ block.settings.image.width }}"
-                          height="{{ block.settings.image.height }}"
-                          loading="lazy"
-                        >
-                      {%- endif -%}
+                      </picture>
                     </div>
                   {%- endif -%}
                 </div>

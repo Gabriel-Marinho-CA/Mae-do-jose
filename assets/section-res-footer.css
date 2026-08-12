@@ -89,15 +89,19 @@
   line-height: 0;
 }
 
-.res-footer__logo {
+/* A troca desktop/mobile é feita pelo <picture>/<source media>, não por CSS:
+   assim o navegador baixa só a imagem que vai usar. A largura por breakpoint
+   vem de --rf-logo-width, definida no {% style %} da section. */
+.res-footer__logo-link picture {
   display: block;
-  width: auto;
-  max-width: 100%;
-  height: auto;
+  line-height: 0;
 }
 
-.res-footer__logo--mobile {
-  display: none;
+.res-footer__logo {
+  display: block;
+  width: var(--rf-logo-width, 250px);
+  max-width: 100%;
+  height: auto;
 }
 
 .res-footer__logo-text {
@@ -186,15 +190,18 @@
   border-radius: 14px;
 }
 
+/* A troca desktop/mobile é feita pelo <picture>/<source media>, não por CSS:
+   assim o navegador baixa só a imagem que vai usar. */
+.res-footer__payments-card picture {
+  display: block;
+  line-height: 0;
+}
+
 .res-footer__payments-image {
   display: block;
   width: auto;
   max-width: 100%;
   height: auto;
-}
-
-.res-footer__payments-image--mobile {
-  display: none;
 }
 
 /* ---------- Redes sociais ---------- */
@@ -320,14 +327,6 @@
     justify-content: center;
   }
 
-  .res-footer__logo--desktop {
-    display: none;
-  }
-
-  .res-footer__logo--mobile {
-    display: block;
-  }
-
   .res-footer__description {
     margin-top: 2.4rem;
   }
@@ -418,14 +417,6 @@
     max-width: none;
     margin-top: 1.6rem;
     padding: 1.6rem 2rem;
-  }
-
-  .res-footer__payments-image--desktop {
-    display: none;
-  }
-
-  .res-footer__payments-image--mobile {
-    display: block;
   }
 
   .res-footer__bottom {

@@ -152,7 +152,7 @@
 }
 
 .banner-carousel .banner-carousel__pagination .swiper-pagination-bullet-active {
-  width: 28px;
+  width: 9px;
   opacity: 1;
 }
 
@@ -174,6 +174,7 @@
 
   .banner-carousel .banner-carousel__content-inner {
     max-width: none;
+    padding-bottom: 3rem;
   }
 
   .banner-carousel .banner-carousel__buttons {
