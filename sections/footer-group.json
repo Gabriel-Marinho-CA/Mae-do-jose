@@ -39,8 +39,8 @@
           "type": "payments",
           "settings": {
             "heading": "Formas de Pagamento",
-            "image": "shopify://shop_images/Group_279.svg",
-            "image_mobile": "shopify://shop_images/Group_279_739e5557-610a-4ab2-9621-3adb365b81a0.svg"
+            "image": "shopify://shop_images/image_1.svg",
+            "image_mobile": "shopify://shop_images/image_1_a717afc8-305d-45d0-8a6c-3177b03bfeb4.svg"
           }
         }
       },
