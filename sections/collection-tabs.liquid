@@ -1,0 +1,380 @@
+{%- comment -%}
+  Cardápio — navegação por coleções ("Nossos pratos").
+
+  - Cada bloco é uma coleção: o card de navegação (imagem + rótulo) filtra a
+    grade de produtos logo abaixo, sem recarregar a página.
+  - Todos os painéis são renderizados no HTML e apenas escondidos com [hidden].
+    Isso mantém o conteúdo rastreável e faz a troca ser instantânea (sem fetch).
+  - Sem JS, cada aba continua sendo um link normal para a página da coleção.
+
+  Estilos fixos ficam em assets/section-collection-tabs.css e
+  assets/component-resultate-card.css. Apenas o que depende do schema
+  (paddings, colunas) fica no {% style %} abaixo.
+
+  Os cards usam snippets/resultate-card.liquid.
+{%- endcomment -%}
+
+{%- liquid
+  assign uid = 'collection-tabs-' | append: section.id
+  assign view_all_url = section.settings.view_all_link
+  if view_all_url == blank
+    assign view_all_url = routes.all_products_collection_url
+  endif
+-%}
+
+{{ 'section-collection-tabs.css' | asset_url | stylesheet_tag }}
+{{ 'component-resultate-card.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'collection-tabs.js' | asset_url }}" defer="defer"></script>
+
+{%- comment -%}
+  Outfit e Marcellus vêm de snippets/theme-fonts.liquid, carregado uma única
+  vez no layout. Nada de <link> de fonte aqui.
+{%- endcomment -%}
+
+{% style %}
+  .{{ uid }} {
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  }
+
+  .{{ uid }} .collection-tabs__grid {
+    --ct-columns: {{ section.settings.columns_desktop }};
+  }
+
+  @media screen and (min-width: 750px) {
+    .{{ uid }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+
+<collection-tabs class="collection-tabs page-width {{ uid }}">
+  <div class="collection-tabs__header{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+    <div class="collection-tabs__intro">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="collection-tabs__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h2 class="collection-tabs__heading">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.view_all_label != blank -%}
+      <a class="collection-tabs__view-all collection-tabs__view-all--desktop" href="{{ view_all_url }}">
+        {{- section.settings.view_all_label | escape -}}
+        {{- 'icon-arrow.svg' | inline_asset_content -}}
+      </a>
+    {%- endif -%}
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <div
+      class="collection-tabs__nav{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+      role="tablist"
+      aria-label="{{ section.settings.heading | default: 'Coleções' | escape }}"
+    >
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign block_collection = block.settings.collection
+          assign tab_label = block.settings.label | default: block_collection.title
+          assign tab_image = block.settings.image | default: block_collection.image
+
+          if tab_image == blank
+            assign tab_image = block_collection.products.first.featured_image
+          endif
+        -%}
+
+        <a
+          class="collection-tabs__tab"
+          id="{{ uid }}-tab-{{ block.id }}"
+          href="{{ block_collection.url | default: view_all_url }}"
+          role="tab"
+          aria-controls="{{ uid }}-panel-{{ block.id }}"
+          aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+          tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+          {{ block.shopify_attributes }}
+        >
+          <span class="collection-tabs__tab-media">
+            {%- if tab_image != blank -%}
+              <img
+                src="{{ tab_image | image_url: width: 340 }}"
+                srcset="{{ tab_image | image_url: width: 180 }} 180w, {{ tab_image | image_url: width: 340 }} 340w"
+                sizes="(min-width: 750px) 166px, 121px"
+                alt="{{ tab_image.alt | default: tab_label | escape }}"
+                width="{{ tab_image.width }}"
+                height="{{ tab_image.height }}"
+                loading="lazy"
+              >
+            {%- else -%}
+              {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+            {%- endif -%}
+          </span>
+          <span class="collection-tabs__tab-label">{{ tab_label | escape }}</span>
+        </a>
+      {%- endfor -%}
+    </div>
+
+    <div
+      class="collection-tabs__panels{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+      data-panels
+    >
+      {%- for block in section.blocks -%}
+        {%- assign block_collection = block.settings.collection -%}
+
+        <div
+          class="collection-tabs__panel"
+          id="{{ uid }}-panel-{{ block.id }}"
+          role="tabpanel"
+          aria-labelledby="{{ uid }}-tab-{{ block.id }}"
+          tabindex="0"
+          {% unless forloop.first %}
+            hidden
+          {% endunless %}
+        >
+          {%- if block_collection.products.size > 0 -%}
+            <ul class="collection-tabs__grid" role="list">
+              {%- for product in block_collection.products limit: section.settings.products_to_show -%}
+                <li
+                  {% if settings.animations_reveal_on_scroll %}
+                    class="scroll-trigger animate--slide-in"
+                    data-cascade
+                    style="--animation-order: {{ forloop.index }};"
+                  {% endif %}
+                >
+                  {%- render 'resultate-card',
+                    card_product: product,
+                    section_id: section.id,
+                    price_label: section.settings.price_label,
+                    button_label: section.settings.button_label,
+                    show_rating: section.settings.show_rating,
+                    show_description: section.settings.show_description,
+                    max_tags: section.settings.max_tags,
+                    lazy_load: true,
+                    skip_styles: true
+                  -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- else -%}
+            <p class="collection-tabs__empty">{{ 'sections.collection_template.empty' | t }}</p>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%}
+      ItemList com os produtos da coleção ativa. Só posição + URL: o schema
+      completo de Product vive na página de cada produto, então aqui não há
+      risco de dado duplicado ou divergente.
+    {%- endcomment -%}
+    {%- assign first_collection = section.blocks.first.settings.collection -%}
+    {%- if first_collection.products.size > 0 -%}
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": {{ section.settings.heading | default: first_collection.title | json }},
+          "itemListElement": [
+            {%- for product in first_collection.products limit: section.settings.products_to_show -%}
+              {
+                "@type": "ListItem",
+                "position": {{ forloop.index }},
+                "url": {{ shop.url | append: product.url | json }}
+              }{% unless forloop.last %},{% endunless %}
+            {%- endfor -%}
+          ]
+        }
+      </script>
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if section.settings.view_all_label != blank -%}
+    <a class="collection-tabs__view-all collection-tabs__view-all--mobile" href="{{ view_all_url }}">
+      {{- section.settings.view_all_label | escape -}}
+      {{- 'icon-arrow.svg' | inline_asset_content -}}
+    </a>
+  {%- endif -%}
+</collection-tabs>
+
+{% schema %}
+{
+  "name": "Cardápio por coleções",
+  "tag": "section",
+  "class": "section-collection-tabs",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Textos"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Texto acima do título",
+      "default": "Cardápio"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título",
+      "default": "Nossos pratos"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "Texto do botão \"Ver tudo\"",
+      "default": "Ver tudo",
+      "info": "Deixe vazio para esconder o botão."
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "Link do botão \"Ver tudo\"",
+      "info": "Se vazio, aponta para todos os produtos."
+    },
+    {
+      "type": "header",
+      "content": "Cards de produto"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 16,
+      "step": 1,
+      "label": "Produtos por coleção",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Colunas no desktop",
+      "default": 4
+    },
+    {
+      "type": "text",
+      "id": "price_label",
+      "label": "Texto acima do preço",
+      "default": "a partir de"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texto do botão do card",
+      "default": "Ver mais"
+    },
+    {
+      "type": "range",
+      "id": "max_tags",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": "Máximo de tags por card",
+      "default": 2,
+      "info": "As tags do produto aparecem no canto superior direito da imagem."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Mostrar descrição curta",
+      "default": true,
+      "info": "Usa o metafield custom.subtitle; se vazio, um resumo da descrição do produto."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Mostrar avaliação",
+      "default": true,
+      "info": "Usa o Judge.me quando disponível. Sem avaliações, mostra as estrelas decorativas do layout."
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço acima",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço abaixo",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento (mobile)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço acima",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço abaixo",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Coleção",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Coleção"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Rótulo",
+          "info": "Se vazio, usa o nome da coleção."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagem",
+          "info": "Se vazio, usa a imagem da coleção ou a do primeiro produto."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cardápio por coleções",
+      "blocks": [
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" }
+      ]
+    }
+  ]
+}
+{% endschema %}

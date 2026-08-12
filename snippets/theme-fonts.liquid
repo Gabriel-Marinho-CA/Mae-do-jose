@@ -1,0 +1,33 @@
+{%- comment -%}
+  Fontes do design (Figma) — Mãe do José.
+
+  Ponto único de carregamento: Outfit para UI/corpo e Marcellus para display.
+  Elas não vêm de settings_data.json (lá as fontes do tema ainda são as
+  padrão do Dawn), então são carregadas do Google Fonts aqui e expostas como
+  custom properties para as sections consumirem:
+
+    var(--mdj-font-body)     Outfit
+    var(--mdj-font-display)  Marcellus
+
+  Renderizado uma única vez em layout/theme.liquid — sections NÃO devem repetir
+  o <link> das fontes.
+
+  O CSS entra com media="print" + onload para não bloquear a renderização, com
+  <noscript> de fallback. O preload garante que o download comece cedo mesmo
+  assim.
+{%- endcomment -%}
+
+{%- assign mdj_fonts_href = 'https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500;600;700&display=swap' -%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="{{ mdj_fonts_href }}">
+<link rel="stylesheet" href="{{ mdj_fonts_href }}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ mdj_fonts_href }}"></noscript>
+
+{%- style -%}
+  :root {
+    --mdj-font-body: 'Outfit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mdj-font-display: 'Marcellus', var(--font-heading-family), Georgia, serif;
+  }
+{%- endstyle -%}

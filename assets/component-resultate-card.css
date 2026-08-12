@@ -1,0 +1,364 @@
+/*
+  Resultate card — card de produto do cardápio (baseado em card-product).
+
+  Estilos estáticos apenas. O que depende de settings do schema fica no
+  {% style %} da section que renderiza o card.
+
+  Estrutura:
+    .resultate-card
+      .resultate-card__media      imagem + tags (canto superior direito)
+      .resultate-card__content    categoria, título, descrição, nota, preço, CTA
+*/
+
+.resultate-card {
+  --resultate-green: #043c39;
+  --resultate-title: #1a2e2d;
+  --resultate-body: #6b7e7d;
+  --resultate-muted: #a89880;
+  --resultate-border: #f0ede8;
+  --resultate-surface: #f7f5f2;
+  --resultate-star: #ff8204;
+  /* Definida em snippets/theme-fonts.liquid; o fallback cobre o caso do
+     snippet não ter sido renderizado. */
+  --resultate-font: var(--mdj-font-body, 'Outfit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--resultate-border);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  font-family: var(--resultate-font);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.resultate-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resultate-card,
+  .resultate-card:hover {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ---------- Mídia ---------- */
+
+.resultate-card__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 323 / 242;
+  overflow: hidden;
+  background: var(--resultate-surface);
+  border-radius: 16px 16px 0 0;
+}
+
+.resultate-card__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.resultate-card__media .placeholder-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Tags do produto — canto superior direito. */
+.resultate-card__tags {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  max-width: calc(100% - 20px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resultate-card__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: var(--resultate-star);
+}
+
+.resultate-card__tag::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  flex: none;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+/* ---------- Conteúdo ---------- */
+
+.resultate-card__content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  padding: 2rem 2.4rem 2.2rem;
+}
+
+.resultate-card__category {
+  margin: 0;
+  color: var(--resultate-muted);
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.resultate-card__title {
+  margin: 0.8rem 0 0;
+  color: var(--resultate-title);
+  font-family: var(--resultate-font);
+  font-size: 2.5rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.15;
+}
+
+.resultate-card__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* O link do título cobre o card inteiro: um clique em qualquer lugar leva ao
+   produto, sem precisar de <div> clicável (ruim para SEO e acessibilidade). */
+.resultate-card__title a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.resultate-card__description {
+  margin: 1.2rem 0 0;
+  color: var(--resultate-body);
+  font-size: 1.6rem;
+  font-weight: 300;
+  line-height: 1.25;
+}
+
+/* ---------- Avaliação ---------- */
+
+.resultate-card__rating {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1.4rem;
+  min-height: 1.2rem;
+}
+
+/* Fallback decorativo (Figma): estrelas em CSS, sem markup de review — não é
+   dado real, então não pode virar rich snippet. */
+.resultate-card__stars {
+  --resultate-rating: 4.8;
+  --resultate-rating-max: 5;
+
+  font-family: Times, serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.24rem;
+  line-height: 1;
+}
+
+.resultate-card__stars::before {
+  content: '★★★★★';
+  background: linear-gradient(
+    90deg,
+    var(--resultate-star) calc(var(--resultate-rating) / var(--resultate-rating-max) * 100%),
+    rgba(168, 152, 128, 0.3) calc(var(--resultate-rating) / var(--resultate-rating-max) * 100%)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.resultate-card__rating-value {
+  color: var(--resultate-muted);
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+/* Widget do Judge.me: herda o tamanho do card e some enquanto não carrega. */
+.resultate-card__rating .jdgm-widget {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.resultate-card__rating .jdgm-prev-badge__text {
+  color: var(--resultate-muted);
+  font-size: 0.95rem;
+}
+
+/* ---------- Preço + CTA ---------- */
+
+.resultate-card__footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.2rem;
+  margin-top: auto;
+  padding-top: 1.8rem;
+}
+
+.resultate-card__price-label {
+  display: block;
+  margin: 0;
+  color: var(--resultate-muted);
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.resultate-card__price {
+  display: block;
+  margin: 0.4rem 0 0;
+  color: var(--resultate-title);
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.resultate-card__price-compare {
+  margin-left: 0.8rem;
+  color: var(--resultate-muted);
+  font-size: 1.4rem;
+  font-weight: 400;
+  text-decoration: line-through;
+}
+
+.resultate-card__button {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  padding: 1rem 2rem;
+  background: var(--resultate-surface);
+  border-radius: 8px;
+  color: var(--resultate-green);
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.resultate-card__button:hover,
+.resultate-card__button:focus-visible {
+  background: var(--resultate-green);
+  color: #fff;
+}
+
+.resultate-card__sold-out {
+  color: var(--resultate-body);
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+/* ---------- Mobile ---------- */
+
+@media screen and (max-width: 749px) {
+  .resultate-card {
+    border-radius: 14px;
+  }
+
+  .resultate-card__media {
+    border-radius: 14px 14px 0 0;
+  }
+
+  .resultate-card__tags {
+    top: 8px;
+    right: 8px;
+    gap: 4px;
+  }
+
+  .resultate-card__tag {
+    padding: 3px 7px;
+    font-size: 0.85rem;
+  }
+
+  .resultate-card__content {
+    padding: 1.4rem 1.4rem 1.6rem;
+  }
+
+  .resultate-card__category {
+    font-size: 0.9rem;
+  }
+
+  .resultate-card__title {
+    margin-top: 0.5rem;
+    font-size: 1.3rem;
+    line-height: 1.1;
+  }
+
+  .resultate-card__description {
+    margin-top: 0.9rem;
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .resultate-card__rating {
+    margin-top: 1rem;
+    gap: 0.5rem;
+  }
+
+  .resultate-card__stars {
+    font-size: 1rem;
+    letter-spacing: 0.2rem;
+  }
+
+  .resultate-card__rating-value,
+  .resultate-card__rating .jdgm-prev-badge__text {
+    font-size: 0.83rem;
+  }
+
+  .resultate-card__footer {
+    padding-top: 1.2rem;
+  }
+
+  .resultate-card__price-label {
+    font-size: 0.9rem;
+  }
+
+  .resultate-card__price {
+    margin-top: 0.2rem;
+    font-size: 1.45rem;
+  }
+
+  .resultate-card__price-compare {
+    margin-left: 0.4rem;
+    font-size: 0.95rem;
+  }
+
+  .resultate-card__button {
+    padding: 0.9rem 1.2rem;
+    border-radius: 7px;
+    font-size: 1rem;
+  }
+}

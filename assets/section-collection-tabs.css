@@ -1,0 +1,355 @@
+/*
+  Cardápio — navegação por coleções ("Nossos pratos").
+
+  Estilos estáticos. Tudo que depende do schema (paddings desktop/mobile,
+  número de colunas) fica no {% style %} da section, escopado por instância.
+
+  Layout desktop: cabeçalho + botão "Ver tudo" à direita, trilha horizontal de
+  coleções, grade de produtos.
+  Layout mobile: cabeçalho centralizado, trilha de coleções e produtos em
+  scroll horizontal, botão "Ver tudo" full-width no rodapé.
+*/
+
+.collection-tabs {
+  --ct-green: #043c39;
+  --ct-title: #1a2e2d;
+  --ct-body: #6b7e7d;
+  --ct-muted: #a89880;
+  --ct-border: #f0ede8;
+  --ct-border-strong: #e8e4dc;
+  --ct-surface: #f7f5f2;
+  /* Definidas em snippets/theme-fonts.liquid; o fallback cobre o caso do
+     snippet não ter sido renderizado. */
+  --ct-font: var(--mdj-font-body, 'Outfit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif);
+  --ct-font-display: var(--mdj-font-display, 'Marcellus', Georgia, serif);
+
+  display: block;
+  font-family: var(--ct-font);
+}
+
+/* ---------- Cabeçalho ---------- */
+
+.collection-tabs__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2.4rem;
+}
+
+.collection-tabs__eyebrow {
+  display: block;
+  margin: 0;
+  color: var(--ct-muted);
+  font-size: 2.5rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.collection-tabs__heading {
+  margin: 0.6rem 0 0;
+  color: var(--ct-title);
+  font-family: var(--ct-font-display);
+  font-size: 7rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 0.86;
+  word-break: normal;
+}
+
+/* ---------- "Ver tudo" ---------- */
+
+.collection-tabs__view-all {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex: none;
+  min-width: 15.8rem;
+  min-height: 5.2rem;
+  padding: 1.4rem 2rem;
+  background: #fff;
+  border: 1px solid var(--ct-border-strong);
+  border-radius: 8px;
+  color: var(--ct-body);
+  font-size: 1.8rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.collection-tabs__view-all:hover,
+.collection-tabs__view-all:focus-visible {
+  background: var(--ct-green);
+  border-color: var(--ct-green);
+  color: #fff;
+}
+
+/* icon-arrow.svg tem viewBox 14x10: só a largura é fixada, para não distorcer. */
+.collection-tabs__view-all svg {
+  width: 1.8rem;
+  height: auto;
+  flex: none;
+}
+
+.collection-tabs__view-all--mobile {
+  display: none;
+}
+
+/* ---------- Trilha de coleções (tabs) ---------- */
+
+.collection-tabs__nav {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 5rem;
+  padding: 1rem 0.4rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.collection-tabs__nav::-webkit-scrollbar {
+  display: none;
+}
+
+.collection-tabs__tab {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: 16.6rem;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--ct-border);
+  border-radius: 16px;
+  color: var(--ct-body);
+  text-decoration: none;
+  scroll-snap-align: start;
+  cursor: pointer;
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+
+.collection-tabs__tab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+.collection-tabs__tab[aria-selected='true'] {
+  border-color: var(--ct-border);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.collection-tabs__tab:focus-visible {
+  outline: 2px solid var(--ct-green);
+  outline-offset: 2px;
+}
+
+.collection-tabs__tab-media {
+  display: block;
+  width: 100%;
+  aspect-ratio: 166 / 91;
+  overflow: hidden;
+  background: var(--ct-surface);
+  border-radius: 16px;
+}
+
+.collection-tabs__tab-media img,
+.collection-tabs__tab-media .placeholder-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.collection-tabs__tab-label {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 6rem;
+  padding: 1rem 1.2rem;
+  font-size: 1.8rem;
+  font-weight: 400;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.collection-tabs__tab[aria-selected='true'] .collection-tabs__tab-label {
+  color: var(--ct-title);
+}
+
+/* ---------- Painéis ---------- */
+
+.collection-tabs__panels {
+  margin-top: 6rem;
+  transition: height 0.35s ease;
+}
+
+/* overflow:hidden só durante a troca de painel — fora dela ele cortaria a
+   sombra de hover dos cards e o sangramento lateral do scroll no mobile. */
+.collection-tabs__panels.is-animating {
+  overflow: hidden;
+}
+
+.collection-tabs__panel[hidden] {
+  display: none;
+}
+
+.collection-tabs__panel {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.collection-tabs__panel.is-transitioning {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.collection-tabs__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--ct-columns, 4), minmax(0, 1fr));
+  gap: 2rem;
+  margin: 0;
+  /* Folga vertical para a sombra de hover dos cards não ficar cortada. */
+  padding: 0.8rem 0;
+  list-style: none;
+}
+
+.collection-tabs__grid > li {
+  display: flex;
+}
+
+.collection-tabs__grid > li > * {
+  width: 100%;
+}
+
+.collection-tabs__empty {
+  margin: 0;
+  color: var(--ct-body);
+  font-size: 1.6rem;
+}
+
+/* ---------- Tablet ---------- */
+
+@media screen and (max-width: 1199px) and (min-width: 750px) {
+  .collection-tabs__heading {
+    font-size: 5.4rem;
+  }
+
+  .collection-tabs__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Mobile ---------- */
+
+@media screen and (max-width: 749px) {
+  .collection-tabs__header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0;
+  }
+
+  .collection-tabs__eyebrow {
+    font-size: 1.6rem;
+  }
+
+  .collection-tabs__heading {
+    margin-top: 0.8rem;
+    font-size: 4rem;
+    line-height: 1.05;
+  }
+
+  .collection-tabs__view-all--desktop {
+    display: none;
+  }
+
+  /* Trilhas em scroll horizontal sangrando até a borda da tela, mantendo o
+     alinhamento do page-width no primeiro e no último item. */
+  .collection-tabs__nav {
+    gap: 1.2rem;
+    margin-top: 2.4rem;
+    padding: 0.8rem 1.5rem;
+    margin-inline: -1.5rem;
+    scroll-padding-left: 1.5rem;
+  }
+
+  .collection-tabs__tab {
+    width: 12.1rem;
+    border-radius: 16px;
+  }
+
+  .collection-tabs__tab-media {
+    aspect-ratio: 121 / 81;
+  }
+
+  .collection-tabs__tab-label {
+    min-height: 4.3rem;
+    padding: 0.6rem 0.8rem;
+    font-size: 1.4rem;
+  }
+
+  /* O sangramento fica no wrapper (e não na grade) para que o overflow:hidden
+     da animação de altura corte na borda da tela, e não dentro do conteúdo. */
+  .collection-tabs__panels {
+    margin-top: 2.4rem;
+    margin-inline: -1.5rem;
+  }
+
+  .collection-tabs__empty {
+    padding-inline: 1.5rem;
+  }
+
+  .collection-tabs__grid {
+    display: flex;
+    gap: 1.1rem;
+    padding: 0.4rem 1.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-padding-left: 1.5rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .collection-tabs__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .collection-tabs__grid > li {
+    flex: none;
+    width: 15.7rem;
+    scroll-snap-align: start;
+  }
+
+  .collection-tabs__view-all--mobile {
+    display: flex;
+    width: 100%;
+    min-height: 4.4rem;
+    margin-top: 2.4rem;
+    padding: 1.2rem 2rem;
+    background: var(--ct-green);
+    border-color: var(--ct-green);
+    color: #fff;
+    font-size: 1.4rem;
+  }
+
+  .collection-tabs__view-all--mobile svg {
+    width: 1.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collection-tabs__panels,
+  .collection-tabs__panel,
+  .collection-tabs__tab {
+    transition: none;
+  }
+
+  .collection-tabs__tab:hover {
+    transform: none;
+  }
+}

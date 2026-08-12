@@ -1,0 +1,194 @@
+{% comment %}
+  Renders a "Resultate card" — o card de produto do cardápio (Figma).
+
+  Baseado em snippets/card-product.liquid, mas com a estrutura própria do design:
+  tags do produto no canto superior direito, categoria (metafield) acima do
+  título, nota em estrelas e um CTA "Ver mais" que leva à página do produto.
+
+  Accepts:
+  - card_product: {Object} Product Liquid object. Se vazio, renderiza placeholder.
+  - section_id: {String} ID da section que renderiza o card (para ids únicos).
+  - price_label: {String} Texto acima do preço. Default: 'a partir de'.
+  - button_label: {String} Texto do CTA. Default: 'Ver mais'.
+  - show_rating: {Boolean} Mostrar a avaliação. Default: true.
+  - show_description: {Boolean} Mostrar a descrição curta. Default: true.
+  - max_tags: {Number} Máximo de tags exibidas. Default: 2.
+  - lazy_load: {Boolean} Carregar a imagem em lazy. Default: true.
+  - image_sizes: {String} Atributo sizes da imagem.
+  - skip_styles: {Boolean} Não incluir o CSS do componente (útil em loops).
+
+  Usage:
+  {% render 'resultate-card', card_product: product, section_id: section.id %}
+
+  SEO/a11y: o título é um <h3> com <a href> real (crawlável) que cobre o card
+  inteiro via ::after — nada de <div> clicável. A imagem sempre tem alt,
+  width/height (evita CLS) e loading explícito. As estrelas de fallback são
+  decorativas: não emitem markup de review, para não gerar rich snippet falso.
+{% endcomment %}
+
+{%- unless skip_styles -%}
+  {{ 'component-resultate-card.css' | asset_url | stylesheet_tag }}
+{%- endunless -%}
+
+{%- liquid
+  assign resultate_price_label = price_label | default: 'a partir de'
+  assign resultate_button_label = button_label | default: 'Ver mais'
+  assign resultate_max_tags = max_tags | default: 2
+  assign resultate_sizes = image_sizes | default: '(min-width: 990px) 325px, (min-width: 750px) 33vw, 45vw'
+
+  if show_rating == nil
+    assign resultate_show_rating = true
+  else
+    assign resultate_show_rating = show_rating
+  endif
+
+  if show_description == nil
+    assign resultate_show_description = true
+  else
+    assign resultate_show_description = show_description
+  endif
+-%}
+
+{%- if card_product and card_product != empty -%}
+  {%- liquid
+    assign card_id = 'ResultateCard-' | append: section_id | append: '-' | append: card_product.id
+    assign card_category = card_product.metafields.custom.categoria.value | default: card_product.type
+    assign card_subtitle = card_product.metafields.custom.subtitle.value
+
+    if card_subtitle == blank
+      assign card_subtitle = card_product.description | strip_html | truncatewords: 8
+    endif
+
+    assign judgeme_badge = card_product.metafields.judgeme.badge
+    assign shopify_rating = card_product.metafields.reviews.rating.value
+  -%}
+
+  <article class="resultate-card">
+    <div class="resultate-card__media">
+      {%- if card_product.featured_media -%}
+        <img
+          class="resultate-card__image"
+          src="{{ card_product.featured_media | image_url: width: 660 }}"
+          srcset="
+            {%- if card_product.featured_media.width >= 330 -%}{{ card_product.featured_media | image_url: width: 330 }} 330w,{%- endif -%}
+            {%- if card_product.featured_media.width >= 500 -%}{{ card_product.featured_media | image_url: width: 500 }} 500w,{%- endif -%}
+            {%- if card_product.featured_media.width >= 660 -%}{{ card_product.featured_media | image_url: width: 660 }} 660w,{%- endif -%}
+            {{ card_product.featured_media | image_url: width: 990 }} 990w
+          "
+          sizes="{{ resultate_sizes }}"
+          alt="{{ card_product.featured_media.alt | default: card_product.title | escape }}"
+          width="{{ card_product.featured_media.width }}"
+          height="{{ card_product.featured_media.height }}"
+          loading="{% if lazy_load == false %}eager{% else %}lazy{% endif %}"
+        >
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+
+      {%- if card_product.tags.size > 0 -%}
+        <ul class="resultate-card__tags">
+          {%- for tag in card_product.tags limit: resultate_max_tags -%}
+            <li class="resultate-card__tag">{{ tag | escape }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+
+    <div class="resultate-card__content">
+      {%- if card_category != blank -%}
+        <p class="resultate-card__category">{{ card_category | escape }}</p>
+      {%- endif -%}
+
+      <h3 class="resultate-card__title">
+        <a href="{{ card_product.url }}" id="{{ card_id }}-link">
+          {{- card_product.title | escape -}}
+        </a>
+      </h3>
+
+      {%- if resultate_show_description and card_subtitle != blank -%}
+        <p class="resultate-card__description">{{ card_subtitle | escape }}</p>
+      {%- endif -%}
+
+      {%- if resultate_show_rating -%}
+        <div class="resultate-card__rating">
+          {%- if judgeme_badge != blank -%}
+            {%- comment -%}
+              Judge.me: o metafield já vem com o widget completo (incluindo o
+              schema de aggregateRating). É a fonte de verdade quando existe —
+              nada de wrapper .jdgm-widget extra aqui, senão duplica.
+            {%- endcomment -%}
+            {{ judgeme_badge }}
+          {%- elsif shopify_rating != blank -%}
+            <span
+              class="resultate-card__stars"
+              style="--resultate-rating: {{ shopify_rating.rating }}; --resultate-rating-max: {{ shopify_rating.scale_max }};"
+              aria-hidden="true"
+            ></span>
+            <span class="resultate-card__rating-value">
+              {{- shopify_rating.rating -}}
+            </span>
+            <span class="visually-hidden">
+              {{- 'accessibility.star_reviews_info'
+                | t: rating_value: shopify_rating.rating, rating_max: shopify_rating.scale_max
+              -}}
+            </span>
+          {%- else -%}
+            {%- comment -%}
+              Fallback puramente visual do Figma. Decorativo (aria-hidden, sem
+              schema.org) — não é avaliação real e não pode virar rich snippet.
+            {%- endcomment -%}
+            <span class="resultate-card__stars" aria-hidden="true"></span>
+            <span class="resultate-card__rating-value" aria-hidden="true">4.8</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="resultate-card__footer">
+        <div class="resultate-card__price-wrapper">
+          {%- if card_product.available -%}
+            {%- if resultate_price_label != blank -%}
+              <span class="resultate-card__price-label">{{ resultate_price_label }}</span>
+            {%- endif -%}
+            <span class="resultate-card__price">
+              {{- card_product.price_min | money -}}
+              {%- if card_product.compare_at_price_min > card_product.price_min -%}
+                <s class="resultate-card__price-compare">{{ card_product.compare_at_price_min | money }}</s>
+              {%- endif -%}
+            </span>
+          {%- else -%}
+            <span class="resultate-card__sold-out">{{ 'products.product.sold_out' | t }}</span>
+          {%- endif -%}
+        </div>
+
+        <a
+          class="resultate-card__button"
+          href="{{ card_product.url }}"
+          aria-labelledby="{{ card_id }}-cta {{ card_id }}-link"
+          id="{{ card_id }}-cta"
+        >
+          {{- resultate_button_label -}}
+        </a>
+      </div>
+    </div>
+  </article>
+{%- else -%}
+  <article class="resultate-card">
+    <div class="resultate-card__media">
+      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    </div>
+    <div class="resultate-card__content">
+      <p class="resultate-card__category">{{ 'products.product.vendor' | t }}</p>
+      <h3 class="resultate-card__title">{{ 'onboarding.product_title' | t }}</h3>
+      {%- if resultate_show_description -%}
+        <p class="resultate-card__description">{{ 'onboarding.product_title' | t }}</p>
+      {%- endif -%}
+      <div class="resultate-card__footer">
+        <div class="resultate-card__price-wrapper">
+          <span class="resultate-card__price-label">{{ resultate_price_label }}</span>
+          <span class="resultate-card__price">{{ 1990 | money }}</span>
+        </div>
+        <span class="resultate-card__button">{{ resultate_button_label }}</span>
+      </div>
+    </div>
+  </article>
+{%- endif -%}
