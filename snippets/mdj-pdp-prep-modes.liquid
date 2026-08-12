@@ -1,0 +1,49 @@
+{%- comment -%}
+  Modo de preparo (Figma: chips "Forno · 12 min", "Air Fryer · 8 min").
+
+  Fonte: variant.metafields.custom.modo_de_preparo (single_line_text_field).
+  Vários modos no mesmo campo são separados por vírgula ou ponto e vírgula.
+  O primeiro modo é o destacado, como no Figma.
+
+  São chips informativos (não alteram o pedido), por isso não são <button>.
+
+  Aceita:
+  - product: {Object} produto atual.
+  - block: {Object} bloco da section.
+
+  Uso:
+  {% render 'mdj-pdp-prep-modes', product: product, block: block %}
+{%- endcomment -%}
+
+{%- liquid
+  assign prep_variant = product.selected_or_first_available_variant
+  assign prep_raw = prep_variant.metafields.custom.modo_de_preparo.value | default: prep_variant.metafields.custom.modo_de_preparo
+
+  assign prep_normalized = prep_raw | replace: ';', ','
+  assign prep_modes = prep_normalized | split: ','
+-%}
+
+<div
+  id="MdjPrep-{{ section.id }}"
+  class="mdj-pdp mdj-prep"
+  {% if prep_raw == blank %}
+    hidden
+  {% endif %}
+  {{ block.shopify_attributes }}
+>
+  {%- if prep_raw != blank -%}
+    <span class="mdj-group-label">{{ block.settings.label | default: 'Modo de Preparo' | escape }}</span>
+
+    <ul class="mdj-prep__list" role="list">
+      {%- for mode in prep_modes -%}
+        {%- assign mode_text = mode | strip -%}
+        {%- if mode_text == blank -%}
+          {%- continue -%}
+        {%- endif -%}
+        <li class="mdj-prep__item{% if forloop.first %} mdj-prep__item--primary{% endif %}">
+          {{- mode_text | escape -}}
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</div>

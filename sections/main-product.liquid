@@ -15,6 +15,8 @@
   {{ 'component-slider.css' | asset_url | stylesheet_tag }}
   {{ 'component-rating.css' | asset_url | stylesheet_tag }}
   {{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
+  {{ 'section-mdj-product.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'mdj-product-panels.js' | asset_url }}" defer="defer"></script>
 
   {% unless product.has_only_default_variant %}
     {{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag }}
@@ -75,8 +77,24 @@
   {% assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' %}
   <product-component view-event-payload="{{ product | standard_event_data: 'view', context: 'page' | escape }}">
     <div class="page-width">
-      <div class="product product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }} grid grid--1-col {% if product.media.size > 0 %}grid--2-col-tablet{% else %}product--no-media{% endif %}">
-        <div class="grid__item product__media-wrapper">
+      {%- if section.settings.show_breadcrumb -%}
+        <div class="mdj-pdp{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+          {%- render 'mdj-pdp-breadcrumb',
+            product: product,
+            parent_label: section.settings.breadcrumb_parent_label,
+            parent_url: section.settings.breadcrumb_parent_url
+          -%}
+        </div>
+      {%- endif -%}
+
+      <div class="product product--mdj product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }} grid grid--1-col {% if product.media.size > 0 %}grid--2-col-tablet{% else %}product--no-media{% endif %}">
+        <div class="grid__item product__media-wrapper mdj-pdp mdj-media">
+          {%- assign media_tag = product.metafields.custom.tag_da_imagem.value
+            | default: product.metafields.custom.tag_da_imagem
+          -%}
+          {%- if section.settings.show_media_tag and media_tag != blank -%}
+            <p class="mdj-media__tag">{{ media_tag | escape }}</p>
+          {%- endif -%}
           {% render 'product-media-gallery', variant_images: variant_images %}
         </div>
         <div class="product__info-wrapper grid__item{% if settings.page_width > 1400 and section.settings.media_size == "small" %} product__info-wrapper--extra-padding{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
@@ -688,6 +706,92 @@
                   </product-recommendations>
                 {%- when 'icon-with-text' -%}
                   {% render 'icon-with-text', block: block %}
+
+                {%- when 'mdj_eyebrow' -%}
+                  {%- liquid
+                    assign eyebrow_meta = product.metafields.custom.categoria
+                    assign eyebrow = eyebrow_meta.value | default: eyebrow_meta
+                    if eyebrow == blank and block.settings.fallback_to_type
+                      assign eyebrow = product.type
+                    endif
+                  -%}
+                  {%- if eyebrow != blank -%}
+                    <p class="mdj-pdp mdj-eyebrow" {{ block.shopify_attributes }}>{{ eyebrow | escape }}</p>
+                  {%- endif -%}
+
+                {%- when 'mdj_title' -%}
+                  <h1 class="mdj-pdp mdj-title" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
+
+                {%- when 'mdj_short_description' -%}
+                  {%- liquid
+                    assign short_meta = product.metafields.custom.pequena_descricao
+                    assign short_description = short_meta.value | default: short_meta
+                  -%}
+                  {%- if short_description != blank -%}
+                    <p class="mdj-pdp mdj-short-description" {{ block.shopify_attributes }}>
+                      {{- short_description | escape -}}
+                    </p>
+                  {%- endif -%}
+
+                {%- when 'mdj_feature_tags' -%}
+                  {%- assign feature_tags = product.metafields.custom.tags_caracteristicas.value -%}
+                  {%- if feature_tags.size > 0 -%}
+                    {%- assign leaf_tags = block.settings.leaf_tags | downcase -%}
+                    <ul class="mdj-pdp mdj-tags" role="list" {{ block.shopify_attributes }}>
+                      {%- for feature_tag in feature_tags -%}
+                        {%- if feature_tag == blank -%}
+                          {%- continue -%}
+                        {%- endif -%}
+                        {%- liquid
+                          assign is_leaf = false
+                          if leaf_tags != blank
+                            assign needle = feature_tag | downcase | strip
+                            assign leaf_list = leaf_tags | split: ','
+                            for leaf in leaf_list
+                              assign leaf_clean = leaf | strip
+                              if leaf_clean == needle
+                                assign is_leaf = true
+                                break
+                              endif
+                            endfor
+                          endif
+                        -%}
+                        <li class="mdj-tags__item{% if is_leaf %} mdj-tags__item--leaf{% endif %}">
+                          {{- feature_tag | escape -}}
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  {%- endif -%}
+
+                {%- when 'mdj_divider' -%}
+                  <hr class="mdj-pdp mdj-rule" {{ block.shopify_attributes }}>
+
+                {%- when 'mdj_size_picker' -%}
+                  {%- render 'mdj-pdp-size-picker',
+                    product: product,
+                    block: block,
+                    product_form_id: product_form_id
+                  -%}
+
+                {%- when 'mdj_prep_modes' -%}
+                  {%- render 'mdj-pdp-prep-modes', product: product, block: block -%}
+
+                {%- when 'mdj_purchase_box' -%}
+                  {%- render 'mdj-pdp-purchase-box',
+                    product: product,
+                    block: block,
+                    product_form_id: product_form_id,
+                    section_id: section.id
+                  -%}
+
+                {%- when 'mdj_ingredients' -%}
+                  {%- render 'mdj-pdp-ingredients', product: product, block: block -%}
+
+                {%- when 'mdj_specs' -%}
+                  {%- render 'mdj-pdp-specs', product: product, block: block -%}
+
+                {%- when 'mdj_nutrition' -%}
+                  {%- render 'mdj-pdp-nutrition', product: product, block: block -%}
               {%- endcase -%}
             {%- endfor -%}
             <a href="{{ product.url }}" class="link product__view-details animate-arrow">
@@ -2144,9 +2248,260 @@
           "info": "t:sections.main-product.blocks.icon_with_text.settings.heading.info"
         }
       ]
+    },
+    {
+      "type": "mdj_eyebrow",
+      "name": "MDJ · Categoria (eyebrow)",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Texto de custom.categoria, acima do título."
+        },
+        {
+          "type": "checkbox",
+          "id": "fallback_to_type",
+          "default": true,
+          "label": "Usar o tipo do produto quando o metacampo estiver vazio"
+        }
+      ]
+    },
+    {
+      "type": "mdj_title",
+      "name": "MDJ · Título",
+      "limit": 1
+    },
+    {
+      "type": "mdj_short_description",
+      "name": "MDJ · Descrição curta",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Texto de custom.pequena_descricao."
+        }
+      ]
+    },
+    {
+      "type": "mdj_feature_tags",
+      "name": "MDJ · Tags de características",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Chips de custom.tags_caracteristicas."
+        },
+        {
+          "type": "text",
+          "id": "leaf_tags",
+          "default": "Vegetariano, Vegano, Sem glúten, Sem lactose",
+          "label": "Tags em verde",
+          "info": "Separadas por vírgula. As demais saem no tom âmbar."
+        }
+      ]
+    },
+    {
+      "type": "mdj_divider",
+      "name": "MDJ · Divisória"
+    },
+    {
+      "type": "mdj_size_picker",
+      "name": "MDJ · Escolha o tamanho",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Variantes do produto em cards. Substitui o bloco \"Variant picker\" do Dawn — não use os dois juntos."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "default": "Escolha o tamanho",
+          "label": "Rótulo",
+          "info": "Deixe vazio para usar o nome da opção do produto."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_price",
+          "default": true,
+          "label": "Mostrar o preço em cada card"
+        }
+      ]
+    },
+    {
+      "type": "mdj_prep_modes",
+      "name": "MDJ · Modo de preparo",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Chips de custom.modo_de_preparo (metacampo da variante). Vários modos: separe por vírgula."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "default": "Modo de Preparo",
+          "label": "Rótulo"
+        }
+      ]
+    },
+    {
+      "type": "mdj_purchase_box",
+      "name": "MDJ · Caixa de compra",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Preço, quantidade e CTAs. Substitui os blocos \"Price\", \"Quantity selector\" e \"Buy buttons\" do Dawn — não use os dois juntos."
+        },
+        {
+          "type": "text",
+          "id": "price_label",
+          "default": "Preço selecionado",
+          "label": "Rótulo do preço"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_quantity",
+          "default": true,
+          "label": "Mostrar seletor de quantidade"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_dynamic_checkout",
+          "default": false,
+          "label": "t:sections.main-product.blocks.buy_buttons.settings.show_dynamic_checkout.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_gift_card_recipient",
+          "default": false,
+          "label": "t:sections.main-product.blocks.buy_buttons.settings.show_gift_card_recipient.label"
+        },
+        {
+          "type": "header",
+          "content": "WhatsApp"
+        },
+        {
+          "type": "text",
+          "id": "whatsapp_number",
+          "label": "Número com DDI",
+          "info": "Ex.: 5511999999999. Deixe vazio para esconder o botão."
+        },
+        {
+          "type": "text",
+          "id": "whatsapp_label",
+          "default": "Pedir via WhatsApp",
+          "label": "Texto do botão"
+        },
+        {
+          "type": "text",
+          "id": "whatsapp_message",
+          "default": "Olá! Tenho interesse em: [produto]",
+          "label": "Mensagem",
+          "info": "Use [produto] para o nome do produto. O link da página é acrescentado no fim."
+        }
+      ]
+    },
+    {
+      "type": "mdj_ingredients",
+      "name": "MDJ · Ingredientes",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Metaobjeto custom.ingredientes + lista custom.demais_ingredientes."
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "Ingredientes",
+          "label": "Título"
+        },
+        {
+          "type": "text",
+          "id": "selected_label",
+          "default": "Ingredientes selecionados",
+          "label": "Rótulo dos ingredientes em destaque"
+        },
+        {
+          "type": "text",
+          "id": "others_label",
+          "default": "Demais ingredientes",
+          "label": "Rótulo dos demais ingredientes"
+        }
+      ]
+    },
+    {
+      "type": "mdj_specs",
+      "name": "MDJ · Especificações",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Lista custom.epecificacao, uma linha por item no formato \"Rótulo | Valor\"."
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "Especificações",
+          "label": "Título"
+        }
+      ]
+    },
+    {
+      "type": "mdj_nutrition",
+      "name": "MDJ · Informação nutricional",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Metaobjeto custom.informacao_nutricional (titulo = rótulo, conteudo = valor)."
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "Informação Nutricional",
+          "label": "Título"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "default": "por 100g",
+          "label": "Complemento do título"
+        }
+      ]
     }
   ],
   "settings": [
+    {
+      "type": "header",
+      "content": "Layout Mãe do José"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "default": true,
+      "label": "Mostrar breadcrumb"
+    },
+    {
+      "type": "text",
+      "id": "breadcrumb_parent_label",
+      "default": "Cardápio",
+      "label": "Breadcrumb · rótulo do nível intermediário"
+    },
+    {
+      "type": "url",
+      "id": "breadcrumb_parent_url",
+      "label": "Breadcrumb · link do nível intermediário"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_media_tag",
+      "default": true,
+      "label": "Mostrar selo sobre a imagem",
+      "info": "Texto de custom.tag_da_imagem."
+    },
     {
       "type": "checkbox",
       "id": "enable_sticky_info",

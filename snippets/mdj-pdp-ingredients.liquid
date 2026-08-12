@@ -1,0 +1,111 @@
+{%- comment -%}
+  Painel "Ingredientes".
+
+  Fontes:
+  - product.metafields.custom.ingredientes → metaobject "ingredientes" com os
+    campos em lista e paralelos entre si: tag, titulo, conteudo,
+    cor_texto_tag, cor_fundo_tag. O item N usa a posição N de cada lista.
+  - product.metafields.custom.demais_ingredientes → lista de textos (chips).
+
+  Aceita:
+  - product: {Object} produto atual.
+  - block: {Object} bloco da section.
+
+  Uso:
+  {% render 'mdj-pdp-ingredients', product: product, block: block %}
+{%- endcomment -%}
+
+{%- liquid
+  assign ing = product.metafields.custom.ingredientes.value
+
+  assign ing_titles = ing.titulo.value | default: ing.titulo
+  assign ing_texts = ing.conteudo.value | default: ing.conteudo
+  assign ing_tags = ing.tag.value | default: ing.tag
+  assign ing_tag_colors = ing.cor_texto_tag.value | default: ing.cor_texto_tag
+  assign ing_tag_bgs = ing.cor_fundo_tag.value | default: ing.cor_fundo_tag
+
+  assign others = product.metafields.custom.demais_ingredientes.value
+
+  assign has_selected = false
+  if ing_titles.size > 0
+    assign has_selected = true
+  endif
+
+  assign has_others = false
+  if others.size > 0
+    assign has_others = true
+  endif
+-%}
+
+{%- if has_selected or has_others -%}
+  <mdj-panel class="mdj-pdp" {{ block.shopify_attributes }}>
+    <details class="mdj-panel" open>
+      <summary class="mdj-panel__summary">
+        <h2 class="mdj-panel__title">{{ block.settings.heading | default: 'Ingredientes' | escape }}</h2>
+        <span class="mdj-panel__icon" aria-hidden="true"></span>
+      </summary>
+
+      <div class="mdj-panel__body">
+        {%- if has_selected -%}
+          {%- if block.settings.selected_label != blank -%}
+            <p class="mdj-ingredients__subtitle">{{ block.settings.selected_label | escape }}</p>
+          {%- endif -%}
+
+          <ul class="mdj-ingredients__list" role="list">
+            {%- assign last_index = ing_titles.size | minus: 1 -%}
+            {%- for i in (0..last_index) -%}
+              {%- liquid
+                assign ing_title = ing_titles[i]
+                assign ing_text = ing_texts[i]
+                assign ing_tag = ing_tags[i]
+                assign ing_tag_color = ing_tag_colors[i]
+                assign ing_tag_bg = ing_tag_bgs[i]
+              -%}
+              {%- if ing_title == blank -%}
+                {%- continue -%}
+              {%- endif -%}
+
+              <li class="mdj-ingredients__item">
+                {%- if ing_tag != blank -%}
+                  <span
+                    class="mdj-ingredients__tag"
+                    {% if ing_tag_bg != blank or ing_tag_color != blank %}
+                      style="
+                        {%- if ing_tag_bg != blank %}background:{{ ing_tag_bg }};{% endif -%}
+                        {%- if ing_tag_color != blank %}color:{{ ing_tag_color }};{% endif -%}
+                      "
+                    {% endif %}
+                  >
+                    {{- ing_tag | escape -}}
+                  </span>
+                {%- endif -%}
+
+                <span class="mdj-ingredients__body">
+                  <h3 class="mdj-ingredients__name">{{ ing_title | escape }}</h3>
+                  {%- if ing_text != blank -%}
+                    <p class="mdj-ingredients__text">{{ ing_text | escape }}</p>
+                  {%- endif -%}
+                </span>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+
+        {%- if has_others -%}
+          {%- if block.settings.others_label != blank -%}
+            <p class="mdj-ingredients__subtitle">{{ block.settings.others_label | escape }}</p>
+          {%- endif -%}
+
+          <ul class="mdj-chips" role="list">
+            {%- for item in others -%}
+              {%- if item == blank -%}
+                {%- continue -%}
+              {%- endif -%}
+              <li class="mdj-chips__item">{{ item | escape }}</li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+    </details>
+  </mdj-panel>
+{%- endif -%}

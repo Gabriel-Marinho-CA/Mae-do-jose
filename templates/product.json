@@ -12,70 +12,85 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "vendor": {
-          "type": "text",
+        "mdj_eyebrow": {
+          "type": "mdj_eyebrow"
+        },
+        "mdj_title": {
+          "type": "mdj_title"
+        },
+        "mdj_short_description": {
+          "type": "mdj_short_description"
+        },
+        "mdj_feature_tags": {
+          "type": "mdj_feature_tags",
           "settings": {
             "text": "{{ product.vendor }}",
             "text_style": "uppercase"
           }
         },
         "title": {
-          "type": "title",
-          "settings": {}
+          "type": "title"
         },
         "price": {
-          "type": "price",
-          "settings": {}
+          "type": "price"
         },
-        "variant_picker": {
-          "type": "variant_picker",
+        "mdj_prep_modes": {
+          "type": "mdj_prep_modes",
           "settings": {
             "picker_type": "button",
             "swatch_shape": "circle"
           }
         },
         "quantity_selector": {
-          "type": "quantity_selector",
-          "settings": {}
+          "type": "quantity_selector"
         },
-        "buy_buttons": {
-          "type": "buy_buttons",
+        "mdj_ingredients": {
+          "type": "mdj_ingredients",
           "settings": {
-            "show_dynamic_checkout": true,
-            "show_gift_card_recipient": true
+            "heading": "Ingredientes",
+            "selected_label": "Ingredientes selecionados",
+            "others_label": "Demais ingredientes"
           }
         },
         "description": {
-          "type": "description",
-          "settings": {}
+          "type": "description"
         },
-        "share": {
-          "type": "share",
+        "mdj_nutrition": {
+          "type": "mdj_nutrition",
           "settings": {
-            "share_label": "Share"
+            "heading": "Informação Nutricional",
+            "subheading": "por 100g"
           }
         }
       },
       "block_order": [
-        "vendor",
-        "title",
-        "price",
-        "variant_picker",
-        "quantity_selector",
-        "buy_buttons",
-        "description",
-        "share"
+        "mdj_eyebrow",
+        "mdj_title",
+        "mdj_short_description",
+        "mdj_feature_tags",
+        "mdj_divider_1",
+        "mdj_size_picker",
+        "mdj_divider_2",
+        "mdj_prep_modes",
+        "mdj_divider_3",
+        "mdj_purchase_box",
+        "mdj_ingredients",
+        "mdj_specs",
+        "mdj_nutrition"
       ],
       "settings": {
+        "show_breadcrumb": true,
+        "breadcrumb_parent_label": "Cardápio",
+        "show_media_tag": true,
         "enable_sticky_info": true,
         "color_scheme": "scheme-1",
-        "media_size": "medium",
+        "gallery_layout": "stacked",
+        "media_size": "large",
         "constrain_to_viewport": true,
         "media_fit": "contain",
-        "gallery_layout": "thumbnail_slider",
+        "image_zoom": "lightbox",
         "mobile_thumbnails": "hide",
         "media_position": "left",
-        "image_zoom": "lightbox",
         "hide_variants": true,
         "enable_video_looping": false,
         "padding_top": 36,
@@ -96,7 +111,7 @@
     "related-products": {
       "type": "related-products",
       "settings": {
-        "heading": "You may also like",
+        "heading": "Você também pode gostar",
         "heading_size": "h2",
         "products_to_show": 4,
         "columns_desktop": 4,

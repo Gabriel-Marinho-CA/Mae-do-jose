@@ -1,0 +1,56 @@
+{%- comment -%}
+  Painel "Informação Nutricional".
+
+  Fonte: product.metafields.custom.informacao_nutricional → metaobject
+  "informacao_nutricional" com os campos em lista e paralelos entre si:
+  titulo (rótulo, ex.: "Calorias") e conteudo (valor, ex.: "248 kcal").
+
+  Aceita:
+  - product: {Object} produto atual.
+  - block: {Object} bloco da section.
+
+  Uso:
+  {% render 'mdj-pdp-nutrition', product: product, block: block %}
+{%- endcomment -%}
+
+{%- liquid
+  assign nutri = product.metafields.custom.informacao_nutricional.value
+  assign nutri_labels = nutri.titulo.value | default: nutri.titulo
+  assign nutri_values = nutri.conteudo.value | default: nutri.conteudo
+-%}
+
+{%- if nutri_labels.size > 0 -%}
+  <mdj-panel class="mdj-pdp" {{ block.shopify_attributes }}>
+    <details class="mdj-panel" open>
+      <summary class="mdj-panel__summary">
+        <h2 class="mdj-panel__title">
+          {{ block.settings.heading | default: 'Informação Nutricional' | escape }}
+          {%- if block.settings.subheading != blank -%}
+            <small>{{ block.settings.subheading | escape }}</small>
+          {%- endif -%}
+        </h2>
+        <span class="mdj-panel__icon" aria-hidden="true"></span>
+      </summary>
+
+      <div class="mdj-panel__body">
+        <ul class="mdj-nutrition" role="list">
+          {%- assign last_index = nutri_labels.size | minus: 1 -%}
+          {%- for i in (0..last_index) -%}
+            {%- liquid
+              assign nutri_label = nutri_labels[i]
+              assign nutri_value = nutri_values[i]
+            -%}
+            {%- if nutri_label == blank and nutri_value == blank -%}
+              {%- continue -%}
+            {%- endif -%}
+
+            <li class="mdj-nutrition__item">
+              <span class="mdj-nutrition__value">{{ nutri_value | escape }}</span>
+              <span class="mdj-nutrition__label">{{ nutri_label | escape }}</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    </details>
+  </mdj-panel>
+{%- endif -%}

@@ -1,0 +1,102 @@
+{%- comment -%}
+  Caixa de compra (Figma: "Preço selecionado" + quantidade + CTAs).
+
+  Aceita:
+  - product: {Object} produto atual.
+  - block: {Object} bloco da section.
+  - product_form_id: {String} id do formulário de compra.
+  - section_id: {String} id da section.
+
+  Uso:
+  {% render 'mdj-pdp-purchase-box', product: product, block: block, product_form_id: product_form_id, section_id: section.id %}
+{%- endcomment -%}
+
+{% # theme-check-disable %}
+{%- assign cart_qty = cart | item_count_for_variant: product.selected_or_first_available_variant.id -%}
+{% # theme-check-enable %}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+
+  assign whatsapp_digits = block.settings.whatsapp_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+  assign product_page_url = request.origin | append: product.url
+  assign whatsapp_body = block.settings.whatsapp_message | replace: '[produto]', product.title
+  assign whatsapp_text = whatsapp_body | append: ' ' | append: product_page_url | url_encode
+-%}
+
+<div class="mdj-pdp mdj-buy" {{ block.shopify_attributes }}>
+  <div class="mdj-buy__price-row">
+    <div class="mdj-buy__price">
+      <p class="mdj-buy__price-label">{{ block.settings.price_label | default: 'Preço selecionado' | escape }}</p>
+      <div id="price-{{ section_id }}" role="status">
+        {%- render 'price', product: product, use_variant: true, show_badges: false, price_class: 'price--large' -%}
+      </div>
+    </div>
+
+    {%- if block.settings.show_quantity -%}
+      <div
+        id="Quantity-Form-{{ section_id }}"
+        class="product-form__input product-form__quantity mdj-buy__quantity"
+      >
+        <label class="quantity__label form__label visually-hidden" for="Quantity-{{ section_id }}">
+          {{ 'products.product.quantity.label' | t }}
+        </label>
+        <quantity-input class="quantity" data-url="{{ product.url }}" data-section="{{ section_id }}">
+          <button class="quantity__button" name="minus" type="button">
+            <span class="visually-hidden">
+              {{- 'products.product.quantity.decrease' | t: product: product.title | escape -}}
+            </span>
+            <span class="svg-wrapper">
+              {{- 'icon-minus.svg' | inline_asset_content -}}
+            </span>
+          </button>
+          <input
+            class="quantity__input"
+            type="number"
+            name="quantity"
+            id="Quantity-{{ section_id }}"
+            data-cart-quantity="{{ cart_qty }}"
+            data-min="{{ current_variant.quantity_rule.min }}"
+            min="{{ current_variant.quantity_rule.min }}"
+            {% if current_variant.quantity_rule.max != null %}
+              data-max="{{ current_variant.quantity_rule.max }}"
+              max="{{ current_variant.quantity_rule.max }}"
+            {% endif %}
+            step="{{ current_variant.quantity_rule.increment }}"
+            value="{{ current_variant.quantity_rule.min }}"
+            form="{{ product_form_id }}"
+          >
+          <button class="quantity__button" name="plus" type="button">
+            <span class="visually-hidden">
+              {{- 'products.product.quantity.increase' | t: product: product.title | escape -}}
+            </span>
+            <span class="svg-wrapper">
+              {{- 'icon-plus.svg' | inline_asset_content -}}
+            </span>
+          </button>
+        </quantity-input>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="mdj-buy__actions">
+    {%- render 'buy-buttons',
+      block: block,
+      product: product,
+      product_form_id: product_form_id,
+      section_id: section_id,
+      show_pickup_availability: false
+    -%}
+
+    {%- if whatsapp_digits != blank -%}
+      <a
+        class="mdj-buy__whatsapp"
+        href="https://wa.me/{{ whatsapp_digits }}?text={{ whatsapp_text }}"
+        target="_blank"
+        rel="noopener"
+      >
+        {{ block.settings.whatsapp_label | default: 'Pedir via WhatsApp' | escape }}
+      </a>
+    {%- endif -%}
+  </div>
+</div>

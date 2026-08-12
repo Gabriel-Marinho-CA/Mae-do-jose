@@ -1,0 +1,106 @@
+{%- comment -%}
+  Seletor de variantes em cards (Figma: "Escolha o tamanho").
+
+  Reaproveita o contrato do <variant-selects> do Dawn: fieldset com
+  class "product-form__input" + inputs radio com data-option-value-id.
+  Assim a troca de variante, o preço e a galeria continuam funcionando.
+
+  Aceita:
+  - product: {Object} produto atual.
+  - block: {Object} bloco da section.
+  - product_form_id: {String} id do formulário de compra.
+
+  Uso:
+  {% render 'mdj-pdp-size-picker', product: product, block: block, product_form_id: product_form_id %}
+{%- endcomment -%}
+
+{%- unless product.has_only_default_variant -%}
+  {%- liquid
+    assign single_option = false
+    if product.options_with_values.size == 1
+      assign single_option = true
+    endif
+  -%}
+
+  <variant-selects
+    id="variant-selects-{{ section.id }}"
+    class="mdj-pdp mdj-variant-selects"
+    data-section="{{ section.id }}"
+    data-product-handle="{{ product.handle }}"
+    data-product-title="{{ product.title | escape }}"
+    data-product-id="{{ product.id }}"
+    data-currency-code="{{ cart.currency.iso_code }}"
+    {% # theme-check-disable %}
+    data-selected-price-amount="{{ product.selected_or_first_available_variant.price | default: 0 | money_amount | escape }}"
+    {% # theme-check-enable %}
+    {{ block.shopify_attributes }}
+  >
+    {%- for option in product.options_with_values -%}
+      <fieldset class="js product-form__input mdj-sizes">
+        <legend class="mdj-group-label">
+          {%- if block.settings.label != blank -%}
+            {{ block.settings.label | escape }}
+          {%- else -%}
+            {{ option.name | escape }}
+          {%- endif -%}
+        </legend>
+
+        <div class="mdj-sizes__grid">
+          {%- for value in option.values -%}
+            {%- liquid
+              assign input_id = section.id | append: '-' | append: option.position | append: '-' | append: forloop.index0
+
+              assign value_variant = null
+              if single_option
+                assign value_variant = product.variants | where: 'title', value.name | first
+              endif
+
+              assign meta_parts = ''
+              if value_variant != null and value_variant.weight > 0
+                assign meta_parts = value_variant.weight | weight_with_unit: value_variant.weight_unit
+              endif
+            -%}
+
+            <input
+              type="radio"
+              id="{{ input_id }}"
+              name="{{ option.name | escape }}-{{ option.position }}"
+              value="{{ value | escape }}"
+              form="{{ product_form_id }}"
+              {% if value.selected %}
+                checked
+              {% endif %}
+              {% unless value.available %}
+                class="disabled"
+              {% endunless %}
+              data-product-url="{{ value.product_url }}"
+              data-option-value-id="{{ value.id }}"
+              data-option-name="{{ option.name | escape }}"
+            >
+            <label class="mdj-sizes__card" for="{{ input_id }}">
+              <span class="mdj-sizes__name">{{ value.name | escape }}</span>
+
+              {%- if meta_parts != blank -%}
+                <span class="mdj-sizes__meta">{{ meta_parts }}</span>
+              {%- endif -%}
+
+              {%- if value_variant != null and block.settings.show_price -%}
+                <span class="mdj-sizes__price">{{ value_variant.price | money }}</span>
+              {%- endif -%}
+
+              {%- unless value.available -%}
+                <span class="visually-hidden">
+                  {{- 'products.product.variant_sold_out_or_unavailable' | t -}}
+                </span>
+              {%- endunless -%}
+            </label>
+          {%- endfor -%}
+        </div>
+      </fieldset>
+    {%- endfor -%}
+
+    <script type="application/json" data-selected-variant>
+      {{ product.selected_or_first_available_variant | json }}
+    </script>
+  </variant-selects>
+{%- endunless -%}

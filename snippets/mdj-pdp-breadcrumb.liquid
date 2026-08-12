@@ -1,0 +1,45 @@
+{%- comment -%}
+  Breadcrumb da página de produto (Figma: Início › Cardápio › Coleção › Produto).
+
+  Aceita:
+  - product: {Object} produto atual.
+  - parent_label: {String} rótulo do nível intermediário (ex.: "Cardápio").
+  - parent_url: {String} URL do nível intermediário.
+
+  Uso:
+  {% render 'mdj-pdp-breadcrumb', product: product, parent_label: '...', parent_url: '...' %}
+{%- endcomment -%}
+
+{%- liquid
+  assign crumb_collection = collection
+  if crumb_collection == blank or crumb_collection.handle == blank
+    assign crumb_collection = product.collections | first
+  endif
+
+  assign parent_label_text = parent_label | default: 'Cardápio'
+  assign parent_url_text = parent_url | default: routes.all_products_collection_url
+-%}
+
+<nav class="mdj-breadcrumb" aria-label="Navegação estrutural">
+  <ol class="mdj-breadcrumb__list" role="list">
+    <li class="mdj-breadcrumb__item">
+      <a href="{{ routes.root_url }}">Início</a>
+    </li>
+
+    {%- if parent_label_text != blank and parent_url_text != blank -%}
+      <li class="mdj-breadcrumb__item">
+        <a href="{{ parent_url_text }}">{{ parent_label_text | escape }}</a>
+      </li>
+    {%- endif -%}
+
+    {%- if crumb_collection != blank and crumb_collection.handle != blank -%}
+      <li class="mdj-breadcrumb__item">
+        <a href="{{ crumb_collection.url }}">{{ crumb_collection.title | escape }}</a>
+      </li>
+    {%- endif -%}
+
+    <li class="mdj-breadcrumb__item">
+      <span class="mdj-breadcrumb__current" aria-current="page">{{ product.title | escape }}</span>
+    </li>
+  </ol>
+</nav>
