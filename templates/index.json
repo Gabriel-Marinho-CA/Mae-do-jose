@@ -59,77 +59,88 @@
         "secondary_button_border": "#e8e4dc"
       }
     },
-    "image_banner": {
-      "type": "image-banner",
+    "collection_tabs_adYhCV": {
+      "type": "collection-tabs",
       "blocks": {
-        "heading": {
-          "type": "heading",
+        "collection_wDWECt": {
+          "type": "collection",
           "settings": {
-            "heading": "Browse our latest products",
-            "heading_size": "h0"
+            "collection": "frontpage",
+            "label": "Tortas Salgadas",
+            "image": "shopify://shop_images/Rectangle_45.png"
           }
         },
-        "button": {
-          "type": "buttons",
+        "collection_WPNcz3": {
+          "type": "collection",
           "settings": {
-            "button_label_1": "Shop all",
-            "button_link_1": "shopify://collections/all",
-            "button_style_secondary_1": true,
-            "button_label_2": "",
-            "button_link_2": "",
-            "button_style_secondary_2": false
+            "collection": "show-color-variations",
+            "label": "Massas",
+            "image": "shopify://shop_images/Rectangle_45_1.png"
+          }
+        },
+        "collection_rUxgyw": {
+          "type": "collection",
+          "settings": {
+            "collection": "frontpage",
+            "label": "Tortas Salgadas",
+            "image": "shopify://shop_images/Rectangle_45.png"
+          }
+        },
+        "collection_cKXHVg": {
+          "type": "collection",
+          "settings": {
+            "collection": "show-color-variations",
+            "label": "Massas",
+            "image": "shopify://shop_images/Rectangle_45_1.png"
+          }
+        },
+        "collection_6rgzG4": {
+          "type": "collection",
+          "settings": {
+            "collection": "frontpage",
+            "label": "Tortas Salgadas",
+            "image": "shopify://shop_images/Rectangle_45.png"
+          }
+        },
+        "collection_VQaqyy": {
+          "type": "collection",
+          "settings": {
+            "collection": "show-color-variations",
+            "label": "Massas",
+            "image": "shopify://shop_images/Rectangle_45_1.png"
           }
         }
       },
       "block_order": [
-        "heading",
-        "button"
+        "collection_wDWECt",
+        "collection_WPNcz3",
+        "collection_rUxgyw",
+        "collection_cKXHVg",
+        "collection_6rgzG4",
+        "collection_VQaqyy"
       ],
+      "name": "Cardápio por coleções",
       "settings": {
-        "image_overlay_opacity": 40,
-        "image_height": "large",
-        "image_behavior": "none",
-        "desktop_content_position": "bottom-center",
-        "desktop_content_alignment": "center",
-        "show_text_box": false,
-        "color_scheme": "scheme-3",
-        "stack_images_on_mobile": false,
-        "mobile_content_alignment": "center",
-        "show_text_below": false
-      }
-    },
-    "featured_collection": {
-      "type": "featured-collection",
-      "settings": {
-        "collection": "all",
+        "eyebrow": "Cardápio",
+        "heading": "Nossos pratos",
+        "view_all_label": "Ver tudo",
+        "view_all_link": "",
         "products_to_show": 8,
-        "title": "Featured products",
-        "heading_size": "h2",
-        "description": "",
-        "show_description": false,
-        "description_style": "body",
         "columns_desktop": 4,
-        "enable_desktop_slider": false,
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "solid",
-        "color_scheme": "scheme-1",
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": true,
-        "show_vendor": false,
-        "show_rating": false,
-        "quick_add": "none",
-        "columns_mobile": "2",
-        "swipe_on_mobile": false,
-        "padding_top": 44,
-        "padding_bottom": 36
+        "price_label": "a partir de",
+        "button_label": "Ver mais",
+        "max_tags": 2,
+        "show_description": true,
+        "show_rating": true,
+        "padding_top": 100,
+        "padding_bottom": 100,
+        "padding_top_mobile": 48,
+        "padding_bottom_mobile": 48
       }
     }
   },
   "order": [
     "banner_carousel",
-    "image_banner",
-    "featured_collection"
+    "collection_tabs_adYhCV"
   ]
 }
