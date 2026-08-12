@@ -8,6 +8,9 @@
   - Layout desktop: conteúdo à esquerda, sobre a área livre da imagem.
     Layout mobile: conteúdo centralizado na parte de baixo.
 
+  Estilos fixos ficam em assets/section-banner-carousel.css. Apenas o que
+  depende do schema (cores, offset, largura) fica no {% style %} abaixo.
+
   Swiper é carregado globalmente no layout/theme.liquid.
 {%- endcomment -%}
 
@@ -15,93 +18,15 @@
   assign uid = 'banner-carousel-' | append: section.id
 -%}
 
-<style>
-  .{{ uid }} {
-    position: relative;
-  }
+{{ 'section-banner-carousel.css' | asset_url | stylesheet_tag }}
 
-  .{{ uid }} .swiper {
-    width: 100%;
-  }
-
-  .{{ uid }} .banner-carousel__slide {
-    position: relative;
-    display: block;
-    overflow: hidden;
-  }
-
-  /* Imagem no tamanho original: largura total, altura automática. */
-  .{{ uid }} .banner-carousel__image {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-  .{{ uid }} .banner-carousel__image--mobile {
-    display: none;
-  }
-
-  /* Conteúdo sobreposto à imagem. */
-  .{{ uid }} .banner-carousel__content {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    text-align: left;
-    padding: 4% 4% 4% {{ section.settings.content_offset }}%;
-    pointer-events: none;
-  }
-
-  .{{ uid }} .banner-carousel__content-inner {
-    max-width: {{ section.settings.content_max_width }}px;
-    width: 100%;
-    pointer-events: auto;
-  }
-
+{% style %}
   .{{ uid }} .banner-carousel__heading {
-    margin: 0;
     color: {{ section.settings.text_color }};
-    font-family: var(--font-heading-family);
-    font-weight: var(--font-heading-weight);
-    line-height: 1;
-    font-size: clamp(3.2rem, 4.6vw, 8.7rem);
   }
 
   .{{ uid }} .banner-carousel__text {
-    margin: 2.4rem 0 0;
     color: {{ section.settings.text_color }};
-    font-size: clamp(1.5rem, 1.2vw, 2.2rem);
-    line-height: 1.3;
-    max-width: 60rem;
-  }
-
-  .{{ uid }} .banner-carousel__buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.6rem;
-    margin-top: 3.2rem;
-  }
-
-  .{{ uid }} .banner-carousel__button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 22rem;
-    padding: 1.5rem 3rem;
-    border-radius: 10px;
-    font-size: clamp(1.4rem, 1vw, 1.8rem);
-    font-weight: 600;
-    text-align: center;
-    text-decoration: none;
-    line-height: 1;
-    cursor: pointer;
-    transition: opacity 0.2s ease, background-color 0.2s ease;
-  }
-
-  .{{ uid }} .banner-carousel__button:hover {
-    opacity: 0.9;
   }
 
   .{{ uid }} .banner-carousel__button--primary {
@@ -116,119 +41,30 @@
     border: 1px solid {{ section.settings.secondary_button_border }};
   }
 
-  /* Setas de navegação (desktop). */
-  .{{ uid }} .banner-carousel__nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 3;
-    width: 41px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #ffffff;
-    border: 1px solid #e8e4dc;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: opacity 0.2s ease;
-  }
-
-  .{{ uid }} .banner-carousel__nav:hover {
-    opacity: 0.85;
-  }
-
-  .{{ uid }} .banner-carousel__nav.swiper-button-disabled {
-    opacity: 0.35;
-    cursor: default;
-  }
-
-  .{{ uid }} .banner-carousel__nav--prev {
-    left: {{ section.settings.content_offset | minus: 3 }}%;
-  }
-
-  .{{ uid }} .banner-carousel__nav--next {
-    left: calc({{ section.settings.content_offset | minus: 3 }}% + 49px);
-  }
-
-  .{{ uid }} .banner-carousel__nav svg {
-    width: 14px;
-    height: 14px;
-    color: #1a2e2d;
-  }
-
-  .{{ uid }} .banner-carousel__nav--next svg {
-    transform: rotate(180deg);
-  }
-
-  /* Paginação (bullets). */
-  .{{ uid }} .banner-carousel__pagination {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 3%;
-    z-index: 3;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-  }
-
   .{{ uid }} .banner-carousel__pagination .swiper-pagination-bullet {
-    width: 9px;
-    height: 9px;
-    display: inline-block;
-    border-radius: 999px;
     background: {{ section.settings.text_color }};
-    opacity: 0.35;
-    margin: 0 !important;
-    transition: width 0.25s ease, opacity 0.25s ease;
-    cursor: pointer;
   }
 
-  .{{ uid }} .banner-carousel__pagination .swiper-pagination-bullet-active {
-    width: 28px;
-    opacity: 1;
-  }
-
-  @media screen and (max-width: 749px) {
-    .{{ uid }} .banner-carousel__image--desktop {
-      display: none;
-    }
-
-    .{{ uid }} .banner-carousel__image--mobile {
-      display: block;
-    }
-
+  @media screen and (min-width: 750px) {
     .{{ uid }} .banner-carousel__content {
-      justify-content: flex-end;
-      align-items: center;
-      text-align: center;
-      padding: 4% 10% 8%;
+      padding: 4% 4% 4% {{ section.settings.content_offset }}%;
     }
 
     .{{ uid }} .banner-carousel__content-inner {
-      max-width: none;
+      max-width: {{ section.settings.content_max_width }}px;
     }
 
-    .{{ uid }} .banner-carousel__buttons {
-      flex-direction: column;
-      align-items: stretch;
-      width: 100%;
+    .{{ uid }} .banner-carousel__nav--prev {
+      left: 8%;
     }
 
-    .{{ uid }} .banner-carousel__button {
-      width: 100%;
-      min-width: 0;
-    }
-
-    .{{ uid }} .banner-carousel__nav {
-      display: none;
+    .{{ uid }} .banner-carousel__nav--next {
+      right: 8%;
     }
   }
-</style>
+{% endstyle %}
 
-<div class="{{ uid }}" data-banner-carousel>
+<div class="banner-carousel {{ uid }}" data-banner-carousel>
   <div class="swiper" data-swiper>
     <div class="swiper-wrapper">
       {%- for block in section.blocks -%}

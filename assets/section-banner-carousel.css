@@ -1,0 +1,193 @@
+/*
+  Banner rotativo — estilos estáticos.
+
+  Tudo que depende de configurações do schema (cores, offset, largura do
+  conteúdo) fica no {% style %} inline da section, scopeado por instância.
+  Aqui ficam apenas os estilos fixos, compartilhados por todas as instâncias.
+*/
+
+.banner-carousel {
+  position: relative;
+}
+
+.banner-carousel .swiper {
+  width: 100%;
+}
+
+.banner-carousel .banner-carousel__slide {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+/* Imagem no tamanho original: largura total, altura automática. */
+.banner-carousel .banner-carousel__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.banner-carousel .banner-carousel__image--mobile {
+  display: none;
+}
+
+/* Conteúdo sobreposto à imagem. */
+.banner-carousel .banner-carousel__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left;
+  pointer-events: none;
+}
+
+.banner-carousel .banner-carousel__content-inner {
+  width: 100%;
+  pointer-events: auto;
+}
+
+.banner-carousel .banner-carousel__heading {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  line-height: 1;
+  font-size: clamp(3.2rem, 4.6vw, 8.7rem);
+}
+
+.banner-carousel .banner-carousel__text {
+  margin: 2.4rem 0 0;
+  font-size: clamp(1.5rem, 1.2vw, 2.2rem);
+  line-height: 1.3;
+  max-width: 60rem;
+}
+
+.banner-carousel .banner-carousel__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.6rem;
+  margin-top: 3.2rem;
+}
+
+.banner-carousel .banner-carousel__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22rem;
+  padding: 1.5rem 3rem;
+  border-radius: 10px;
+  font-size: clamp(1.4rem, 1vw, 1.8rem);
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  line-height: 1;
+  cursor: pointer;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.banner-carousel .banner-carousel__button:hover {
+  opacity: 0.9;
+}
+
+/* Setas de navegação (desktop). */
+.banner-carousel .banner-carousel__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 41px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid #e8e4dc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.banner-carousel .banner-carousel__nav:hover {
+  opacity: 0.85;
+}
+
+.banner-carousel .banner-carousel__nav.swiper-button-disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.banner-carousel .banner-carousel__nav svg {
+  width: 14px;
+  height: 14px;
+  color: #1a2e2d;
+}
+
+.banner-carousel .banner-carousel__nav--next svg {
+  transform: rotate(180deg);
+}
+
+/* Paginação (bullets). */
+.banner-carousel .banner-carousel__pagination {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 3%;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.banner-carousel .banner-carousel__pagination .swiper-pagination-bullet {
+  width: 9px;
+  height: 9px;
+  display: inline-block;
+  border-radius: 999px;
+  opacity: 0.35;
+  margin: 0 !important;
+  transition: width 0.25s ease, opacity 0.25s ease;
+  cursor: pointer;
+}
+
+.banner-carousel .banner-carousel__pagination .swiper-pagination-bullet-active {
+  width: 28px;
+  opacity: 1;
+}
+
+@media screen and (max-width: 749px) {
+  .banner-carousel .banner-carousel__image--desktop {
+    display: none;
+  }
+
+  .banner-carousel .banner-carousel__image--mobile {
+    display: block;
+  }
+
+  .banner-carousel .banner-carousel__content {
+    justify-content: flex-end;
+    align-items: center;
+    text-align: center;
+    padding: 4% 10% 8%;
+  }
+
+  .banner-carousel .banner-carousel__content-inner {
+    max-width: none;
+  }
+
+  .banner-carousel .banner-carousel__buttons {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .banner-carousel .banner-carousel__button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .banner-carousel .banner-carousel__nav {
+    display: none;
+  }
+}

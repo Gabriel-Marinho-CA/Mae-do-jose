@@ -576,6 +576,10 @@ details > * {
   box-sizing: border-box;
 }
 
+body * {
+  box-sizing: border-box;
+}
+
 .break {
   word-break: break-word;
 }
