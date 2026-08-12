@@ -1,0 +1,368 @@
+{%- comment -%}
+  Rodapé — Mãe do José.
+
+  - Logo (desktop e mobile), descrição da marca e redes sociais à esquerda.
+  - Cada bloco é uma coluna de links, alimentada por um menu da loja
+    (link_list), então o merchant edita os links em Navegação, não aqui.
+  - Formas de pagamento: os ícones vêm de shop.enabled_payment_types, ou seja,
+    refletem os meios realmente habilitados na loja.
+  - No mobile as colunas viram sanfonas (ver assets/res-footer.js).
+
+  Estilos fixos ficam em assets/section-res-footer.css. Apenas o que depende do
+  schema (paddings, cor de fundo) fica no {% style %} abaixo.
+
+  Outfit vem de snippets/theme-fonts.liquid, carregado uma única vez no layout.
+{%- endcomment -%}
+
+{%- assign uid = 'res-footer-' | append: section.id -%}
+
+{{ 'section-res-footer.css' | asset_url | stylesheet_tag }}
+{{ 'component-list-social.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'res-footer.js' | asset_url }}" defer="defer"></script>
+
+{% style %}
+  .{{ uid }} {
+    --rf-bg: {{ section.settings.background_color }};
+    --rf-heading: {{ section.settings.heading_color }};
+
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .{{ uid }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+
+<footer class="res-footer {{ uid }}">
+  <div class="res-footer__inner page-width">
+    <div class="res-footer__top">
+      <div class="res-footer__brand{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+        <a class="res-footer__logo-link" href="{{ routes.root_url }}">
+          {%- if section.settings.logo != blank -%}
+            <img
+              class="res-footer__logo res-footer__logo--desktop"
+              src="{{ section.settings.logo | image_url: width: 550 }}"
+              srcset="
+                {{ section.settings.logo | image_url: width: 275 }} 275w,
+                {{ section.settings.logo | image_url: width: 550 }} 550w
+              "
+              sizes="{{ section.settings.logo_width }}px"
+              alt="{{ section.settings.logo.alt | default: shop.name | escape }}"
+              width="{{ section.settings.logo.width }}"
+              height="{{ section.settings.logo.height }}"
+              style="width: {{ section.settings.logo_width }}px;"
+              loading="lazy"
+            >
+          {%- endif -%}
+
+          {%- if section.settings.logo_mobile != blank -%}
+            <img
+              class="res-footer__logo res-footer__logo--mobile"
+              src="{{ section.settings.logo_mobile | image_url: width: 550 }}"
+              srcset="
+                {{ section.settings.logo_mobile | image_url: width: 275 }} 275w,
+                {{ section.settings.logo_mobile | image_url: width: 550 }} 550w
+              "
+              sizes="{{ section.settings.logo_width_mobile }}px"
+              alt="{{ section.settings.logo_mobile.alt | default: shop.name | escape }}"
+              width="{{ section.settings.logo_mobile.width }}"
+              height="{{ section.settings.logo_mobile.height }}"
+              style="width: {{ section.settings.logo_width_mobile }}px;"
+              loading="lazy"
+            >
+          {%- elsif section.settings.logo != blank -%}
+            {%- comment -%}Sem logo de mobile, a de desktop cobre os dois.{%- endcomment -%}
+            <img
+              class="res-footer__logo res-footer__logo--mobile"
+              src="{{ section.settings.logo | image_url: width: 550 }}"
+              sizes="{{ section.settings.logo_width_mobile }}px"
+              alt="{{ section.settings.logo.alt | default: shop.name | escape }}"
+              width="{{ section.settings.logo.width }}"
+              height="{{ section.settings.logo.height }}"
+              style="width: {{ section.settings.logo_width_mobile }}px;"
+              loading="lazy"
+            >
+          {%- else -%}
+            <span class="res-footer__logo-text">{{ shop.name }}</span>
+          {%- endif -%}
+        </a>
+      </div>
+
+      {%- if section.settings.description != blank -%}
+        <div class="res-footer__description{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+          {{ section.settings.description }}
+        </div>
+      {%- endif -%}
+
+      {%- liquid
+        assign has_social = false
+        if settings.social_facebook_link != blank or settings.social_instagram_link != blank or settings.social_youtube_link != blank or settings.social_tiktok_link != blank or settings.social_twitter_link != blank or settings.social_pinterest_link != blank or settings.social_snapchat_link != blank or settings.social_tumblr_link != blank or settings.social_vimeo_link != blank
+          assign has_social = true
+        endif
+      -%}
+
+      {%- if has_social -%}
+        <div class="res-footer__social-wrapper">
+          {%- render 'social-icons', class: 'res-footer__social' -%}
+        </div>
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 or section.settings.show_payment_icons -%}
+        <res-footer-menus class="res-footer__columns" role="list">
+          {%- for block in section.blocks -%}
+            {%- assign panel_id = uid | append: '-menu-' | append: block.id -%}
+
+            <div class="res-footer__column" role="listitem" {{ block.shopify_attributes }}>
+              {%- if block.settings.heading != blank -%}
+                <h2 class="res-footer__column-heading">
+                  {%- comment -%}
+                    O botão existe sempre; no desktop o CSS esconde o ícone e o
+                    JS remove o aria-expanded, então ele vira texto inerte.
+                  {%- endcomment -%}
+                  <button
+                    type="button"
+                    class="res-footer__toggle"
+                    data-footer-toggle
+                    aria-controls="{{ panel_id }}"
+                  >
+                    {{ block.settings.heading | escape }}
+                    <span class="res-footer__toggle-icon" aria-hidden="true"></span>
+                  </button>
+                </h2>
+              {%- endif -%}
+
+              {%- if block.settings.menu != blank -%}
+                <ul class="res-footer__menu-list" id="{{ panel_id }}" role="list">
+                  {%- for link in block.settings.menu.links -%}
+                    <li>
+                      <a class="res-footer__menu-link" href="{{ link.url }}">{{ link.title | escape }}</a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+
+          {%- if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
+            <div class="res-footer__column res-footer__payments" role="listitem">
+              {%- if section.settings.payment_heading != blank -%}
+                <h2 class="res-footer__column-heading">{{ section.settings.payment_heading | escape }}</h2>
+              {%- endif -%}
+
+              <ul class="res-footer__payments-card" role="list">
+                {%- for type in shop.enabled_payment_types -%}
+                  <li>{{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}</li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+        </res-footer-menus>
+      {%- endif -%}
+    </div>
+
+    <div class="res-footer__bottom">
+      <p class="res-footer__legal">
+        &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}
+        {%- if section.settings.legal_text != blank %} &middot; {{ section.settings.legal_text | escape }}{% endif -%}
+      </p>
+
+      {%- if section.settings.credit_text != blank -%}
+        <p class="res-footer__credit">
+          {%- if section.settings.credit_link != blank -%}
+            <a href="{{ section.settings.credit_link }}" rel="noopener">{{ section.settings.credit_text | escape }}</a>
+          {%- else -%}
+            {{ section.settings.credit_text | escape }}
+          {%- endif -%}
+        </p>
+      {%- endif -%}
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Rodapé Resultate",
+  "tag": "footer",
+  "class": "section-res-footer",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Marca"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 100,
+      "max": 400,
+      "step": 5,
+      "unit": "px",
+      "label": "Largura da logo (desktop)",
+      "default": 250
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_mobile",
+      "label": "Logo (mobile)",
+      "info": "Se vazio, usa a logo de desktop."
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "min": 100,
+      "max": 320,
+      "step": 5,
+      "unit": "px",
+      "label": "Largura da logo (mobile)",
+      "default": 275
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Descrição",
+      "default": "<p>Ingredientes premium, receitas que acolhem. Cada prato feito com intenção e carinho.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Formas de pagamento"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Mostrar formas de pagamento",
+      "default": true,
+      "info": "Os ícones refletem os meios de pagamento habilitados na loja."
+    },
+    {
+      "type": "text",
+      "id": "payment_heading",
+      "label": "Título da coluna",
+      "default": "Formas de Pagamento"
+    },
+    {
+      "type": "header",
+      "content": "Rodapé inferior"
+    },
+    {
+      "type": "text",
+      "id": "legal_text",
+      "label": "Texto de direitos",
+      "default": "Todos os direitos reservados",
+      "info": "O ano e o nome da loja são adicionados automaticamente antes deste texto."
+    },
+    {
+      "type": "text",
+      "id": "credit_text",
+      "label": "Crédito (canto direito)"
+    },
+    {
+      "type": "url",
+      "id": "credit_link",
+      "label": "Link do crédito"
+    },
+    {
+      "type": "header",
+      "content": "Cores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Fundo",
+      "default": "#043c39"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Título das colunas",
+      "default": "#a89880"
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Espaço acima",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Espaço abaixo",
+      "default": 15
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento (mobile)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 5,
+      "unit": "px",
+      "label": "Espaço acima",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 5,
+      "unit": "px",
+      "label": "Espaço abaixo",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Coluna de links",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Título da coluna",
+          "default": "Cardápio"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "info": "Os links são editados em Navegação, no admin da loja."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rodapé Resultate",
+      "blocks": [
+        { "type": "menu" },
+        { "type": "menu" },
+        { "type": "menu" }
+      ]
+    }
+  ]
+}
+{% endschema %}

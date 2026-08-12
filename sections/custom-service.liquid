@@ -86,10 +86,11 @@
     {%- if section.settings.button_1_label != blank or section.settings.button_2_label != blank -%}
       <div class="custom-service__actions{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
         {%- if section.settings.button_1_label != blank -%}
+          {%- assign button_1_href = section.settings.button_1_link | default: settings.whatsapp -%}
           <a
             class="custom-service__button custom-service__button--primary"
-            {% if section.settings.button_1_link != blank %}
-              href="{{ section.settings.button_1_link }}"
+            {% if button_1_href != blank %}
+              href="{{ button_1_href }}"
             {% else %}
               role="link" aria-disabled="true"
             {% endif %}
@@ -159,7 +160,7 @@
       "type": "url",
       "id": "button_1_link",
       "label": "Link do botão",
-      "info": "Para o WhatsApp, use um link no formato https://wa.me/5511999999999"
+      "info": "Se vazio, usa o WhatsApp de Configurações do tema › Contato."
     },
     {
       "type": "header",

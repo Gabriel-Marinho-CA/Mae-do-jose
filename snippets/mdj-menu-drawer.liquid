@@ -92,11 +92,13 @@
               {{- 'icon-instagram-mdj.svg' | inline_asset_content -}}
             </a>
           </li>
-          <li>
-            <a href="https://wa.me/5500000000000" class="mdj-drawer__social-link" aria-label="WhatsApp">
-              {{- 'icon-whatsapp-mdj.svg' | inline_asset_content -}}
-            </a>
-          </li>
+          {%- if settings.whatsapp != blank -%}
+            <li>
+              <a href="{{ settings.whatsapp }}" class="mdj-drawer__social-link" aria-label="WhatsApp">
+                {{- 'icon-whatsapp-mdj.svg' | inline_asset_content -}}
+              </a>
+            </li>
+          {%- endif -%}
           <li>
             <a
               href="{{ settings.social_youtube_link | default: 'https://www.youtube.com/' }}"

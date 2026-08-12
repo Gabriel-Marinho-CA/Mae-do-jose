@@ -34,6 +34,17 @@
     ]
   },
   {
+    "name": "Contato",
+    "settings": [
+      {
+        "type": "url",
+        "id": "whatsapp",
+        "label": "WhatsApp",
+        "info": "Link do WhatsApp (ex.: https://wa.me/5599999999999). Usado nos botões de WhatsApp do tema."
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.colors.name",
     "settings": [
       {

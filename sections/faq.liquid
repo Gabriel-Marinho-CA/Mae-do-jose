@@ -50,8 +50,8 @@
       {%- endif -%}
     </div>
 
-    {%- if section.settings.whatsapp_label != blank and section.settings.whatsapp_link != blank -%}
-      <a class="faq__whatsapp" href="{{ section.settings.whatsapp_link }}" target="_blank" rel="noopener">
+    {%- if section.settings.whatsapp_label != blank and settings.whatsapp != blank -%}
+      <a class="faq__whatsapp" href="{{ settings.whatsapp }}" target="_blank" rel="noopener">
         <span>{{ section.settings.whatsapp_label | escape }}</span>
         {{- 'icon-arrow.svg' | inline_asset_content -}}
       </a>
@@ -136,13 +136,7 @@
       "id": "whatsapp_label",
       "label": "Texto do botão",
       "default": "Falar no WhatsApp",
-      "info": "Deixe vazio para esconder o botão."
-    },
-    {
-      "type": "url",
-      "id": "whatsapp_link",
-      "label": "Link do WhatsApp",
-      "info": "Ex.: https://wa.me/5599999999999"
+      "info": "Deixe vazio para esconder o botão. O link vem de Configurações do tema › Contato › WhatsApp."
     },
     {
       "type": "header",
