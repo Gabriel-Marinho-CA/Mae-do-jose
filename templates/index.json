@@ -182,11 +182,73 @@
         "text_color": "#6b7e7d",
         "price_color": "#ff8204"
       }
+    },
+    "testimonials_WdLRGj": {
+      "type": "testimonials",
+      "blocks": {
+        "testimonial_wqENjB": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "<p>\"A melhor quiche que já comi. Melhor do que em restaurante. Virou meu pedido fixo toda semana.\"</p>",
+            "author": "Rodrigo F.",
+            "author_detail": "Quiche de Cogumelos",
+            "initials": ""
+          }
+        },
+        "testimonial_EzgVHV": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "<p>\"A melhor quiche que já comi. Melhor do que em restaurante. Virou meu pedido fixo toda semana.\"</p>",
+            "author": "Rodrigo F.",
+            "author_detail": "Quiche de Cogumelos",
+            "initials": ""
+          }
+        },
+        "testimonial_VBNARi": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "<p>\"A melhor quiche que já comi. Melhor do que em restaurante. Virou meu pedido fixo toda semana.\"</p>",
+            "author": "Rodrigo F.",
+            "author_detail": "Quiche de Cogumelos",
+            "initials": ""
+          }
+        },
+        "testimonial_rbBxFJ": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "<p>\"A melhor quiche que já comi. Melhor do que em restaurante. Virou meu pedido fixo toda semana.\"</p>",
+            "author": "Rodrigo F.",
+            "author_detail": "Quiche de Cogumelos",
+            "initials": ""
+          }
+        }
+      },
+      "block_order": [
+        "testimonial_wqENjB",
+        "testimonial_EzgVHV",
+        "testimonial_VBNARi",
+        "testimonial_rbBxFJ"
+      ],
+      "name": "Depoimentos",
+      "settings": {
+        "eyebrow": "Depoimentos",
+        "heading": "O que nossos clientes dizem",
+        "columns_desktop": 4,
+        "padding_top": 90,
+        "padding_bottom": 90,
+        "padding_top_mobile": 60,
+        "padding_bottom_mobile": 60
+      }
     }
   },
   "order": [
     "banner_carousel",
     "collection_tabs_adYhCV",
-    "how_it_works"
+    "how_it_works",
+    "testimonials_WdLRGj"
   ]
 }
