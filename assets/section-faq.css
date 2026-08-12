@@ -24,7 +24,7 @@
   background-color: var(--faq-bg);
   font-family: var(--mdj-font-body, 'Outfit', ui-sans-serif, system-ui, sans-serif);
   width: 100%;
-  display: block;
+  display:block;
 }
 
 /* ---------- Cabeçalho ---------- */
