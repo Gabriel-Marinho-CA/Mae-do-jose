@@ -15,6 +15,14 @@
 
   assign current_path = request.path | split: '?' | first
 
+  comment
+    Sem título no editor, cai no título da coleção atual.
+  endcomment
+  assign heading = section.settings.heading
+  if heading == blank
+    assign heading = collection.title
+  endif
+
   assign current_label = section.settings.breadcrumb_current_label
   if current_label == blank
     assign current_label = collection.title

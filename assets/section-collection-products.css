@@ -277,6 +277,12 @@
   color: var(--cp-title);
 }
 
+.cp-clear.is-disabled,
+.cp-sheet__clear.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
 /* ---------- Faixa de preço ---------- */
 
 .cp-price {

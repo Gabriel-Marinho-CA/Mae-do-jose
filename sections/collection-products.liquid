@@ -198,11 +198,17 @@
             {%- endunless -%}
           {%- endfor -%}
 
-          {%- if active_filters_count > 0 -%}
-            <a class="cp-clear" href="{{ collection.url }}" data-cp-link>
-              {{- section.settings.clear_label | escape -}}
-            </a>
-          {%- endif -%}
+          {%- comment -%}
+            Sempre visível (como no Figma). Sem filtro ativo ele fica apagado e
+            não recebe clique.
+          {%- endcomment -%}
+          <a
+            class="cp-clear{% if active_filters_count == 0 %} is-disabled{% endif %}"
+            href="{{ collection.url }}"
+            data-cp-link
+          >
+            {{- section.settings.clear_label | escape -}}
+          </a>
         </aside>
       {%- endif -%}
 
@@ -229,11 +235,17 @@
 
                 <div class="cp-sheet__header">
                   <p class="cp-sheet__title">{{ section.settings.filters_label | escape }}</p>
-                  {%- if active_filters_count > 0 -%}
-                    <a class="cp-sheet__clear" href="{{ collection.url }}" data-cp-link>
-                      {{- section.settings.mobile_clear_label | escape -}}
-                    </a>
-                  {%- endif -%}
+                  {%- comment -%}
+                    Sempre visível (como no Figma). Sem filtro ativo ele fica
+                    apagado e não recebe clique.
+                  {%- endcomment -%}
+                  <a
+                    class="cp-sheet__clear{% if active_filters_count == 0 %} is-disabled{% endif %}"
+                    href="{{ collection.url }}"
+                    data-cp-link
+                  >
+                    {{- section.settings.mobile_clear_label | escape -}}
+                  </a>
                 </div>
 
                 <div class="cp-sheet__body">
