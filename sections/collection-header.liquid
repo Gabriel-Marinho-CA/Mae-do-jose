@@ -68,9 +68,9 @@
         </nav>
       {%- endif -%}
 
-      {%- if section.settings.heading != blank -%}
+      {%- if heading != blank -%}
         <{{ section.settings.heading_tag }} class="collection-header__heading">
-          {{- section.settings.heading | escape -}}
+          {{- heading | escape -}}
         </{{ section.settings.heading_tag }}>
       {%- endif -%}
     </div>
@@ -176,6 +176,7 @@
       "type": "text",
       "id": "heading",
       "label": "Título",
+      "info": "Se ficar vazio, usa o título da coleção atual.",
       "default": "Cardápio Completo"
     },
     {
