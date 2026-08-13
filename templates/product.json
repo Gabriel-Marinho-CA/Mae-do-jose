@@ -13,13 +13,18 @@
       "type": "main-product",
       "blocks": {
         "mdj_eyebrow": {
-          "type": "mdj_eyebrow"
+          "type": "mdj_eyebrow",
+          "settings": {
+            "fallback_to_type": true
+          }
         },
         "mdj_title": {
-          "type": "mdj_title"
+          "type": "mdj_title",
+          "settings": {}
         },
         "mdj_short_description": {
-          "type": "mdj_short_description"
+          "type": "mdj_short_description",
+          "settings": {}
         },
         "mdj_feature_tags": {
           "type": "mdj_feature_tags",
@@ -28,7 +33,8 @@
           }
         },
         "mdj_divider_1": {
-          "type": "mdj_divider"
+          "type": "mdj_divider",
+          "settings": {}
         },
         "mdj_size_picker": {
           "type": "mdj_size_picker",
@@ -38,7 +44,8 @@
           }
         },
         "mdj_divider_2": {
-          "type": "mdj_divider"
+          "type": "mdj_divider",
+          "settings": {}
         },
         "mdj_prep_modes": {
           "type": "mdj_prep_modes",
@@ -47,7 +54,8 @@
           }
         },
         "mdj_divider_3": {
-          "type": "mdj_divider"
+          "type": "mdj_divider",
+          "settings": {}
         },
         "mdj_purchase_box": {
           "type": "mdj_purchase_box",
@@ -56,6 +64,7 @@
             "show_quantity": true,
             "show_dynamic_checkout": false,
             "show_gift_card_recipient": false,
+            "whatsapp_number": "",
             "whatsapp_label": "Pedir via WhatsApp",
             "whatsapp_message": "Olá! Tenho interesse em: [produto]"
           }
@@ -100,16 +109,17 @@
       "settings": {
         "show_breadcrumb": true,
         "breadcrumb_parent_label": "Cardápio",
+        "breadcrumb_parent_url": "",
         "show_media_tag": true,
         "enable_sticky_info": true,
         "color_scheme": "scheme-1",
-        "media_position": "left",
-        "gallery_layout": "thumbnail",
-        "media_size": "large",
+        "media_size": "medium",
         "constrain_to_viewport": true,
         "media_fit": "cover",
-        "image_zoom": "lightbox",
+        "gallery_layout": "thumbnail",
         "mobile_thumbnails": "hide",
+        "media_position": "left",
+        "image_zoom": "lightbox",
         "hide_variants": true,
         "enable_video_looping": false,
         "padding_top": 36,
