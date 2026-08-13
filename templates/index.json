@@ -65,7 +65,7 @@
         "collection_wDWECt": {
           "type": "collection",
           "settings": {
-            "collection": "frontpage",
+            "collection": "tortas-salgadas",
             "label": "Tortas Salgadas",
             "image": "shopify://shop_images/Rectangle_45.png"
           }
@@ -73,7 +73,7 @@
         "collection_WPNcz3": {
           "type": "collection",
           "settings": {
-            "collection": "show-color-variations",
+            "collection": "frontpage",
             "label": "Massas",
             "image": "shopify://shop_images/Rectangle_45_1.png"
           }
@@ -81,7 +81,7 @@
         "collection_rUxgyw": {
           "type": "collection",
           "settings": {
-            "collection": "frontpage",
+            "collection": "tortas-salgadas-copia",
             "label": "Tortas Salgadas",
             "image": "shopify://shop_images/Rectangle_45.png"
           }
@@ -89,7 +89,7 @@
         "collection_cKXHVg": {
           "type": "collection",
           "settings": {
-            "collection": "show-color-variations",
+            "collection": "tortas-salgadas",
             "label": "Massas",
             "image": "shopify://shop_images/Rectangle_45_1.png"
           }
@@ -97,7 +97,7 @@
         "collection_6rgzG4": {
           "type": "collection",
           "settings": {
-            "collection": "frontpage",
+            "collection": "tortas-salgadas-copia",
             "label": "Tortas Salgadas",
             "image": "shopify://shop_images/Rectangle_45.png"
           }
@@ -105,7 +105,7 @@
         "collection_VQaqyy": {
           "type": "collection",
           "settings": {
-            "collection": "show-color-variations",
+            "collection": "tortas-salgadas",
             "label": "Massas",
             "image": "shopify://shop_images/Rectangle_45_1.png"
           }
