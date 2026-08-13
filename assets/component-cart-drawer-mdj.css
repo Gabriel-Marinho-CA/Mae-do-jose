@@ -252,7 +252,9 @@
 
 .cart-drawer .cart-item .quantity__input {
   flex: 1 1 auto;
-  width: auto;
+  /* width/min-width zerados para o input number não impedir o shrink e empurrar o "+" para fora */
+  width: 0;
+  min-width: 0;
   padding: 0;
   font-family: var(--mdj-font-body);
   font-size: 1.8rem;
@@ -365,12 +367,9 @@
   color: var(--mdj-cart-title);
 }
 
+/* O design não tem a nota de tributos no minicart (ela continua na página do carrinho) */
 .cart-drawer .tax-note {
-  margin: 0 0 14px;
-  font-size: 1.2rem;
-  line-height: 1.4;
-  color: var(--mdj-cart-muted);
-  text-align: left;
+  display: none;
 }
 
 .cart-drawer .cart__ctas {
