@@ -2,8 +2,9 @@
   Painel "Especificações".
 
   Fonte: product.metafields.custom.epecificacao (list.single_line_text_field).
-  Cada item da lista é uma linha "Rótulo | Valor". Também são aceitos os
-  separadores "::" e ":" — o primeiro encontrado, nessa ordem, é o que vale.
+  Cada item da lista é uma linha no formato "TextoColunaA | TextoColunaB":
+  o que vem antes do "|" é o rótulo (esquerda) e o que vem depois é o valor
+  (direita). Item sem "|" vira uma linha só com o rótulo.
 
   Aceita:
   - product: {Object} produto atual.
@@ -13,7 +14,12 @@
   {% render 'mdj-pdp-specs', product: product, block: block %}
 {%- endcomment -%}
 
-{%- assign specs = product.metafields.custom.epecificacao.value -%}
+{%- liquid
+  assign specs = product.metafields.custom.epecificacao.value
+  if specs.size == 0
+    assign specs = product.metafields.custom.especificacao.value
+  endif
+-%}
 
 {%- if specs.size > 0 -%}
   <mdj-panel class="mdj-pdp" {{ block.shopify_attributes }}>
@@ -31,24 +37,13 @@
                 continue
               endif
 
-              assign separator = '|'
-              assign parts = spec | split: separator
-              if parts.size < 2
-                assign separator = '::'
-                assign parts = spec | split: separator
-              endif
-              if parts.size < 2
-                assign separator = ':'
-                assign parts = spec | split: separator
-              endif
+              assign columns = spec | split: '|'
+              assign spec_label = columns[0] | strip
 
-              if parts.size < 2
-                assign spec_label = spec | strip
-                assign spec_value = ''
-              else
-                assign rest_count = parts.size | minus: 1
-                assign spec_label = parts[0] | strip
-                assign spec_value = parts | slice: 1, rest_count | join: separator | strip
+              assign spec_value = ''
+              if columns.size > 1
+                assign rest_count = columns.size | minus: 1
+                assign spec_value = columns | slice: 1, rest_count | join: '|' | strip
               endif
             -%}
 

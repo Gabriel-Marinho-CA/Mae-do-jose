@@ -2,10 +2,11 @@
   Modo de preparo (Figma: chips "Forno · 12 min", "Air Fryer · 8 min").
 
   Fonte: variant.metafields.custom.modo_de_preparo (single_line_text_field).
-  Vários modos no mesmo campo são separados por vírgula ou ponto e vírgula.
-  O primeiro modo é o destacado, como no Figma.
+  É um texto simples por variante, então cada variante vira um chip e o chip
+  da variante selecionada (selected_or_first_available_variant) fica ativo.
 
-  São chips informativos (não alteram o pedido), por isso não são <button>.
+  Chips com o mesmo texto são exibidos uma vez só. São informativos — quem
+  troca a variante é o seletor de tamanho — por isso não são <button>.
 
   Aceita:
   - product: {Object} produto atual.
@@ -16,32 +17,51 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign prep_variant = product.selected_or_first_available_variant
-  assign prep_raw = prep_variant.metafields.custom.modo_de_preparo.value | default: prep_variant.metafields.custom.modo_de_preparo
+  assign current_variant = product.selected_or_first_available_variant
+  assign selected_meta = current_variant.metafields.custom.modo_de_preparo
+  assign selected_prep = selected_meta.value | default: selected_meta
+  assign selected_prep = selected_prep | strip
 
-  assign prep_normalized = prep_raw | replace: ';', ','
-  assign prep_modes = prep_normalized | split: ','
+  assign has_prep = ''
+  for variant in product.variants
+    assign variant_meta = variant.metafields.custom.modo_de_preparo
+    assign variant_prep = variant_meta.value | default: variant_meta
+    assign has_prep = has_prep | append: variant_prep
+  endfor
+  assign has_prep = has_prep | strip
 -%}
 
 <div
   id="MdjPrep-{{ section.id }}"
   class="mdj-pdp mdj-prep"
-  {% if prep_raw == blank %}
+  {% if has_prep == blank %}
     hidden
   {% endif %}
   {{ block.shopify_attributes }}
 >
-  {%- if prep_raw != blank -%}
+  {%- if has_prep != blank -%}
     <span class="mdj-group-label">{{ block.settings.label | default: 'Modo de Preparo' | escape }}</span>
 
     <ul class="mdj-prep__list" role="list">
-      {%- for mode in prep_modes -%}
-        {%- assign mode_text = mode | strip -%}
-        {%- if mode_text == blank -%}
-          {%- continue -%}
-        {%- endif -%}
-        <li class="mdj-prep__item{% if forloop.first %} mdj-prep__item--primary{% endif %}">
-          {{- mode_text | escape -}}
+      {%- assign rendered_preps = '' -%}
+      {%- for variant in product.variants -%}
+        {%- liquid
+          assign variant_meta = variant.metafields.custom.modo_de_preparo
+          assign variant_prep = variant_meta.value | default: variant_meta
+          assign variant_prep = variant_prep | strip
+
+          if variant_prep == blank
+            continue
+          endif
+
+          assign prep_key = '||' | append: variant_prep | append: '||'
+          if rendered_preps contains prep_key
+            continue
+          endif
+          assign rendered_preps = rendered_preps | append: prep_key
+        -%}
+        <li class="mdj-prep__item{% if variant_prep == selected_prep %} mdj-prep__item--primary{% endif %}">
+          {{- variant_prep | escape -}}
         </li>
       {%- endfor -%}
     </ul>

@@ -1,9 +1,13 @@
 {%- comment -%}
   Painel "Informação Nutricional".
 
-  Fonte: product.metafields.custom.informacao_nutricional → metaobject
-  "informacao_nutricional" com os campos em lista e paralelos entre si:
-  titulo (rótulo, ex.: "Calorias") e conteudo (valor, ex.: "248 kcal").
+  Fonte: product.metafields.custom.informacao_nutricional — referência ao
+  metaobjeto "informacao_nutricional", com os campos titulo (rótulo, ex.:
+  "Calorias") e conteudo (valor em destaque, ex.: "248 kcal").
+
+  Aceita as duas formas do metacampo:
+  - referência única, com titulo/conteudo em lista e paralelos entre si;
+  - lista de referências, com um metaobjeto por card.
 
   Aceita:
   - product: {Object} produto atual.
@@ -15,11 +19,22 @@
 
 {%- liquid
   assign nutri = product.metafields.custom.informacao_nutricional.value
-  assign nutri_labels = nutri.titulo.value | default: nutri.titulo
-  assign nutri_values = nutri.conteudo.value | default: nutri.conteudo
+
+  assign nutri_entries = null
+  assign nutri_labels = null
+  assign nutri_values = null
+
+  if nutri.first.titulo
+    # lista de metaobjetos: um card por referência
+    assign nutri_entries = nutri
+  else
+    # referência única: os campos são listas paralelas
+    assign nutri_labels = nutri.titulo.value | default: nutri.titulo
+    assign nutri_values = nutri.conteudo.value | default: nutri.conteudo
+  endif
 -%}
 
-{%- if nutri_labels.size > 0 -%}
+{%- if nutri_entries.size > 0 or nutri_labels.size > 0 -%}
   <mdj-panel class="mdj-pdp" {{ block.shopify_attributes }}>
     <details class="mdj-panel" open>
       <summary class="mdj-panel__summary">
@@ -34,21 +49,36 @@
 
       <div class="mdj-panel__body">
         <ul class="mdj-nutrition" role="list">
-          {%- assign last_index = nutri_labels.size | minus: 1 -%}
-          {%- for i in (0..last_index) -%}
-            {%- liquid
-              assign nutri_label = nutri_labels[i]
-              assign nutri_value = nutri_values[i]
-            -%}
-            {%- if nutri_label == blank and nutri_value == blank -%}
-              {%- continue -%}
-            {%- endif -%}
-
-            <li class="mdj-nutrition__item">
-              <span class="mdj-nutrition__value">{{ nutri_value | escape }}</span>
-              <span class="mdj-nutrition__label">{{ nutri_label | escape }}</span>
-            </li>
-          {%- endfor -%}
+          {%- if nutri_entries.size > 0 -%}
+            {%- for entry in nutri_entries -%}
+              {%- liquid
+                assign nutri_label = entry.titulo.value | default: entry.titulo
+                assign nutri_value = entry.conteudo.value | default: entry.conteudo
+                if nutri_label == blank and nutri_value == blank
+                  continue
+                endif
+              -%}
+              <li class="mdj-nutrition__item">
+                <span class="mdj-nutrition__value">{{ nutri_value | escape }}</span>
+                <span class="mdj-nutrition__label">{{ nutri_label | escape }}</span>
+              </li>
+            {%- endfor -%}
+          {%- else -%}
+            {%- assign last_index = nutri_labels.size | minus: 1 -%}
+            {%- for i in (0..last_index) -%}
+              {%- liquid
+                assign nutri_label = nutri_labels[i]
+                assign nutri_value = nutri_values[i]
+                if nutri_label == blank and nutri_value == blank
+                  continue
+                endif
+              -%}
+              <li class="mdj-nutrition__item">
+                <span class="mdj-nutrition__value">{{ nutri_value | escape }}</span>
+                <span class="mdj-nutrition__label">{{ nutri_label | escape }}</span>
+              </li>
+            {%- endfor -%}
+          {%- endif -%}
         </ul>
       </div>
     </details>
