@@ -1,0 +1,66 @@
+{% comment %}
+  Filtro de faixa de preço da coleção.
+
+  Não aparece no Figma, mas é renderizado se a loja tiver o filtro de preço
+  ativo no Search & Discovery — assim nenhum filtro configurado some da página.
+
+  Como é o único filtro que não cabe em um link, ele é um <form method="get">
+  que reenvia os outros filtros ativos como hidden.
+
+  Accepts:
+  - filter: {Object} filtro do tipo price_range.
+  - collection: {Object} coleção atual (para ler os filtros ativos).
+
+  Usage:
+  {% render 'collection-price-filter', filter: filter, collection: collection %}
+{% endcomment %}
+
+<form class="cp-price" method="get" action="{{ collection.url }}">
+  {%- for other_filter in collection.filters -%}
+    {%- unless other_filter.param_name == filter.min_value.param_name -%}
+      {%- for value in other_filter.active_values -%}
+        <input type="hidden" name="{{ value.param_name }}" value="{{ value.value }}">
+      {%- endfor -%}
+    {%- endunless -%}
+  {%- endfor -%}
+
+  <div class="cp-price__fields">
+    <label class="cp-price__field">
+      <span class="visually-hidden">
+        {{- 'products.facets.from' | t }} {{ filter.label | escape -}}
+      </span>
+      <span class="cp-price__currency">{{ cart.currency.symbol }}</span>
+      <input
+        type="number"
+        inputmode="decimal"
+        name="{{ filter.min_value.param_name }}"
+        id="{{ filter.min_value.param_name }}"
+        value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
+        placeholder="0"
+        min="0"
+        max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+      >
+    </label>
+
+    <span class="cp-price__separator" aria-hidden="true">–</span>
+
+    <label class="cp-price__field">
+      <span class="visually-hidden">
+        {{- 'products.facets.to' | t }} {{ filter.label | escape -}}
+      </span>
+      <span class="cp-price__currency">{{ cart.currency.symbol }}</span>
+      <input
+        type="number"
+        inputmode="decimal"
+        name="{{ filter.max_value.param_name }}"
+        id="{{ filter.max_value.param_name }}"
+        value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
+        placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+        min="0"
+        max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+      >
+    </label>
+  </div>
+
+  <button type="submit" class="cp-price__submit">{{ 'products.facets.apply' | t }}</button>
+</form>

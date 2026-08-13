@@ -1,36 +1,72 @@
 {
   "sections": {
-    "banner": {
-      "type": "main-collection-banner",
+    "header": {
+      "type": "collection-header",
+      "blocks": {
+        "category-1": {
+          "type": "category",
+          "settings": {}
+        },
+        "category-2": {
+          "type": "category",
+          "settings": {}
+        },
+        "category-3": {
+          "type": "category",
+          "settings": {}
+        },
+        "category-4": {
+          "type": "category",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "category-1",
+        "category-2",
+        "category-3",
+        "category-4"
+      ],
       "settings": {
-        "show_collection_description": true,
-        "show_collection_image": false,
-        "color_scheme": "scheme-1"
+        "heading": "Cardápio Completo",
+        "heading_tag": "h1",
+        "show_breadcrumb": true,
+        "breadcrumb_home_label": "Início",
+        "background_color": "#f7f5f2",
+        "padding_top": 90,
+        "padding_bottom": 90,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40
       }
     },
     "product-grid": {
-      "type": "main-collection-product-grid",
+      "type": "collection-products",
       "settings": {
-        "products_per_page": 16,
-        "columns_desktop": 4,
-        "color_scheme": "scheme-1",
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": false,
-        "show_vendor": false,
-        "show_rating": false,
-        "quick_add": "none",
-        "enable_filtering": true,
-        "filter_type": "horizontal",
-        "enable_sorting": true,
+        "products_per_page": 12,
+        "columns_desktop": 3,
         "columns_mobile": "2",
-        "padding_top": 36,
-        "padding_bottom": 36
+        "price_label": "a partir de",
+        "button_label": "Ver mais",
+        "show_rating": true,
+        "show_description": true,
+        "max_tags": 2,
+        "filters_label": "Filtros",
+        "category_filter_label": "Categorias",
+        "all_label": "Todos",
+        "clear_label": "Limpar Filtro",
+        "mobile_clear_label": "Limpar tudo",
+        "mobile_apply_label": "Ver [count] pratos",
+        "remove_label": "Remover filtro",
+        "count_label_singular": "produto",
+        "count_label_plural": "produtos",
+        "padding_top": 60,
+        "padding_bottom": 90,
+        "padding_top_mobile": 24,
+        "padding_bottom_mobile": 48
       }
     }
   },
   "order": [
-    "banner",
+    "header",
     "product-grid"
   ]
 }

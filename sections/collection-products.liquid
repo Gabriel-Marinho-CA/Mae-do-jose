@@ -1,0 +1,582 @@
+{%- comment -%}
+  Cardápio — grade da coleção com filtros (Figma: desktop 158-4095, mobile 166-631,
+  painel de filtros mobile 158-1805).
+
+  - Usa os filtros nativos do Shopify (collection.filters, configurados no app
+    Search & Discovery). Cada valor é um <a href> real: sem JS a página continua
+    filtrando e navegando normalmente.
+  - Com JS, o web component collection-products.js intercepta os cliques, busca a
+    própria section (?section_id=) e troca só a barra de filtros e os resultados.
+  - Os cards são o snippets/resultate-card.liquid já existente.
+  - No mobile a gaveta de filtros é um <details>: abre e fecha sem JS.
+
+  Estilos fixos ficam em assets/section-collection-products.css. Apenas o que
+  depende do schema (paddings, colunas) fica no {% style %} abaixo.
+{%- endcomment -%}
+
+{%- liquid
+  assign uid = 'collection-products-' | append: section.id
+
+  assign category_label_match = section.settings.category_filter_label | downcase | strip
+
+  assign active_filters_count = 0
+  for filter in collection.filters
+    assign active_filters_count = active_filters_count | plus: filter.active_values.size
+    if filter.type == 'price_range'
+      if filter.min_value.value != nil or filter.max_value.value != nil
+        assign active_filters_count = active_filters_count | plus: 1
+      endif
+    endif
+  endfor
+
+  assign has_category_filter = false
+  for filter in collection.filters
+    assign filter_label_match = filter.label | downcase | strip
+    if filter_label_match == category_label_match
+      assign category_filter = filter
+      assign has_category_filter = true
+      break
+    endif
+  endfor
+
+  assign results_heading = section.settings.all_label
+  if has_category_filter and category_filter.active_values.size > 0
+    assign results_heading = category_filter.active_values.first.label
+  endif
+
+  assign products_count = collection.products_count
+  assign count_label = section.settings.count_label_plural
+  if products_count == 1
+    assign count_label = section.settings.count_label_singular
+  endif
+
+  assign apply_label = section.settings.mobile_apply_label | replace: '[count]', products_count
+-%}
+
+{{ 'section-collection-products.css' | asset_url | stylesheet_tag }}
+{{ 'component-resultate-card.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'collection-products.js' | asset_url }}" defer="defer"></script>
+
+{%- comment -%}
+  Outfit e Marcellus vêm de snippets/theme-fonts.liquid, carregado uma única
+  vez no layout. Nada de <link> de fonte aqui.
+{%- endcomment -%}
+
+{% style %}
+  .{{ uid }} {
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  }
+
+  .{{ uid }} .collection-products__grid {
+    --cp-columns: {{ section.settings.columns_mobile }};
+  }
+
+  @media screen and (min-width: 750px) {
+    .{{ uid }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+
+    .{{ uid }} .collection-products__grid {
+      --cp-columns: {{ section.settings.columns_desktop }};
+    }
+  }
+{% endstyle %}
+
+<collection-products
+  class="collection-products page-width {{ uid }}"
+  data-section-id="{{ section.id }}"
+  data-uid="{{ uid }}"
+>
+  {%- paginate collection.products by section.settings.products_per_page -%}
+    <div class="collection-products__layout">
+      {%- if collection.filters.size > 0 -%}
+        {%- comment -%} Coluna de filtros (desktop) {%- endcomment -%}
+        <aside
+          class="collection-products__sidebar{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+          data-cp-facets
+        >
+          <h2 class="visually-hidden">{{ section.settings.filters_label | escape }}</h2>
+
+          {%- if has_category_filter -%}
+            <div class="cp-facet cp-facet--categories">
+              <div class="cp-facet__title">
+                <span>{{ category_filter.label | escape }}</span>
+                {%- if category_filter.active_values.size > 0 -%}
+                  <span class="cp-badge">{{ category_filter.active_values.size }}</span>
+                {%- endif -%}
+              </div>
+
+              <ul class="cp-categories" role="list">
+                <li>
+                  <a
+                    class="cp-categories__item{% if category_filter.active_values.size == 0 %} cp-categories__item--active{% endif %}"
+                    href="{{ category_filter.url_to_remove }}"
+                    data-cp-link
+                    {% if category_filter.active_values.size == 0 %}
+                      aria-current="true"
+                    {% endif %}
+                  >
+                    <span class="cp-categories__label">{{ section.settings.all_label | escape }}</span>
+                    <span class="cp-categories__count">{{ collection.all_products_count }}</span>
+                  </a>
+                </li>
+
+                {%- for value in category_filter.values -%}
+                  <li>
+                    <a
+                      class="cp-categories__item{% if value.active %} cp-categories__item--active{% endif %}"
+                      href="{% if value.active %}{{ value.url_to_remove }}{% else %}{{ value.url_to_add }}{% endif %}"
+                      data-cp-link
+                      {% if value.active %}
+                        aria-current="true"
+                      {% endif %}
+                    >
+                      <span class="cp-categories__label">{{ value.label | escape }}</span>
+                      <span class="cp-categories__count">{{ value.count }}</span>
+                    </a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+
+          {%- for filter in collection.filters -%}
+            {%- liquid
+              assign filter_label_match = filter.label | downcase | strip
+
+              assign group_active = filter.active_values.size
+              if filter.type == 'price_range'
+                if filter.min_value.value != nil or filter.max_value.value != nil
+                  assign group_active = 1
+                endif
+              endif
+            -%}
+
+            {%- unless filter_label_match == category_label_match -%}
+              <details
+                class="cp-facet cp-facet--group"
+                id="{{ uid }}-group-{{ forloop.index }}"
+                data-cp-details
+                {% if group_active > 0 %}
+                  open
+                {% endif %}
+              >
+                <summary class="cp-facet__title">
+                  <span>{{ filter.label | escape }}</span>
+                  {%- if group_active > 0 -%}
+                    <span class="cp-badge">{{ group_active }}</span>
+                  {%- endif -%}
+                  <span class="cp-facet__toggle" aria-hidden="true"></span>
+                </summary>
+
+                {%- if filter.type == 'price_range' -%}
+                  {%- render 'collection-price-filter', filter: filter, collection: collection -%}
+                {%- else -%}
+                  <ul class="cp-pills" role="list">
+                    {%- for value in filter.values -%}
+                      <li>
+                        <a
+                          class="cp-pill{% if value.active %} cp-pill--active{% endif %}"
+                          href="{% if value.active %}{{ value.url_to_remove }}{% else %}{{ value.url_to_add }}{% endif %}"
+                          data-cp-link
+                          {% if value.active %}
+                            aria-current="true"
+                          {% endif %}
+                        >
+                          {{- value.label | escape -}}
+                          {%- if value.count > 0 and value.active == false -%}
+                            <span class="cp-pill__count">{{ value.count }}</span>
+                          {%- endif -%}
+                        </a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+              </details>
+            {%- endunless -%}
+          {%- endfor -%}
+
+          {%- if active_filters_count > 0 -%}
+            <a class="cp-clear" href="{{ collection.url }}" data-cp-link>
+              {{- section.settings.clear_label | escape -}}
+            </a>
+          {%- endif -%}
+        </aside>
+      {%- endif -%}
+
+      <div class="collection-products__main">
+        <div class="cp-toolbar" data-cp-toolbar>
+          <h2 class="cp-toolbar__heading">{{ results_heading | escape }}</h2>
+          <p class="cp-toolbar__count">{{ products_count }} {{ count_label | escape }}</p>
+        </div>
+
+        {%- if collection.filters.size > 0 -%}
+          {%- comment -%} Barra + gaveta de filtros (mobile) {%- endcomment -%}
+          <div class="cp-mobile-bar" data-cp-mobile>
+            <details class="cp-sheet" id="{{ uid }}-sheet" data-cp-details data-cp-sheet>
+              <summary class="cp-sheet__trigger">
+                <span class="svg-wrapper">{{- 'icon-filter.svg' | inline_asset_content -}}</span>
+                <span>
+                  {{- section.settings.filters_label | escape -}}
+                  {%- if active_filters_count > 0 %} · {{ active_filters_count }}{% endif -%}
+                </span>
+              </summary>
+
+              <div class="cp-sheet__panel">
+                <div class="cp-sheet__handle" aria-hidden="true"></div>
+
+                <div class="cp-sheet__header">
+                  <p class="cp-sheet__title">{{ section.settings.filters_label | escape }}</p>
+                  {%- if active_filters_count > 0 -%}
+                    <a class="cp-sheet__clear" href="{{ collection.url }}" data-cp-link>
+                      {{- section.settings.mobile_clear_label | escape -}}
+                    </a>
+                  {%- endif -%}
+                </div>
+
+                <div class="cp-sheet__body">
+                  {%- for filter in collection.filters -%}
+                    <div class="cp-sheet__group">
+                      <p class="cp-sheet__group-title">{{ filter.label | escape }}</p>
+
+                      {%- if filter.type == 'price_range' -%}
+                        {%- render 'collection-price-filter', filter: filter, collection: collection -%}
+                      {%- else -%}
+                        <ul class="cp-pills" role="list">
+                          {%- for value in filter.values -%}
+                            <li>
+                              <a
+                                class="cp-pill{% if value.active %} cp-pill--active{% endif %}"
+                                href="{% if value.active %}{{ value.url_to_remove }}{% else %}{{ value.url_to_add }}{% endif %}"
+                                data-cp-link
+                                {% if value.active %}
+                                  aria-current="true"
+                                {% endif %}
+                              >
+                                {{- value.label | escape -}}
+                              </a>
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      {%- endif -%}
+                    </div>
+                  {%- endfor -%}
+                </div>
+
+                <a class="cp-sheet__apply" href="#{{ uid }}-results" data-cp-close>
+                  {{- apply_label | escape -}}
+                </a>
+              </div>
+            </details>
+
+            {%- comment -%} Chips dos filtros ativos {%- endcomment -%}
+            {%- for filter in collection.filters -%}
+              {%- for value in filter.active_values -%}
+                <a class="cp-chip" href="{{ value.url_to_remove }}" data-cp-link>
+                  <span>{{ value.label | escape }}</span>
+                  <span class="cp-chip__remove" aria-hidden="true">
+                    {{- 'icon-close-small.svg' | inline_asset_content -}}
+                  </span>
+                  <span class="visually-hidden">{{ section.settings.remove_label | escape }}</span>
+                </a>
+              {%- endfor -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <div id="{{ uid }}-results" data-cp-results>
+          {%- if collection.products.size > 0 -%}
+            <ul class="collection-products__grid" role="list">
+              {%- for product in collection.products -%}
+                <li
+                  {% if settings.animations_reveal_on_scroll %}
+                    class="scroll-trigger animate--slide-in"
+                    data-cascade
+                    style="--animation-order: {{ forloop.index }};"
+                  {% endif %}
+                >
+                  {%- render 'resultate-card',
+                    card_product: product,
+                    section_id: section.id,
+                    price_label: section.settings.price_label,
+                    button_label: section.settings.button_label,
+                    show_rating: section.settings.show_rating,
+                    show_description: section.settings.show_description,
+                    max_tags: section.settings.max_tags,
+                    lazy_load: true,
+                    skip_styles: true
+                  -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- else -%}
+            <p class="cp-empty">{{ 'sections.collection_template.empty' | t }}</p>
+          {%- endif -%}
+
+          {%- if paginate.pages > 1 -%}
+            <nav class="cp-pagination" aria-label="{{ 'general.pagination.label' | t }}">
+              <ul class="cp-pagination__list" role="list">
+                <li>
+                  {%- if paginate.previous -%}
+                    <a
+                      class="cp-pagination__item cp-pagination__item--nav"
+                      href="{{ paginate.previous.url }}"
+                      data-cp-link
+                      data-cp-scroll
+                      aria-label="{{ 'general.pagination.previous' | t }}"
+                    >
+                      <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+                    </a>
+                  {%- else -%}
+                    <span class="cp-pagination__item cp-pagination__item--nav is-disabled" aria-hidden="true">
+                      <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+                    </span>
+                  {%- endif -%}
+                </li>
+
+                {%- for part in paginate.parts -%}
+                  <li>
+                    {%- if part.is_link -%}
+                      <a
+                        class="cp-pagination__item"
+                        href="{{ part.url }}"
+                        data-cp-link
+                        data-cp-scroll
+                        aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
+                      >
+                        {{- part.title -}}
+                      </a>
+                    {%- elsif part.title == paginate.current_page -%}
+                      <span
+                        class="cp-pagination__item cp-pagination__item--current"
+                        aria-current="page"
+                        aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
+                      >
+                        {{- part.title -}}
+                      </span>
+                    {%- else -%}
+                      {%- comment -%} Reticências entre blocos de páginas {%- endcomment -%}
+                      <span class="cp-pagination__item is-disabled">{{ part.title }}</span>
+                    {%- endif -%}
+                  </li>
+                {%- endfor -%}
+
+                <li>
+                  {%- if paginate.next -%}
+                    <a
+                      class="cp-pagination__item cp-pagination__item--nav cp-pagination__item--next"
+                      href="{{ paginate.next.url }}"
+                      data-cp-link
+                      data-cp-scroll
+                      aria-label="{{ 'general.pagination.next' | t }}"
+                    >
+                      <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+                    </a>
+                  {%- else -%}
+                    <span
+                      class="cp-pagination__item cp-pagination__item--nav cp-pagination__item--next is-disabled"
+                      aria-hidden="true"
+                    >
+                      <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+                    </span>
+                  {%- endif -%}
+                </li>
+              </ul>
+            </nav>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  {%- endpaginate -%}
+</collection-products>
+
+{% schema %}
+{
+  "name": "Cardápio com filtros",
+  "tag": "section",
+  "class": "section-collection-products",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Grade"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Produtos por página",
+      "min": 4,
+      "max": 48,
+      "step": 4,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Colunas (desktop)",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Colunas (mobile)",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "header",
+      "content": "Card"
+    },
+    {
+      "type": "text",
+      "id": "price_label",
+      "label": "Texto acima do preço",
+      "default": "a partir de"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texto do botão",
+      "default": "Ver mais"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Mostrar avaliação",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Mostrar descrição curta",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "max_tags",
+      "label": "Máximo de tags no card",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Filtros",
+      "info": "Os filtros vêm do app Search & Discovery da Shopify."
+    },
+    {
+      "type": "text",
+      "id": "filters_label",
+      "label": "Título dos filtros",
+      "default": "Filtros"
+    },
+    {
+      "type": "text",
+      "id": "category_filter_label",
+      "label": "Nome do filtro de categorias",
+      "info": "O filtro com este nome aparece como lista com contagem, no topo da coluna. Os demais viram grupos com pílulas.",
+      "default": "Categorias"
+    },
+    {
+      "type": "text",
+      "id": "all_label",
+      "label": "Rótulo de \"sem filtro de categoria\"",
+      "default": "Todos"
+    },
+    {
+      "type": "text",
+      "id": "clear_label",
+      "label": "Limpar (desktop)",
+      "default": "Limpar Filtro"
+    },
+    {
+      "type": "text",
+      "id": "mobile_clear_label",
+      "label": "Limpar (mobile)",
+      "default": "Limpar tudo"
+    },
+    {
+      "type": "text",
+      "id": "mobile_apply_label",
+      "label": "Botão da gaveta (mobile)",
+      "info": "Use [count] para o número de produtos.",
+      "default": "Ver [count] pratos"
+    },
+    {
+      "type": "text",
+      "id": "remove_label",
+      "label": "Rótulo acessível de \"remover filtro\"",
+      "default": "Remover filtro"
+    },
+    {
+      "type": "text",
+      "id": "count_label_singular",
+      "label": "Contagem (singular)",
+      "default": "produto"
+    },
+    {
+      "type": "text",
+      "id": "count_label_plural",
+      "label": "Contagem (plural)",
+      "default": "produtos"
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Espaço acima (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Espaço abaixo (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Espaço acima (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Espaço abaixo (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cardápio com filtros"
+    }
+  ]
+}
+{% endschema %}
