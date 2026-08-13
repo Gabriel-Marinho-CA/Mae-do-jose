@@ -31,28 +31,28 @@
 
 /* Os blocos vivem dentro do .product__info-container do Dawn, que aplica
    margens verticais nos filhos diretos. Zeramos e controlamos aqui. */
-.product__info-container > .mdj-pdp {
+.product__info-container>.mdj-pdp {
   margin: 0 0 1.5rem;
 }
 
-.product__info-container > .mdj-pdp:last-child {
+.product__info-container>.mdj-pdp:last-child {
   margin-bottom: 0;
 }
 
-.product__info-container > .mdj-eyebrow {
+.product__info-container>.mdj-eyebrow {
   margin-bottom: 0.4rem;
 }
 
-.product__info-container > .mdj-title {
+.product__info-container>.mdj-title {
   margin-bottom: 1.2rem;
 }
 
-.product__info-container > .mdj-short-description {
+.product__info-container>.mdj-short-description {
   margin-top: 0;
   margin-bottom: 2rem;
 }
 
-.product__info-container > .mdj-rule {
+.product__info-container>.mdj-rule {
   margin: 0 0 2rem;
 }
 
@@ -89,7 +89,7 @@ mdj-panel {
   min-width: 0;
 }
 
-.mdj-breadcrumb__item + .mdj-breadcrumb__item::before {
+.mdj-breadcrumb__item+.mdj-breadcrumb__item::before {
   content: '›';
   color: #d4cfc9;
   flex: 0 0 auto;
@@ -203,6 +203,7 @@ mdj-panel {
 }
 
 @media screen and (min-width: 750px) {
+
   .mdj-eyebrow,
   .mdj-title,
   .mdj-short-description {
@@ -324,7 +325,7 @@ mdj-panel {
   max-width: none;
 }
 
-.mdj-sizes + .mdj-sizes {
+.mdj-sizes+.mdj-sizes {
   margin-top: 2rem;
 }
 
@@ -387,21 +388,21 @@ mdj-panel {
   margin-top: 0.9rem;
 }
 
-.mdj-sizes input[type='radio']:checked + .mdj-sizes__card {
+.mdj-sizes input[type='radio']:checked+.mdj-sizes__card {
   background: #fff;
   border-color: var(--mdj-green);
 }
 
-.mdj-sizes input[type='radio']:focus-visible + .mdj-sizes__card {
+.mdj-sizes input[type='radio']:focus-visible+.mdj-sizes__card {
   outline: 0.2rem solid var(--mdj-green);
   outline-offset: 0.2rem;
 }
 
-.mdj-sizes input[type='radio'].disabled + .mdj-sizes__card {
+.mdj-sizes input[type='radio'].disabled+.mdj-sizes__card {
   opacity: 0.45;
 }
 
-.mdj-sizes input[type='radio'].disabled + .mdj-sizes__card .mdj-sizes__price {
+.mdj-sizes input[type='radio'].disabled+.mdj-sizes__card .mdj-sizes__price {
   text-decoration: line-through;
 }
 
@@ -627,6 +628,17 @@ mdj-panel {
   background: var(--mdj-orange);
   border-color: var(--mdj-orange);
   color: #fff;
+
+  &:hover {
+
+    &::before,
+    &::after {
+      border-radius: 16px;
+      box-shadow: 0px 2px 6px orange;
+    }
+  }
+
+
 }
 
 .mdj-buy .product-form__submit:not([disabled]):hover {
@@ -775,6 +787,7 @@ mdj-panel {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .mdj-panel__icon::before,
   .mdj-panel__icon::after {
     transition: none;
@@ -980,6 +993,7 @@ mdj-panel {
 }
 
 @media screen and (min-width: 750px) {
+
   .mdj-specs__label,
   .mdj-specs__value {
     font-size: 1.8rem;
