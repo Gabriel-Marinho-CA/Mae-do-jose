@@ -24,25 +24,41 @@
         "mdj_feature_tags": {
           "type": "mdj_feature_tags",
           "settings": {
-            "text": "{{ product.vendor }}",
-            "text_style": "uppercase"
+            "leaf_tags": "Vegetariano, Vegano, Sem glúten, Sem lactose"
           }
         },
-        "title": {
-          "type": "title"
+        "mdj_divider_1": {
+          "type": "mdj_divider"
         },
-        "price": {
-          "type": "price"
+        "mdj_size_picker": {
+          "type": "mdj_size_picker",
+          "settings": {
+            "label": "Escolha o tamanho",
+            "show_price": true
+          }
+        },
+        "mdj_divider_2": {
+          "type": "mdj_divider"
         },
         "mdj_prep_modes": {
           "type": "mdj_prep_modes",
           "settings": {
-            "picker_type": "button",
-            "swatch_shape": "circle"
+            "label": "Modo de Preparo"
           }
         },
-        "quantity_selector": {
-          "type": "quantity_selector"
+        "mdj_divider_3": {
+          "type": "mdj_divider"
+        },
+        "mdj_purchase_box": {
+          "type": "mdj_purchase_box",
+          "settings": {
+            "price_label": "Preço selecionado",
+            "show_quantity": true,
+            "show_dynamic_checkout": false,
+            "show_gift_card_recipient": false,
+            "whatsapp_label": "Pedir via WhatsApp",
+            "whatsapp_message": "Olá! Tenho interesse em: [produto]"
+          }
         },
         "mdj_ingredients": {
           "type": "mdj_ingredients",
@@ -52,8 +68,11 @@
             "others_label": "Demais ingredientes"
           }
         },
-        "description": {
-          "type": "description"
+        "mdj_specs": {
+          "type": "mdj_specs",
+          "settings": {
+            "heading": "Especificações"
+          }
         },
         "mdj_nutrition": {
           "type": "mdj_nutrition",
@@ -84,13 +103,13 @@
         "show_media_tag": true,
         "enable_sticky_info": true,
         "color_scheme": "scheme-1",
-        "gallery_layout": "stacked",
+        "media_position": "left",
+        "gallery_layout": "thumbnail",
         "media_size": "large",
         "constrain_to_viewport": true,
-        "media_fit": "contain",
+        "media_fit": "cover",
         "image_zoom": "lightbox",
         "mobile_thumbnails": "hide",
-        "media_position": "left",
         "hide_variants": true,
         "enable_video_looping": false,
         "padding_top": 36,
