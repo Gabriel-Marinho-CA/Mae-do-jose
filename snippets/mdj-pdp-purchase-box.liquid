@@ -38,8 +38,23 @@
         id="Quantity-Form-{{ section_id }}"
         class="product-form__input product-form__quantity mdj-buy__quantity"
       >
+        {%- comment -%}
+          O <label> fica escondido no layout, mas precisa manter a estrutura do Dawn:
+          product-info.js assina 'cart-update' com fetchQuantityRules(), que lê
+          '.quantity__rules-cart .loading__spinner' sem optional chaining. Sem esse
+          span o subscriber explode dentro do publish() do product-form.js e o
+          carrinho nunca é renderizado.
+        {%- endcomment -%}
         <label class="quantity__label form__label visually-hidden" for="Quantity-{{ section_id }}">
           {{ 'products.product.quantity.label' | t }}
+          <span class="quantity__rules-cart{% if cart_qty == 0 %} hidden{% endif %}" aria-hidden="true">
+            {%- render 'loading-spinner' -%}
+            <span
+              >(
+              {{- 'products.product.quantity.in_cart_html' | t: quantity: cart_qty -}}
+              )</span
+            >
+          </span>
         </label>
         <quantity-input class="quantity" data-url="{{ product.url }}" data-section="{{ section_id }}">
           <button class="quantity__button" name="minus" type="button">
@@ -75,6 +90,29 @@
             </span>
           </button>
         </quantity-input>
+
+        {%- comment -%}
+          Regras de quantidade: fica escondido pelo CSS, mas product-info.js
+          espera encontrar '.quantity__rules' dentro de .product-form__quantity
+          para sincronizar mínimo/múltiplos na troca de variante.
+        {%- endcomment -%}
+        <div class="quantity__rules caption" id="Quantity-Rules-{{ section_id }}">
+          {%- if current_variant.quantity_rule.increment > 1 -%}
+            <span class="divider">
+              {{- 'products.product.quantity.multiples_of' | t: quantity: current_variant.quantity_rule.increment -}}
+            </span>
+          {%- endif -%}
+          {%- if current_variant.quantity_rule.min > 1 -%}
+            <span class="divider">
+              {{- 'products.product.quantity.minimum_of' | t: quantity: current_variant.quantity_rule.min -}}
+            </span>
+          {%- endif -%}
+          {%- if current_variant.quantity_rule.max != null -%}
+            <span class="divider">
+              {{- 'products.product.quantity.maximum_of' | t: quantity: current_variant.quantity_rule.max -}}
+            </span>
+          {%- endif -%}
+        </div>
       </div>
     {%- endif -%}
   </div>

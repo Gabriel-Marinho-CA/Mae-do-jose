@@ -153,6 +153,7 @@
 
 .cart-drawer .cart-item__title {
   margin: 0;
+  padding-right: 18px;
 }
 
 .cart-drawer .cart-item__details .cart-item__name {

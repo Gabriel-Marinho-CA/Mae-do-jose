@@ -1,0 +1,223 @@
+/*
+  Cabeçalho de coleção — breadcrumb + título + trilha de categorias.
+
+  Estilos estáticos. Tudo que depende do schema (paddings desktop/mobile e cor
+  de fundo) fica no {% style %} da section, escopado por instância.
+
+  Desktop: conteúdo centralizado, cards de 166px em linha (quebram em várias
+  linhas quando não cabem).
+  Mobile: cards de 121px em scroll horizontal, sangrando até a borda da tela.
+*/
+
+.collection-header {
+  --ch-green: #043c39;
+  --ch-title: #1a2e2d;
+  --ch-body: #6b7e7d;
+  --ch-muted: #a89880;
+  --ch-border: #f0ede8;
+  --ch-surface: #f7f5f2;
+  /* Definidas em snippets/theme-fonts.liquid; o fallback cobre o caso do
+     snippet não ter sido renderizado. */
+  --ch-font: var(--mdj-font-body, 'Outfit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif);
+  --ch-font-display: var(--mdj-font-display, 'Marcellus', Georgia, serif);
+
+  display: block;
+  font-family: var(--ch-font);
+}
+
+.collection-header__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---------- Breadcrumb ---------- */
+
+.collection-header__breadcrumb-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ch-muted);
+  font-size: 1.6rem;
+  line-height: 1.4;
+}
+
+.collection-header__breadcrumb-list li + li::before {
+  content: '›';
+  margin-right: 0.6rem;
+  color: var(--ch-muted);
+}
+
+.collection-header__breadcrumb-list a {
+  color: var(--ch-muted);
+  text-decoration: none;
+}
+
+.collection-header__breadcrumb-list a:hover,
+.collection-header__breadcrumb-list a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+}
+
+.collection-header__breadcrumb-list [aria-current='page'] {
+  color: #5a6e6d;
+}
+
+/* ---------- Título ---------- */
+
+.collection-header__heading {
+  margin: 1.2rem 0 0;
+  color: var(--ch-title);
+  font-family: var(--ch-font-display);
+  font-size: 4rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.15;
+  text-align: center;
+  word-break: normal;
+}
+
+/* ---------- Trilha de categorias ---------- */
+
+.collection-header__list {
+  display: flex;
+  gap: 1.2rem;
+  width: 100%;
+  margin: 3.2rem 0 0;
+  padding: 1rem 1.5rem;
+  margin-inline: -1.5rem;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.collection-header__list::-webkit-scrollbar {
+  display: none;
+}
+
+.collection-header__list > li {
+  display: flex;
+  flex: none;
+}
+
+.collection-header__card {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: 12.1rem;
+  overflow: hidden;
+  background: transparent;
+  border: 1px solid var(--ch-border);
+  border-radius: 16px;
+  color: var(--ch-body);
+  text-decoration: none;
+  scroll-snap-align: start;
+  transition: box-shadow 0.25s ease, transform 0.25s ease, background-color 0.25s ease;
+}
+
+.collection-header__card:hover {
+  transform: translateY(-2px);
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+.collection-header__card--active {
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.collection-header__card:focus-visible {
+  outline: 2px solid var(--ch-green);
+  outline-offset: 2px;
+}
+
+.collection-header__card-media {
+  display: block;
+  width: 100%;
+  aspect-ratio: 121 / 81;
+  overflow: hidden;
+  background: var(--ch-surface);
+  border-radius: 16px;
+}
+
+.collection-header__card-media picture,
+.collection-header__card-media img,
+.collection-header__card-media .placeholder-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.collection-header__card-label {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 4.3rem;
+  padding: 0.6rem 0.8rem;
+  font-size: 1.4rem;
+  font-weight: 400;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.collection-header__card--active .collection-header__card-label {
+  color: var(--ch-title);
+}
+
+/* ---------- Desktop ---------- */
+
+@media screen and (min-width: 750px) {
+  .collection-header__breadcrumb-list {
+    font-size: 1.8rem;
+  }
+
+  .collection-header__heading {
+    margin-top: 2rem;
+    font-size: 7rem;
+    line-height: 0.86;
+  }
+
+  .collection-header__list {
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 5rem;
+    margin-inline: 0;
+    padding: 1rem 0.4rem;
+    overflow-x: visible;
+  }
+
+  .collection-header__card {
+    width: 16.6rem;
+  }
+
+  .collection-header__card-media {
+    aspect-ratio: 166 / 91;
+  }
+
+  .collection-header__card-label {
+    min-height: 6rem;
+    padding: 1rem 1.2rem;
+    font-size: 1.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collection-header__card {
+    transition: none;
+  }
+
+  .collection-header__card:hover {
+    transform: none;
+  }
+}

@@ -1,0 +1,306 @@
+{%- comment -%}
+  Cabeçalho de coleção — breadcrumb + título + trilha de categorias.
+
+  - Cada bloco é um card com link real (<a href>), rastreável e navegável sem JS.
+  - O card da coleção que está sendo exibida ganha o estado ativo (fundo branco
+    + sombra), comparando a URL do bloco com request.path. Nada de JS.
+  - Sem carrossel: a trilha é uma lista com scroll horizontal nativo.
+
+  Estilos fixos ficam em assets/section-collection-header.css. Apenas o que
+  depende do schema (paddings e cor de fundo) fica no {% style %} abaixo.
+{%- endcomment -%}
+
+{%- liquid
+  assign uid = 'collection-header-' | append: section.id
+
+  assign current_path = request.path | split: '?' | first
+
+  assign current_label = section.settings.breadcrumb_current_label
+  if current_label == blank
+    assign current_label = collection.title
+  endif
+  if current_label == blank
+    assign current_label = section.settings.heading
+  endif
+-%}
+
+{{ 'section-collection-header.css' | asset_url | stylesheet_tag }}
+
+{%- comment -%}
+  Outfit e Marcellus vêm de snippets/theme-fonts.liquid, carregado uma única
+  vez no layout. Nada de <link> de fonte aqui.
+{%- endcomment -%}
+
+{% style %}
+  .{{ uid }} {
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    background-color: {{ section.settings.background_color }};
+  }
+
+  @media screen and (min-width: 750px) {
+    .{{ uid }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="collection-header {{ uid }}">
+  <div class="collection-header__inner page-width">
+    <div class="collection-header__intro{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+      {%- if section.settings.show_breadcrumb and current_label != blank -%}
+        <nav class="collection-header__breadcrumb" aria-label="Trilha de navegação">
+          <ol class="collection-header__breadcrumb-list" role="list">
+            <li>
+              <a href="{{ routes.root_url }}">{{ section.settings.breadcrumb_home_label | escape }}</a>
+            </li>
+            <li aria-current="page">{{ current_label | escape }}</li>
+          </ol>
+        </nav>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <{{ section.settings.heading_tag }} class="collection-header__heading">
+          {{- section.settings.heading | escape -}}
+        </{{ section.settings.heading_tag }}>
+      {%- endif -%}
+    </div>
+
+    {%- if section.blocks.size > 0 -%}
+      <ul
+        class="collection-header__list{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+        role="list"
+      >
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign block_collection = block.settings.collection
+
+            assign card_url = block.settings.link
+            if card_url == blank
+              assign card_url = block_collection.url
+            endif
+            if card_url == blank
+              assign card_url = routes.all_products_collection_url
+            endif
+
+            assign card_label = block.settings.label | default: block_collection.title
+
+            assign card_image = block.settings.image | default: block_collection.image
+            if card_image == blank
+              assign card_image = block_collection.products.first.featured_image
+            endif
+
+            assign card_image_mobile = block.settings.image_mobile | default: card_image
+
+            assign card_path = card_url | split: '?' | first
+            assign is_active = false
+            if card_path != blank and card_path == current_path
+              assign is_active = true
+            endif
+
+            assign loading = 'lazy'
+            if forloop.index <= 4
+              assign loading = 'eager'
+            endif
+          -%}
+
+          <li
+            {% if settings.animations_reveal_on_scroll %}
+              class="scroll-trigger animate--slide-in"
+              data-cascade
+              style="--animation-order: {{ forloop.index }};"
+            {% endif %}
+            {{ block.shopify_attributes }}
+          >
+            <a
+              class="collection-header__card{% if is_active %} collection-header__card--active{% endif %}"
+              href="{{ card_url }}"
+              {% if is_active %}
+                aria-current="page"
+              {% endif %}
+            >
+              <span class="collection-header__card-media">
+                {%- if card_image != blank -%}
+                  <picture>
+                    {%- if card_image_mobile != blank -%}
+                      <source
+                        media="(max-width: 749px)"
+                        srcset="{{ card_image_mobile | image_url: width: 250 }} 250w, {{ card_image_mobile | image_url: width: 500 }} 500w"
+                        sizes="121px"
+                      >
+                    {%- endif -%}
+                    <img
+                      src="{{ card_image | image_url: width: 340 }}"
+                      srcset="{{ card_image | image_url: width: 340 }} 340w, {{ card_image | image_url: width: 680 }} 680w"
+                      sizes="(min-width: 750px) 166px, 121px"
+                      alt="{{ card_image.alt | default: card_label | escape }}"
+                      width="{{ card_image.width }}"
+                      height="{{ card_image.height }}"
+                      loading="{{ loading }}"
+                    >
+                  </picture>
+                {%- else -%}
+                  {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                {%- endif -%}
+              </span>
+              <span class="collection-header__card-label">{{ card_label | escape }}</span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Cabeçalho de coleção",
+  "tag": "section",
+  "class": "section-collection-header",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Conteúdo"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título",
+      "default": "Cardápio Completo"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Tag do título",
+      "info": "Use h1 quando esta section for o título principal da página (e o banner padrão da coleção estiver desativado).",
+      "options": [
+        { "value": "h1", "label": "h1" },
+        { "value": "h2", "label": "h2" }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Mostrar breadcrumb",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "breadcrumb_home_label",
+      "label": "Rótulo da página inicial",
+      "default": "Início"
+    },
+    {
+      "type": "text",
+      "id": "breadcrumb_current_label",
+      "label": "Rótulo da página atual",
+      "info": "Se vazio, usa o título da coleção e, na falta dele, o título da section."
+    },
+    {
+      "type": "header",
+      "content": "Aparência"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Cor de fundo",
+      "default": "#f7f5f2"
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Espaço acima (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Espaço abaixo (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Espaço acima (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Espaço abaixo (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Categoria",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Coleção"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Rótulo",
+          "info": "Se vazio, usa o título da coleção."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "info": "Se vazio, usa a URL da coleção."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagem (desktop)",
+          "info": "Se vazia, usa a imagem da coleção."
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Imagem (mobile)",
+          "info": "Se vazia, usa a imagem de desktop."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cabeçalho de coleção",
+      "blocks": [
+        { "type": "category" },
+        { "type": "category" },
+        { "type": "category" },
+        { "type": "category" }
+      ]
+    }
+  ]
+}
+{% endschema %}
