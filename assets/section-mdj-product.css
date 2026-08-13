@@ -483,12 +483,27 @@ mdj-panel {
   gap: 1.6rem;
 }
 
+/* O preço e o rótulo nunca quebram em duas linhas: quem cede espaço
+   na linha é o seletor de quantidade, que tem largura fixa. */
+.mdj-buy__price {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .mdj-buy__price-label {
   font-size: 1.6rem;
   font-weight: 400;
   line-height: 1.3;
   color: var(--mdj-muted);
   margin: 0;
+  white-space: nowrap;
+}
+
+.mdj-buy__price .price,
+.mdj-buy__price .price__container,
+.mdj-buy__price .price__regular,
+.mdj-buy__price .price__sale {
+  white-space: nowrap;
 }
 
 .mdj-buy__price .price {
@@ -513,6 +528,7 @@ mdj-panel {
 .mdj-buy__quantity {
   display: flex;
   justify-content: center;
+  flex: 0 0 auto;
 }
 
 .mdj-buy__quantity .quantity {
@@ -530,20 +546,41 @@ mdj-panel {
   display: none;
 }
 
-.mdj-buy__quantity .quantity__button {
+/* O Dawn força background-color: inherit nos botões fora de foco
+   (.quantity__button:not(:focus-visible):not(.focused)); é preciso repetir
+   o mesmo peso de seletor pra manter o círculo branco do Figma. */
+.mdj-buy__quantity .quantity__button,
+.mdj-buy__quantity .quantity__button:not(:focus-visible):not(.focused),
+.mdj-buy__quantity .quantity__button:first-child,
+.mdj-buy__quantity .quantity__button:last-child {
   width: 3.6rem;
   height: 3.6rem;
   flex: 0 0 3.6rem;
+  margin: 0;
+  padding: 0;
   border: 0.1rem solid var(--mdj-border-strong);
   border-radius: 1.8rem;
-  background: #fff;
+  background-color: #fff;
   color: var(--mdj-title);
-  padding: 0;
 }
 
+.mdj-buy__quantity .quantity__button:hover {
+  border-color: var(--mdj-muted);
+}
+
+.mdj-buy__quantity .quantity__button .svg-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: auto;
+}
+
+/* icon-minus tem viewBox 10x2 e icon-plus 10x10 — altura automática
+   pra nenhum dos dois esticar. */
 .mdj-buy__quantity .quantity__button svg {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 100%;
+  height: auto;
 }
 
 .mdj-buy__quantity .quantity__input {

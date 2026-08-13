@@ -14,12 +14,7 @@
   {% render 'mdj-pdp-specs', product: product, block: block %}
 {%- endcomment -%}
 
-{%- liquid
-  assign specs = product.metafields.custom.especificacao.value
-  if specs.size == 0
-    assign specs = product.metafields.custom.especificacao.value
-  endif
--%}
+{%- assign specs = product.metafields.custom.especificacao.value -%}
 
 {%- if specs.size > 0 -%}
   <mdj-panel class="mdj-pdp" {{ block.shopify_attributes }}>

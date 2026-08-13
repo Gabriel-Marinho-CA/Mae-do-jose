@@ -89,7 +89,7 @@
 
       <div class="product product--mdj product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }} grid grid--1-col {% if product.media.size > 0 %}grid--2-col-tablet{% else %}product--no-media{% endif %}">
         <div class="grid__item product__media-wrapper mdj-pdp mdj-media">
-          {%- assign media_tag = product.metafields.custom.tag_da_imagem.value
+          {%- assign media_tag = product.metafields.custom.tag_da_imagem
             | default: product.metafields.custom.tag_da_imagem
           -%}
           {%- if section.settings.show_media_tag and media_tag != blank -%}
@@ -2367,6 +2367,18 @@
           "label": "Mostrar seletor de quantidade"
         },
         {
+          "type": "text",
+          "id": "add_to_cart_label",
+          "default": "Adicionar ao Pedido",
+          "label": "Texto do botão de compra"
+        },
+        {
+          "type": "text",
+          "id": "sold_out_label",
+          "default": "Esgotado",
+          "label": "Texto quando esgotado"
+        },
+        {
           "type": "checkbox",
           "id": "show_dynamic_checkout",
           "default": false,
@@ -2383,10 +2395,16 @@
           "content": "WhatsApp"
         },
         {
+          "type": "checkbox",
+          "id": "show_whatsapp",
+          "default": true,
+          "label": "Mostrar botão do WhatsApp"
+        },
+        {
           "type": "text",
           "id": "whatsapp_number",
           "label": "Número com DDI",
-          "info": "Ex.: 5511999999999. Deixe vazio para esconder o botão."
+          "info": "Ex.: 5511999999999. Sem número, o WhatsApp abre pedindo pra escolher o contato."
         },
         {
           "type": "text",

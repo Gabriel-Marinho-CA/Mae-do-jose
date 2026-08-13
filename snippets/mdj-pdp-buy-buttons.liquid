@@ -1,0 +1,115 @@
+{%- comment -%}
+  Botão de compra da página de produto — Mãe do José.
+
+  Mesma estrutura do snippet 'buy-buttons' do Dawn (product-form.js e
+  product-info.js dependem de <product-form>, do id ProductSubmitButton-*
+  e do input .product-variant-id), com o texto do botão editável pelo
+  theme editor, como pede o layout do Figma ("Adicionar ao Pedido").
+
+  Aceita:
+  - product: {Object} produto atual.
+  - block: {Object} bloco da section.
+  - product_form_id: {String} id do formulário de compra.
+  - section_id: {String} id da section.
+
+  Uso:
+  {% render 'mdj-pdp-buy-buttons', product: product, block: block, product_form_id: product_form_id, section_id: section_id %}
+{%- endcomment -%}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+
+  assign check_against_inventory = true
+  if current_variant.inventory_management != 'shopify' or current_variant.inventory_policy == 'continue'
+    assign check_against_inventory = false
+  endif
+
+  assign quantity_rule_soldout = false
+  if current_variant.quantity_rule.min > current_variant.inventory_quantity and check_against_inventory
+    assign quantity_rule_soldout = true
+  endif
+
+  assign is_unavailable = false
+  if current_variant == null or current_variant.available == false or quantity_rule_soldout
+    assign is_unavailable = true
+  endif
+
+  assign add_label = block.settings.add_to_cart_label | default: 'Adicionar ao Pedido'
+  assign sold_out_label = block.settings.sold_out_label | default: 'Esgotado'
+-%}
+
+{%- if product != blank -%}
+  {%- liquid
+    assign gift_card_recipient_feature_active = false
+    if block.settings.show_gift_card_recipient and product.gift_card?
+      assign gift_card_recipient_feature_active = true
+    endif
+  -%}
+  <product-form
+    class="product-form"
+    data-hide-errors="{{ gift_card_recipient_feature_active }}"
+    data-section-id="{{ section_id }}"
+  >
+    <div class="product-form__error-message-wrapper" role="alert" hidden>
+      <span class="svg-wrapper">
+        {{- 'icon-error.svg' | inline_asset_content -}}
+      </span>
+      <span class="product-form__error-message"></span>
+    </div>
+
+    {%- form 'product',
+      product,
+      id: product_form_id,
+      class: 'form',
+      novalidate: 'novalidate',
+      data-type: 'add-to-cart-form'
+    -%}
+      <input
+        type="hidden"
+        name="id"
+        value="{{ current_variant.id }}"
+        {% if is_unavailable %}
+          disabled
+        {% endif %}
+        class="product-variant-id"
+      >
+
+      {%- if product.gift_card? and block.settings.show_gift_card_recipient -%}
+        {%- render 'gift-card-recipient-form', product: product, form: form, section: section -%}
+      {%- endif -%}
+
+      <div class="product-form__buttons">
+        <button
+          id="ProductSubmitButton-{{ section_id }}"
+          type="submit"
+          name="add"
+          class="product-form__submit button button--full-width button--primary"
+          {% if is_unavailable %}
+            disabled
+          {% endif %}
+        >
+          <span>
+            {%- if is_unavailable -%}
+              {{ sold_out_label | escape }}
+            {%- else -%}
+              {{ add_label | escape }}
+            {%- endif -%}
+          </span>
+          {%- render 'loading-spinner' -%}
+        </button>
+
+        {%- if block.settings.show_dynamic_checkout -%}
+          {{ form | payment_button }}
+        {%- endif -%}
+      </div>
+    {%- endform -%}
+  </product-form>
+{%- else -%}
+  <div class="product-form">
+    <div class="product-form__buttons form">
+      <button type="submit" name="add" class="product-form__submit button button--full-width button--primary" disabled>
+        {{ sold_out_label | escape }}
+      </button>
+    </div>
+  </div>
+{%- endif -%}

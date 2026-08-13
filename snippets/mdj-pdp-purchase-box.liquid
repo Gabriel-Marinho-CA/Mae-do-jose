@@ -80,15 +80,14 @@
   </div>
 
   <div class="mdj-buy__actions">
-    {%- render 'buy-buttons',
+    {%- render 'mdj-pdp-buy-buttons',
       block: block,
       product: product,
       product_form_id: product_form_id,
-      section_id: section_id,
-      show_pickup_availability: false
+      section_id: section_id
     -%}
 
-    {%- if whatsapp_digits != blank -%}
+    {%- if block.settings.show_whatsapp -%}
       <a
         class="mdj-buy__whatsapp"
         href="https://wa.me/{{ whatsapp_digits }}?text={{ whatsapp_text }}"

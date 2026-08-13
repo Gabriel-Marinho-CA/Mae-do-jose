@@ -62,8 +62,10 @@
           "settings": {
             "price_label": "Preço selecionado",
             "show_quantity": true,
+            "add_to_cart_label": "Adicionar ao Pedido",
+            "sold_out_label": "Esgotado",
             "show_dynamic_checkout": false,
-            "show_gift_card_recipient": false,
+            "show_whatsapp": true,
             "whatsapp_number": "",
             "whatsapp_label": "Pedir via WhatsApp",
             "whatsapp_message": "Olá! Tenho interesse em: [produto]"
