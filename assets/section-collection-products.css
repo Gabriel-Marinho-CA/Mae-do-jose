@@ -392,6 +392,80 @@
   background: rgba(26, 46, 45, 0.45);
 }
 
+/*
+  <details> não anima sozinho. A entrada usa animation (dispara assim que o
+  painel passa a ser renderizado); a saída depende do JS, que segura o
+  fechamento com .is-closing até a animação terminar. Sem JS, fecha na hora.
+*/
+@keyframes cp-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes cp-sheet-out {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes cp-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cp-backdrop-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.cp-sheet[open] .cp-sheet__panel {
+  animation: cp-sheet-in 300ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.cp-sheet[open] .cp-sheet__trigger::after {
+  animation: cp-backdrop-in 300ms ease;
+}
+
+.cp-sheet.is-closing .cp-sheet__panel {
+  animation: cp-sheet-out 220ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.cp-sheet.is-closing .cp-sheet__trigger::after {
+  animation: cp-backdrop-out 220ms ease forwards;
+}
+
+/*
+  Ao filtrar, o markup da gaveta é substituído e ela é reaberta pelo script.
+  Sem isso, a animação de entrada rodaria de novo a cada clique em um filtro.
+*/
+.cp-sheet.is-restoring .cp-sheet__panel,
+.cp-sheet.is-restoring .cp-sheet__trigger::after {
+  animation: none;
+}
+
+body.cp-sheet-open {
+  overflow: hidden;
+}
+
 .cp-sheet__panel {
   position: fixed;
   right: 0;
@@ -633,5 +707,12 @@
   .cp-clear,
   .cp-pagination__item {
     transition: none;
+  }
+
+  .cp-sheet[open] .cp-sheet__panel,
+  .cp-sheet[open] .cp-sheet__trigger::after,
+  .cp-sheet.is-closing .cp-sheet__panel,
+  .cp-sheet.is-closing .cp-sheet__trigger::after {
+    animation: none;
   }
 }

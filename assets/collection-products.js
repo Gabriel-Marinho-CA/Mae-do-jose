@@ -5,30 +5,66 @@
   Com ele, o clique é interceptado, a própria section é buscada com
   ?section_id= e só a coluna de filtros, a barra mobile e os resultados são
   trocados — o scroll e a gaveta aberta são preservados.
+
+  A gaveta mobile é um <details>. A entrada é animada por CSS; o fechamento
+  passa por aqui, que segura o open=false até a animação de saída terminar.
 */
+
+const CP_CLOSE_DURATION = 220;
+const CP_BODY_CLASS = 'cp-sheet-open';
 
 class CollectionProducts extends HTMLElement {
   connectedCallback() {
     this.sectionId = this.dataset.sectionId;
     this.handleClick = this.handleClick.bind(this);
     this.handlePopState = this.handlePopState.bind(this);
+    this.handleToggle = this.handleToggle.bind(this);
 
     this.addEventListener('click', this.handleClick);
+    // O evento toggle não borbulha: só chega aqui na fase de captura.
+    this.addEventListener('toggle', this.handleToggle, true);
     window.addEventListener('popstate', this.handlePopState);
   }
 
   disconnectedCallback() {
     window.removeEventListener('popstate', this.handlePopState);
+    document.body.classList.remove(CP_BODY_CLASS);
+  }
+
+  get prefersReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  handleToggle(event) {
+    const sheet = event.target;
+    if (!(sheet instanceof HTMLDetailsElement) || !sheet.hasAttribute('data-cp-sheet')) return;
+
+    this.syncBodyScroll();
+  }
+
+  syncBodyScroll() {
+    const open = this.querySelector('[data-cp-sheet][open]') !== null;
+    document.body.classList.toggle(CP_BODY_CLASS, open);
   }
 
   handleClick(event) {
     if (event.defaultPrevented) return;
 
+    // Fechar a gaveta pelo próprio botão de filtros ou pelo fundo escurecido.
+    const trigger = event.target.closest('.cp-sheet__trigger');
+    if (trigger && this.contains(trigger)) {
+      const sheet = trigger.closest('[data-cp-sheet]');
+      if (sheet && sheet.open) {
+        event.preventDefault();
+        this.closeSheet();
+      }
+      return;
+    }
+
     const closeTrigger = event.target.closest('[data-cp-close]');
     if (closeTrigger && this.contains(closeTrigger)) {
       event.preventDefault();
-      this.closeSheet();
-      this.scrollToResults();
+      this.closeSheet().then(() => this.scrollToResults());
       return;
     }
 
@@ -111,24 +147,61 @@ class CollectionProducts extends HTMLElement {
   restoreState(state) {
     state.open.forEach((id) => {
       const details = this.querySelector(`details[id="${id}"]`);
-      if (details) details.open = true;
+      if (!details || details.open) return;
+
+      // Reabre sem reanimar: a gaveta já estava na tela antes da troca.
+      details.classList.add('is-restoring');
+      details.open = true;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => details.classList.remove('is-restoring'));
+      });
     });
 
     const categories = this.querySelector('.cp-categories');
     if (categories) categories.scrollTop = state.scrollTop;
+
+    this.syncBodyScroll();
   }
 
   closeSheet() {
-    const sheet = this.querySelector('[data-cp-sheet]');
-    if (sheet) sheet.open = false;
+    const sheet = this.querySelector('[data-cp-sheet][open]');
+    if (!sheet) return Promise.resolve();
+
+    const panel = sheet.querySelector('.cp-sheet__panel');
+
+    if (!panel || this.prefersReducedMotion) {
+      sheet.open = false;
+      this.syncBodyScroll();
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+      let settled = false;
+
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+
+        panel.removeEventListener('animationend', finish);
+        sheet.classList.remove('is-closing');
+        sheet.open = false;
+        this.syncBodyScroll();
+        resolve();
+      };
+
+      panel.addEventListener('animationend', finish);
+      sheet.classList.add('is-closing');
+
+      // Rede de segurança: se a animação não rodar, fecha assim mesmo.
+      setTimeout(finish, CP_CLOSE_DURATION + 120);
+    });
   }
 
   scrollToResults() {
     const results = this.querySelector('[data-cp-results]');
     if (!results) return;
 
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    results.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    results.scrollIntoView({ behavior: this.prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
   }
 }
 
