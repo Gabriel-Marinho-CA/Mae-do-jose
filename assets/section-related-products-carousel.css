@@ -1,0 +1,190 @@
+/*
+  Você também pode gostar — carrossel de produtos recomendados.
+
+  Estilos estáticos apenas. O que depende do schema (paddings, cores,
+  colunas) fica no {% style %} da section.
+
+  Estrutura:
+    .related-products-carousel            fundo + paddings
+      .related-products-carousel__inner   page-width
+        .related-products-carousel__header  título + setas (desktop)
+        .swiper                             slides com resultate-card
+        .related-products-carousel__pagination
+*/
+
+.related-products-carousel {
+  --rpc-green: #043c39;
+  --rpc-title: #1a2e2d;
+  --rpc-border: #e8e4dc;
+  --rpc-font: var(--mdj-font-body, 'Outfit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif);
+
+  font-family: var(--rpc-font);
+}
+
+.related-products-carousel__inner {
+  display: block;
+}
+
+/* Enquanto as recomendações não chegam, a section não ocupa espaço nem deixa
+   um buraco no layout. */
+.related-products-carousel__inner:empty {
+  display: none;
+}
+
+/* ---------- Cabeçalho ---------- */
+
+.related-products-carousel__header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin: 0 0 2.4rem;
+}
+
+.related-products-carousel__heading {
+  margin: 0;
+  color: var(--rpc-title);
+  font-family: var(--rpc-font);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* ---------- Setas ---------- */
+
+.related-products-carousel__nav {
+  display: none;
+  flex: none;
+  align-items: center;
+  gap: 1rem;
+}
+
+.related-products-carousel__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  padding: 0;
+  background: #fff;
+  border: 1px solid var(--rpc-border);
+  border-radius: 50%;
+  color: var(--rpc-green);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+.related-products-carousel__arrow:hover,
+.related-products-carousel__arrow:focus-visible {
+  background: var(--rpc-green);
+  color: #fff;
+}
+
+.related-products-carousel__arrow svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.related-products-carousel__arrow--next svg {
+  transform: rotate(180deg);
+}
+
+.related-products-carousel__arrow.swiper-button-disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* Sem slides suficientes o Swiper esconde a navegação: some junto. */
+.related-products-carousel__arrow.swiper-button-lock {
+  display: none;
+}
+
+/* ---------- Carrossel ---------- */
+
+/* O padding evita que a sombra e o hover (translateY) dos cards sejam
+   cortados pelo overflow do Swiper. */
+.related-products-carousel .swiper {
+  padding: 0.6rem;
+  margin: -0.6rem;
+}
+
+.related-products-carousel .swiper-slide {
+  height: auto;
+  display: flex;
+}
+
+.related-products-carousel .swiper-slide > * {
+  width: 100%;
+}
+
+/* Fallback antes da inicialização do Swiper (ou sem JS do carrossel):
+   os cards viram uma faixa rolável, nada some da tela. */
+.related-products-carousel .swiper:not(.swiper-initialized) .swiper-wrapper {
+  overflow-x: auto;
+  gap: 1.2rem;
+}
+
+.related-products-carousel .swiper:not(.swiper-initialized) .swiper-slide {
+  flex: 0 0 calc(50% - 0.6rem);
+}
+
+/* ---------- Paginação ---------- */
+
+.related-products-carousel__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 2.4rem;
+}
+
+.related-products-carousel__pagination .swiper-pagination-bullet {
+  width: 0.8rem;
+  height: 0.8rem;
+  margin: 0;
+  background: var(--rpc-border);
+  border-radius: 50%;
+  opacity: 1;
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.related-products-carousel__pagination .swiper-pagination-bullet-active {
+  width: 2.4rem;
+  background: var(--rpc-green);
+  border-radius: 0.4rem;
+}
+
+.related-products-carousel__pagination.swiper-pagination-lock {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .related-products-carousel__arrow,
+  .related-products-carousel__pagination .swiper-pagination-bullet {
+    transition: none;
+  }
+}
+
+/* ---------- Desktop ---------- */
+
+@media screen and (min-width: 750px) {
+  .related-products-carousel__header {
+    justify-content: space-between;
+    margin-bottom: 3.2rem;
+  }
+
+  .related-products-carousel__heading {
+    font-size: 2.7rem;
+    text-align: left;
+  }
+
+  .related-products-carousel__nav {
+    display: flex;
+  }
+
+  .related-products-carousel .swiper:not(.swiper-initialized) .swiper-slide {
+    flex: 0 0 calc(25% - 0.9rem);
+  }
+}

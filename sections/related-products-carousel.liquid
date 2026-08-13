@@ -1,0 +1,280 @@
+{%- comment -%}
+  Você também pode gostar — carrossel de produtos recomendados.
+
+  - Usa a mesma API de recomendações do Dawn (routes.product_recommendations_url
+    + Section Rendering API) da section related-products.liquid: o conteúdo é
+    buscado quando a section entra na viewport.
+  - Desktop: carrossel com 4 cards por vez (configurável).
+  - Mobile: carrossel com 2 colunas x 2 linhas por slide (4 produtos por vez).
+  - Os cards são os mesmos do cardápio: snippets/resultate-card.liquid.
+
+  Estilos fixos ficam em assets/section-related-products-carousel.css e
+  assets/component-resultate-card.css. Apenas o que depende do schema
+  (paddings, cores, colunas) fica no {% style %} abaixo.
+
+  A inicialização do Swiper mora em assets/related-products-carousel.js: o HTML
+  das recomendações é injetado via innerHTML, e <script> injetado assim não
+  executa. Swiper é carregado globalmente em layout/theme.liquid.
+{%- endcomment -%}
+
+{%- liquid
+  assign uid = 'related-products-carousel-' | append: section.id
+-%}
+
+{{ 'section-related-products-carousel.css' | asset_url | stylesheet_tag }}
+{{ 'component-resultate-card.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'related-products-carousel.js' | asset_url }}" defer="defer"></script>
+
+{% style %}
+  .{{ uid }} {
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    background: {{ section.settings.background_color }};
+  }
+
+  @media screen and (min-width: 750px) {
+    .{{ uid }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="related-products-carousel {{ uid }}">
+  <resultate-recommendations
+    class="related-products-carousel__inner page-width"
+    data-url="{{ routes.product_recommendations_url }}?limit={{ section.settings.products_to_show }}&intent=related"
+    data-section-id="{{ section.id }}"
+    data-product-id="{{ product.id }}"
+    data-columns-desktop="{{ section.settings.columns_desktop }}"
+  >
+    {%- if recommendations.performed and recommendations.products_count > 0 -%}
+      <div class="related-products-carousel__header{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="related-products-carousel__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.show_arrows -%}
+          <div class="related-products-carousel__nav">
+            <button
+              type="button"
+              class="related-products-carousel__arrow related-products-carousel__arrow--prev"
+              data-prev
+              aria-label="{{ 'general.slider.previous_slide' | t }}"
+            >
+              <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                <path d="M9 1L3 7l6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="related-products-carousel__arrow related-products-carousel__arrow--next"
+              data-next
+              aria-label="{{ 'general.slider.next_slide' | t }}"
+            >
+              <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                <path d="M9 1L3 7l6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="swiper" data-swiper>
+        <div class="swiper-wrapper">
+          {%- for recommendation in recommendations.products -%}
+            <div
+              class="swiper-slide{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+              {% if settings.animations_reveal_on_scroll %}
+                data-cascade
+                style="--animation-order: {{ forloop.index }};"
+              {% endif %}
+            >
+              {%- render 'resultate-card',
+                card_product: recommendation,
+                section_id: section.id,
+                price_label: section.settings.price_label,
+                button_label: section.settings.button_label,
+                show_rating: section.settings.show_rating,
+                show_description: section.settings.show_description,
+                max_tags: section.settings.max_tags,
+                lazy_load: true,
+                image_sizes: '(min-width: 990px) 325px, (min-width: 750px) 33vw, 45vw',
+                skip_styles: true
+              -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      {%- if section.settings.show_pagination -%}
+        <div class="related-products-carousel__pagination" data-pagination></div>
+      {%- endif -%}
+    {%- endif -%}
+  </resultate-recommendations>
+</div>
+
+{% schema %}
+{
+  "name": "Recomendados (carrossel)",
+  "tag": "section",
+  "class": "section-related-products-carousel",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Os produtos vêm das recomendações da Shopify para o produto da página. Só aparecem na loja publicada (não no editor)."
+    },
+    {
+      "type": "header",
+      "content": "Textos"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título",
+      "default": "Você também pode gostar"
+    },
+    {
+      "type": "header",
+      "content": "Carrossel"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 16,
+      "step": 1,
+      "label": "Produtos recomendados",
+      "default": 8,
+      "info": "No mobile, cada slide mostra 4 produtos (2 colunas x 2 linhas)."
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Cards por vez no desktop",
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Mostrar setas (desktop)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pagination",
+      "label": "Mostrar indicadores",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Cards de produto"
+    },
+    {
+      "type": "text",
+      "id": "price_label",
+      "label": "Texto acima do preço",
+      "default": "a partir de"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texto do botão do card",
+      "default": "Ver mais"
+    },
+    {
+      "type": "range",
+      "id": "max_tags",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": "Máximo de tags por card",
+      "default": 2,
+      "info": "As tags do produto aparecem no canto superior esquerdo da imagem."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Mostrar descrição curta",
+      "default": true,
+      "info": "Usa o metafield custom.pequena_descricao; se vazio, um resumo da descrição do produto."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Mostrar avaliação",
+      "default": true,
+      "info": "Usa o Judge.me quando disponível. Sem avaliações, mostra as estrelas decorativas do layout."
+    },
+    {
+      "type": "header",
+      "content": "Cores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Cor de fundo",
+      "default": "#f7f5f2"
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço acima",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço abaixo",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Espaçamento (mobile)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço acima",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Espaço abaixo",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recomendados (carrossel)"
+    }
+  ],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}
