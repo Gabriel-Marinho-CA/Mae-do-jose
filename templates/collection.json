@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "header": {
@@ -31,6 +40,86 @@
         "heading_tag": "h1",
         "show_breadcrumb": true,
         "breadcrumb_home_label": "Início",
+        "background_color": "#f7f5f2",
+        "padding_top": 90,
+        "padding_bottom": 90,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40
+      }
+    },
+    "collection_header_dABtdg": {
+      "type": "collection-header",
+      "blocks": {
+        "category_ymtDVJ": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "label": "Massas",
+            "link": "shopify://collections/tortas-salgadas-copia",
+            "image": "shopify://shop_images/Rectangle_45_1.png"
+          }
+        },
+        "category_tXii3C": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "label": "Torta Salgada",
+            "link": "shopify://collections/tortas-salgadas",
+            "image": "shopify://shop_images/Rectangle_45.png"
+          }
+        },
+        "category_AjkB4E": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "label": "Massas",
+            "link": "shopify://collections/tortas-salgadas-copia",
+            "image": "shopify://shop_images/Rectangle_45_1.png"
+          }
+        },
+        "category_7k87LL": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "label": "Torta Salgada",
+            "link": "shopify://collections/tortas-salgadas",
+            "image": "shopify://shop_images/Rectangle_45.png"
+          }
+        },
+        "category_rk9VQX": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "label": "Massas",
+            "link": "shopify://collections/tortas-salgadas-copia",
+            "image": "shopify://shop_images/Rectangle_45_1.png"
+          }
+        },
+        "category_AtwUDN": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "label": "Torta Salgada",
+            "link": "shopify://collections/tortas-salgadas",
+            "image": "shopify://shop_images/Rectangle_45.png"
+          }
+        }
+      },
+      "block_order": [
+        "category_ymtDVJ",
+        "category_tXii3C",
+        "category_AjkB4E",
+        "category_7k87LL",
+        "category_rk9VQX",
+        "category_AtwUDN"
+      ],
+      "name": "Cabeçalho de coleção",
+      "settings": {
+        "heading": "Cardápio Completo",
+        "heading_tag": "h1",
+        "show_breadcrumb": true,
+        "breadcrumb_home_label": "Início",
+        "breadcrumb_current_label": "",
         "background_color": "#f7f5f2",
         "padding_top": 90,
         "padding_bottom": 90,
