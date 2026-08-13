@@ -65,6 +65,7 @@
             "add_to_cart_label": "Adicionar ao Pedido",
             "sold_out_label": "Esgotado",
             "show_dynamic_checkout": false,
+            "show_gift_card_recipient": false,
             "show_whatsapp": true,
             "whatsapp_number": "",
             "whatsapp_label": "Pedir via WhatsApp",
@@ -142,6 +143,7 @@
     },
     "related-products": {
       "type": "related-products",
+      "disabled": true,
       "settings": {
         "heading": "Você também pode gostar",
         "heading_size": "h2",
@@ -157,11 +159,33 @@
         "padding_top": 36,
         "padding_bottom": 28
       }
+    },
+    "related_products_carousel_gMYyHJ": {
+      "type": "related-products-carousel",
+      "name": "Recomendados (carrossel)",
+      "settings": {
+        "heading": "Você também pode gostar",
+        "products_to_show": 8,
+        "columns_desktop": 4,
+        "show_arrows": true,
+        "show_pagination": true,
+        "price_label": "a partir de",
+        "button_label": "Ver mais",
+        "max_tags": 2,
+        "show_description": true,
+        "show_rating": true,
+        "background_color": "#f7f5f2",
+        "padding_top": 100,
+        "padding_bottom": 100,
+        "padding_top_mobile": 48,
+        "padding_bottom_mobile": 48
+      }
     }
   },
   "order": [
     "main",
     "disclosures",
-    "related-products"
+    "related-products",
+    "related_products_carousel_gMYyHJ"
   ]
 }
