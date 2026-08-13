@@ -44,6 +44,54 @@ if (!customElements.get('mdj-panel')) {
   );
 }
 
+/*
+  Pontinhos do slider da galeria no mobile.
+
+  O SliderComponent do Dawn só sabe lidar com o contador "1 / 5" — os dots são
+  do SlideshowComponent, que arrasta autoplay e loop junto. Aqui só ligamos os
+  botões ao setSlidePosition e ouvimos o evento 'slideChanged' que o próprio
+  SliderComponent já dispara.
+*/
+if (!customElements.get('mdj-gallery-dots')) {
+  customElements.define(
+    'mdj-gallery-dots',
+    class MdjGalleryDots extends HTMLElement {
+      connectedCallback() {
+        this.sliderComponent = this.closest('slider-component');
+        this.dots = Array.from(this.querySelectorAll('[data-slide-index]'));
+        if (!this.sliderComponent || this.dots.length === 0) return;
+
+        this.dots.forEach((dot) => {
+          dot.addEventListener('click', () => {
+            const index = Number(dot.dataset.slideIndex);
+            const offset = this.sliderComponent.sliderItemOffset;
+            if (!offset) return;
+            this.sliderComponent.setSlidePosition(index * offset);
+          });
+        });
+
+        this.sliderComponent.addEventListener('slideChanged', (event) => {
+          this.setActive(event.detail.currentPage);
+        });
+
+        this.setActive(this.sliderComponent.currentPage || 1);
+      }
+
+      setActive(page) {
+        this.dots.forEach((dot, index) => {
+          const isActive = index === page - 1;
+          dot.classList.toggle('slider-counter__link--active', isActive);
+          if (isActive) {
+            dot.setAttribute('aria-current', 'true');
+          } else {
+            dot.removeAttribute('aria-current');
+          }
+        });
+      }
+    }
+  );
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof subscribe !== 'function' || typeof PUB_SUB_EVENTS === 'undefined') return;
 

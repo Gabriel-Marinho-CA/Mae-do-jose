@@ -125,7 +125,13 @@
         {%- endunless -%}
       {%- endfor -%}
     </ul>
-    <div class="slider-buttons quick-add-hidden{% if hide_mobile_slider %} small-hide{% endif %}">
+    {%- comment -%}
+      Paginação do slider mobile. Em 'dots' (layout Mãe do José) as setas
+      continuam no DOM — o SliderComponent do Dawn aborta sem o botão "next" —
+      mas ficam escondidas, e quem navega são os pontinhos.
+    {%- endcomment -%}
+    {%- assign gallery_pagination = section.settings.mobile_pagination | default: 'counter' -%}
+    <div class="slider-buttons quick-add-hidden{% if gallery_pagination == 'dots' %} slider-buttons--dots{% endif %}{% if hide_mobile_slider %} small-hide{% endif %}">
       <button
         type="button"
         class="slider-button slider-button--prev"
@@ -136,12 +142,38 @@
           {{- 'icon-caret.svg' | inline_asset_content -}}
         </span>
       </button>
-      <div class="slider-counter caption">
-        <span class="slider-counter--current">1</span>
-        <span aria-hidden="true"> / </span>
-        <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
-        <span class="slider-counter--total">{{ media_count }}</span>
-      </div>
+
+      {%- if gallery_pagination == 'dots' -%}
+        <mdj-gallery-dots class="slider-counter slider-counter--dots">
+          {%- for i in (1..media_count) -%}
+            <button
+              type="button"
+              class="slider-counter__link slider-counter__link--dots{% if forloop.first %} slider-counter__link--active{% endif %}"
+              data-slide-index="{{ forloop.index0 }}"
+              aria-controls="Slider-Gallery-{{ section.id }}"
+              aria-label="{{ 'products.product.media.load_image' | t: index: forloop.index }}"
+              {% if forloop.first %}
+                aria-current="true"
+              {% endif %}
+            >
+              <span class="dot"></span>
+            </button>
+          {%- endfor -%}
+        </mdj-gallery-dots>
+        <div class="slider-counter caption visually-hidden" aria-hidden="true">
+          <span class="slider-counter--current">1</span>
+          <span> / </span>
+          <span class="slider-counter--total">{{ media_count }}</span>
+        </div>
+      {%- else -%}
+        <div class="slider-counter caption">
+          <span class="slider-counter--current">1</span>
+          <span aria-hidden="true"> / </span>
+          <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
+          <span class="slider-counter--total">{{ media_count }}</span>
+        </div>
+      {%- endif -%}
+
       <button
         type="button"
         class="slider-button slider-button--next"

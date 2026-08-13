@@ -123,7 +123,7 @@ mdj-panel {
 
 .mdj-media__tag {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   left: 1.6rem;
   right: 1.6rem;
   bottom: 1.6rem;
@@ -143,6 +143,11 @@ mdj-panel {
   line-height: 1.3;
   color: var(--mdj-muted);
   pointer-events: none;
+
+  @media (max-width:750px) {
+    font-size: 11px;
+    bottom: 6.6rem;
+  }
 }
 
 .mdj-media__tag::before {
@@ -1058,5 +1063,57 @@ mdj-panel {
 @media screen and (min-width: 750px) {
   .product--mdj .product__info-container {
     max-width: 66.5rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Paginação em pontinhos do slider da galeria (mobile)
+
+   As setas continuam no DOM porque o SliderComponent do Dawn desiste de
+   inicializar sem o botão "next" — aqui elas só somem da tela.
+   -------------------------------------------------------------------------- */
+
+.slider-buttons--dots .slider-button {
+  display: none;
+}
+
+.slider-buttons--dots .slider-counter--dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  margin: 0;
+}
+
+.slider-buttons--dots .slider-counter__link {
+  padding: 0.8rem 0.4rem;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.slider-buttons--dots .slider-counter__link--dots .dot {
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 0;
+  border-radius: 10rem;
+  background: #d9d3ca;
+  transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+.slider-buttons--dots .slider-counter__link--dots:hover .dot {
+  background: #a89880;
+  transform: none;
+}
+
+.slider-buttons--dots .slider-counter__link--active.slider-counter__link--dots .dot {
+  width: 2.4rem;
+  background: #a89880;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slider-buttons--dots .slider-counter__link--dots .dot {
+    transition: none;
   }
 }
