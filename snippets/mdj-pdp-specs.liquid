@@ -1,7 +1,7 @@
 {%- comment -%}
   Painel "Especificações".
 
-  Fonte: product.metafields.custom.epecificacao (list.single_line_text_field).
+  Fonte: product.metafields.custom.especificacao (list.single_line_text_field).
   Cada item da lista é uma linha no formato "TextoColunaA | TextoColunaB":
   o que vem antes do "|" é o rótulo (esquerda) e o que vem depois é o valor
   (direita). Item sem "|" vira uma linha só com o rótulo.
@@ -15,7 +15,7 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign specs = product.metafields.custom.epecificacao.value
+  assign specs = product.metafields.custom.especificacao.value
   if specs.size == 0
     assign specs = product.metafields.custom.especificacao.value
   endif
